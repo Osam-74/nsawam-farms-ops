@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#1a2e1a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Nsawam Farms"/>
+<link rel="manifest" href="manifest.json">
+<title>Nsawam Farms — Olamide's Ops Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #0f2010;
+    --green-dark: #1a3a1a;
+    --green-mid: #2d5a2d;
+    --green-bright: #4a9a4a;
+    --green-light: #7dc87d;
+    --gold: #d4a843;
+    --gold-light: #f0c870;
+    --cream: #f5f0e8;
+    --cream-dark: #e8e0d0;
+    --red-alert: #c0392b;
+    --red-light: #e74c3c;
+    --orange: #e67e22;
+    --text-dark: #1a1a1a;
+    --text-mid: #444;
+    --text-light: #888;
+    --white: #ffffff;
+    --card-bg: rgba(255,255,255,0.97);
+    --shadow: 0 4px 24px rgba(0,0,0,0.12);
+    --shadow-heavy: 0 8px 40px rgba(0,0,0,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { font-size:16px; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green-deep);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-dark) 60%, var(--green-mid) 100%);
+    padding: 28px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content:'';
+    position:absolute; inset:0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a9a4a' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .header-top { display:flex; justify-content:space-between; align-items:flex-start; position:relative; }
+  .farm-logo { display:flex; flex-direction:column; }
+  .farm-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold-light);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+  .farm-sub { font-size:0.72rem; color:var(--green-light); letter-spacing:0.15em; text-transform:uppercase; margin-top:3px; }
+  .header-date { text-align:right; }
+  .date-day { font-size:0.7rem; color:var(--green-light); letter-spacing:0.1em; text-transform:uppercase; }
+  .date-full { font-size:0.95rem; color:var(--cream); font-weight:500; margin-top:2px; }
+  .time-now { font-size:1.4rem; color:var(--gold); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  .header-stats {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:10px; margin-top:20px; position:relative;
+  }
+  .stat-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius:12px; padding:10px 8px; text-align:center;
+    backdrop-filter: blur(10px);
+  }
+  .stat-pill .val { font-size:1.15rem; font-weight:700; color:var(--gold-light); }
+  .stat-pill .lbl { font-size:0.6rem; color:var(--green-light); letter-spacing:0.1em; text-transform:uppercase; margin-top:2px; }
+
+  /* ── NOTIFICATION BANNER ── */
+  .notif-banner {
+    background: var(--gold);
+    color: var(--green-deep);
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .notif-banner:hover { background: var(--gold-light); }
+  .notif-banner.granted { background: var(--green-bright); color:#fff; }
+  .notif-banner .nb-icon { font-size:1rem; }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display:flex; overflow-x:auto; background:var(--green-dark);
+    border-bottom:2px solid var(--green-mid);
+    scrollbar-width:none; -ms-overflow-style:none;
+    position:sticky; top:0; z-index:100;
+  }
+  .nav-tabs::-webkit-scrollbar { display:none; }
+  .tab-btn {
+    flex-shrink:0; padding:12px 16px;
+    font-size:0.75rem; font-weight:600;
+    color:var(--green-light); background:none;
+    border:none; cursor:pointer;
+    letter-spacing:0.06em; text-transform:uppercase;
+    border-bottom:3px solid transparent;
+    transition:all 0.2s; white-space:nowrap;
+  }
+  .tab-btn.active { color:var(--gold); border-bottom-color:var(--gold); }
+  .tab-btn:hover:not(.active) { color:var(--cream); }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding:16px; max-width:480px; margin:0 auto; padding-bottom:32px; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-family:'DM Serif Display', serif;
+    font-size:1.1rem; color:var(--cream);
+    margin:20px 0 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .section-title .icon { font-size:1rem; }
+  .section-badge {
+    background:var(--gold); color:var(--green-deep);
+    font-family:'DM Sans',sans-serif;
+    font-size:0.65rem; font-weight:700;
+    padding:2px 7px; border-radius:20px;
+    letter-spacing:0.05em; text-transform:uppercase;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background:var(--card-bg); border-radius:16px;
+    padding:16px; margin-bottom:10px;
+    box-shadow:var(--shadow);
+  }
+  .card-red { border-left:4px solid var(--red-light); }
+  .card-gold { border-left:4px solid var(--gold); }
+  .card-green { border-left:4px solid var(--green-bright); }
+
+  /* ── CHECKLIST ITEMS ── */
+  .check-group { margin-bottom:6px; }
+  .check-item {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:11px 14px; border-radius:11px;
+    background:#fff; border:1.5px solid #e8e8e8;
+    margin-bottom:7px; cursor:pointer;
+    transition:all 0.18s; position:relative;
+  }
+  .check-item:hover { border-color:var(--green-bright); box-shadow:0 2px 12px rgba(74,154,74,0.1); }
+  .check-item.done { background:#f0f9f0; border-color:#b8ddb8; }
+  .check-item.done .ci-text { text-decoration:line-through; color:var(--text-light); }
+  .check-item.done .ci-time { color:#aaa; }
+  .check-box {
+    width:22px; height:22px; border-radius:6px;
+    border:2px solid #ccc; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    margin-top:1px; transition:all 0.18s;
+  }
+  .check-item.done .check-box { background:var(--green-bright); border-color:var(--green-bright); }
+  .check-item.done .check-box::after { content:'✓'; color:#fff; font-size:0.75rem; font-weight:700; }
+  .ci-body { flex:1; }
+  .ci-time {
+    font-size:0.65rem; font-weight:700; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:2px;
+  }
+  .ci-text { font-size:0.875rem; color:var(--text-dark); line-height:1.4; font-weight:500; }
+  .ci-sub { font-size:0.75rem; color:var(--text-light); margin-top:3px; }
+  .ci-urgent { background:#fff5f5; border-color:#f5c0c0; }
+  .ci-urgent .ci-time { color:var(--red-light); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin-bottom:14px; }
+  .progress-label { display:flex; justify-content:space-between; font-size:0.75rem; color:var(--cream-dark); margin-bottom:6px; font-weight:500; }
+  .progress-bar { background:rgba(255,255,255,0.1); border-radius:20px; height:8px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--green-bright), var(--gold)); border-radius:20px; transition:width 0.4s ease; }
+
+  /* ── ALERT CARDS ── */
+  .alert-card {
+    border-radius:13px; padding:13px 15px;
+    margin-bottom:9px; display:flex; align-items:flex-start; gap:12px;
+  }
+  .alert-red { background:#fff0f0; border:1.5px solid #f5c0c0; }
+  .alert-orange { background:#fff8f0; border:1.5px solid #f5d8a0; }
+  .alert-green { background:#f0fff4; border:1.5px solid #b8ddb8; }
+  .alert-icon { font-size:1.3rem; flex-shrink:0; margin-top:1px; }
+  .alert-title { font-size:0.82rem; font-weight:700; margin-bottom:3px; }
+  .alert-red .alert-title { color:var(--red-alert); }
+  .alert-orange .alert-title { color:#b7650a; }
+  .alert-green .alert-title { color:#1e6b1e; }
+  .alert-body { font-size:0.78rem; color:var(--text-mid); line-height:1.45; }
+
+  /* ── WEEKLY GRID ── */
+  .week-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .week-day-card {
+    background:var(--card-bg); border-radius:13px; padding:13px;
+    box-shadow:var(--shadow);
+  }
+  .week-day-name {
+    font-size:0.65rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.1em; color:var(--text-light); margin-bottom:6px;
+  }
+  .week-day-card.today .week-day-name { color:var(--gold); }
+  .week-task { font-size:0.75rem; color:var(--text-mid); padding:4px 0; border-bottom:1px solid #f0f0f0; line-height:1.35; }
+  .week-task:last-child { border-bottom:none; }
+  .week-task.done-task { text-decoration:line-through; color:#bbb; }
+
+  /* ── TEAM CARDS ── */
+  .team-list { display:grid; gap:8px; }
+  .team-card {
+    background:var(--card-bg); border-radius:13px;
+    padding:13px 15px; display:flex; align-items:center; gap:13px;
+    box-shadow:var(--shadow);
+  }
+  .team-avatar {
+    width:40px; height:40px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; flex-shrink:0;
+  }
+  .team-info { flex:1; }
+  .team-name { font-size:0.9rem; font-weight:600; color:var(--text-dark); }
+  .team-role { font-size:0.72rem; color:var(--text-light); margin-top:1px; }
+  .team-freq { font-size:0.68rem; background:#f0f0f0; color:var(--text-mid); padding:2px 7px; border-radius:20px; font-weight:600; }
+
+  /* ── ESCALATION ── */
+  .escalation-item {
+    background:var(--card-bg); border-radius:13px;
+    padding:13px 15px; margin-bottom:8px;
+    border-left:4px solid #ccc;
+    box-shadow:var(--shadow);
+  }
+  .esc-immediate { border-color:var(--red-light); }
+  .esc-sameday { border-color:var(--orange); }
+  .esc-2hr { border-color:var(--gold); }
+  .esc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  .esc-situation { font-size:0.85rem; font-weight:600; color:var(--text-dark); }
+  .esc-badge {
+    font-size:0.62rem; font-weight:700; padding:2px 8px; border-radius:20px;
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .esc-immediate .esc-badge { background:#fff0f0; color:var(--red-light); }
+  .esc-sameday .esc-badge { background:#fff8f0; color:var(--orange); }
+  .esc-2hr .esc-badge { background:#fffbe8; color:#b7650a; }
+  .esc-action { font-size:0.75rem; color:var(--text-light); line-height:1.4; }
+
+  /* ── REPORT TEMPLATE ── */
+  .report-form { background:var(--card-bg); border-radius:16px; padding:16px; box-shadow:var(--shadow); }
+  .rf-field { margin-bottom:12px; }
+  .rf-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-light); margin-bottom:5px; }
+  .rf-input, .rf-textarea {
+    width:100%; border:1.5px solid #e0e0e0; border-radius:9px;
+    padding:9px 12px; font-size:0.875rem; font-family:'DM Sans',sans-serif;
+    color:var(--text-dark); outline:none; transition:border 0.2s;
+  }
+  .rf-input:focus, .rf-textarea:focus { border-color:var(--green-bright); }
+  .rf-textarea { resize:vertical; min-height:70px; }
+  .rf-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn-primary {
+    background:linear-gradient(135deg, var(--green-mid), var(--green-bright));
+    color:#fff; border:none; border-radius:10px;
+    padding:12px 20px; font-size:0.875rem; font-weight:600;
+    cursor:pointer; width:100%; transition:all 0.2s;
+    font-family:'DM Sans',sans-serif; letter-spacing:0.02em;
+  }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(74,154,74,0.35); }
+  .btn-gold {
+    background:linear-gradient(135deg, var(--gold), var(--gold-light));
+    color:var(--green-deep);
+  }
+  .btn-gold:hover { box-shadow:0 4px 16px rgba(212,168,67,0.35); }
+
+  /* ── RED FLAGS ── */
+  .red-flags { display:grid; gap:8px; }
+  .rf-flag {
+    background:#fff; border-radius:13px; padding:13px 15px;
+    display:flex; align-items:center; gap:12px;
+    box-shadow:var(--shadow); border-left:4px solid var(--red-light);
+  }
+  .rflag-icon { font-size:1.4rem; flex-shrink:0; }
+  .rflag-title { font-size:0.85rem; font-weight:700; color:var(--red-alert); }
+  .rflag-desc { font-size:0.75rem; color:var(--text-mid); margin-top:2px; line-height:1.4; }
+
+  /* ── GOLDEN RULES ── */
+  .rules-list { display:grid; gap:8px; }
+  .rule-item {
+    background:var(--card-bg); border-radius:13px;
+    padding:13px 15px; display:flex; gap:12px; align-items:flex-start;
+    box-shadow:var(--shadow);
+  }
+  .rule-num {
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--gold),var(--gold-light));
+    color:var(--green-deep); font-size:0.8rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .rule-text { font-size:0.82rem; color:var(--text-dark); line-height:1.5; padding-top:4px; }
+
+  /* ── NOTIFICATION LOG ── */
+  .notif-log { background:var(--card-bg); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); }
+  .notif-log-item { padding:11px 15px; border-bottom:1px solid #f0f0f0; font-size:0.8rem; display:flex; gap:10px; align-items:flex-start; }
+  .notif-log-item:last-child { border-bottom:none; }
+  .nlog-time { color:var(--gold); font-weight:700; font-size:0.7rem; flex-shrink:0; margin-top:2px; }
+  .nlog-msg { color:var(--text-mid); line-height:1.4; }
+
+  /* ── TOAST ── */
+  #toast {
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--green-dark); color:var(--cream);
+    padding:11px 20px; border-radius:25px; font-size:0.82rem; font-weight:500;
+    box-shadow:var(--shadow-heavy); z-index:9999;
+    opacity:0; transition:all 0.3s; pointer-events:none; white-space:nowrap;
+    border:1px solid var(--green-bright);
+  }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--green-mid); border-radius:4px; }
+
+  /* ── PULSE ANIMATION ── */
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+  .pulse { animation:pulse 2s infinite; }
+
+  /* ── REPORT COPY BOX ── */
+  .copy-box {
+    background:#f8f8f8; border:1px solid #e0e0e0; border-radius:10px;
+    padding:12px 14px; font-size:0.78rem; font-family:monospace;
+    color:var(--text-dark); line-height:1.6; white-space:pre-wrap;
+    word-break:break-word; margin-bottom:10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="farm-logo">
+      <div class="farm-name">🌿 Nsawam Farms</div>
+      <div class="farm-sub">Olamide · Operations Hub</div>
+    </div>
+    <div class="header-date">
+      <div class="date-day" id="hDay"></div>
+      <div class="date-full" id="hDate"></div>
+      <div class="time-now" id="hTime"></div>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill">
+      <div class="val" id="statDone">0/12</div>
+      <div class="lbl">Done Today</div>
+    </div>
+    <div class="stat-pill">
+      <div class="val">997</div>
+      <div class="lbl">Active Birds</div>
+    </div>
+    <div class="stat-pill">
+      <div class="val pulse" style="color:var(--gold-light)">~430</div>
+      <div class="lbl">Eggs/Day</div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION BANNER -->
+<div class="notif-banner" id="notifBanner" onclick="requestNotifications()">
+  <span class="nb-icon">🔔</span>
+  <span id="notifBannerText">Tap here to enable push notifications for all reminders</span>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('daily', this)">📋 Daily</button>
+  <button class="tab-btn" onclick="switchTab('weekly', this)">📅 Weekly</button>
+  <button class="tab-btn" onclick="switchTab('alerts', this)">🚨 Alerts</button>
+  <button class="tab-btn" onclick="switchTab('team', this)">👥 Team</button>
+  <button class="tab-btn" onclick="switchTab('report', this)">📝 Report</button>
+  <button class="tab-btn" onclick="switchTab('rules', this)">⭐ Rules</button>
+</div>
+
+<div class="main">
+
+<!-- ═══ DAILY TAB ═══ -->
+<div class="tab-panel active" id="tab-daily">
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Today's Progress</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="section-title"><span class="icon">🌅</span> Morning Checklist</div>
+
+  <div id="checklistWrap">
+    <!-- Populated by JS -->
+  </div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">📊</span> Red Flags to Watch</div>
+  <div class="red-flags">
+    <div class="rf-flag">
+      <div class="rflag-icon">💀</div>
+      <div><div class="rflag-title">3+ Bird Deaths Today</div><div class="rflag-desc">Call Alex vet immediately + message Stephen & Tobi</div></div>
+    </div>
+    <div class="rf-flag">
+      <div class="rflag-icon">📉</div>
+      <div><div class="rflag-title">Lay Rate Drops 10%+ in One Day</div><div class="rflag-desc">Check report, confirm with Jalil, alert owners within 2 hours</div></div>
+    </div>
+    <div class="rf-flag">
+      <div class="rflag-icon">🌾</div>
+      <div><div class="rflag-title">Feed Below 7 Days Stock</div><div class="rflag-desc">Emergency order — message owners for approval immediately</div></div>
+    </div>
+    <div class="rf-flag">
+      <div class="rflag-icon">💧</div>
+      <div><div class="rflag-title">Water Below 200ml or Above 450ml/Bird</div><div class="rflag-desc">Investigate immediately with Jalil</div></div>
+    </div>
+    <div class="rf-flag">
+      <div class="rflag-icon">💰</div>
+      <div><div class="rflag-title">Cash Discrepancy Spotted</div><div class="rflag-desc">Do NOT confront anyone — message owners privately, same day</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ WEEKLY TAB ═══ -->
+<div class="tab-panel" id="tab-weekly">
+  <div class="section-title"><span class="icon">📅</span> This Week's Tasks</div>
+  <div class="week-grid" id="weekGrid"></div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">🔄</span> Every Week (Recurring)</div>
+  <div id="recurringList"></div>
+</div>
+
+<!-- ═══ ALERTS TAB ═══ -->
+<div class="tab-panel" id="tab-alerts">
+  <div class="section-title"><span class="icon">🚨</span> Escalation Protocol</div>
+  <p style="font-size:0.78rem;color:var(--cream-dark);margin-bottom:12px;line-height:1.5;">These situations require you to contact Stephen or Tobi <strong style="color:var(--gold)">immediately</strong>. Send WhatsApp first, then call if no response within 30 minutes.</p>
+
+  <div id="escalationList"></div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">🦠</span> Biosecurity Warning Signs</div>
+  <div class="card card-red">
+    <p style="font-size:0.78rem;color:var(--text-mid);line-height:1.6;">Ask Jalil about these <strong>every morning</strong>:</p>
+    <ul style="padding-left:18px;margin-top:8px;font-size:0.8rem;color:var(--text-dark);line-height:2;">
+      <li>Sneezing, coughing, rattling sounds</li>
+      <li>Watery, green, or blood-stained droppings</li>
+      <li>Lethargic, hunched birds not eating</li>
+      <li>Swollen eyes, face, or unusual symptoms</li>
+      <li>Sudden drop in egg production or feed intake</li>
+    </ul>
+    <div style="margin-top:12px;padding:10px;background:#fff5f5;border-radius:9px;font-size:0.78rem;color:var(--red-alert);font-weight:600;line-height:1.5;">
+      ⚡ If any sign appears: Isolate bird → Photo it → Send to Alex via WhatsApp → Alert Stephen & Tobi
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">⚖️</span> Your Spending Limits</div>
+  <div class="card">
+    <div style="display:grid;gap:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+        <span style="font-size:0.82rem;color:var(--text-dark)">Up to GHS 200</span>
+        <span style="background:#f0fff4;color:#1e6b1e;font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:20px;">✓ YOUR CALL</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+        <span style="font-size:0.82rem;color:var(--text-dark)">GHS 200 – 1,000</span>
+        <span style="background:#fff8f0;color:#b7650a;font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:20px;">⚠ WHATSAPP APPROVAL</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+        <span style="font-size:0.82rem;color:var(--text-dark)">Above GHS 1,000</span>
+        <span style="background:#fff0f0;color:var(--red-light);font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:20px;">🚫 WRITTEN APPROVAL</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEAM TAB ═══ -->
+<div class="tab-panel" id="tab-team">
+  <div class="section-title"><span class="icon">👥</span> The Team</div>
+  <div class="team-list" id="teamList"></div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">💬</span> Group Chats</div>
+  <div class="card">
+    <div style="display:grid;gap:10px;">
+      <div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--green-mid);text-transform:uppercase;letter-spacing:0.08em;">Farm Full Team</div>
+        <div style="font-size:0.78rem;color:var(--text-mid);margin-top:3px;">Stephen, Tobi, Damian, Jalil — Main operational updates</div>
+      </div>
+      <div style="border-top:1px solid #f0f0f0;padding-top:10px;">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;">Farm Management ⭐</div>
+        <div style="font-size:0.78rem;color:var(--text-mid);margin-top:3px;">Stephen, Tobi, Francis, Olamide — <strong>Your primary reporting channel</strong></div>
+      </div>
+      <div style="border-top:1px solid #f0f0f0;padding-top:10px;">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--green-mid);text-transform:uppercase;letter-spacing:0.08em;">Farm Vet</div>
+        <div style="font-size:0.78rem;color:var(--text-mid);margin-top:3px;">Stephen, Tobi, Alex — Health & vaccination matters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">🤝</span> Managing Jalil</div>
+  <div class="card card-green">
+    <ul style="padding-left:18px;font-size:0.8rem;color:var(--text-dark);line-height:1.9;">
+      <li>Message him every morning with a <strong>clear task list</strong></li>
+      <li>Be friendly & respectful — he works in Ghana's heat daily</li>
+      <li>When he reports an issue, act on it quickly — builds trust</li>
+      <li>If no response after 3 hours — <strong>escalate</strong></li>
+      <li>Acknowledge good work when the report looks good</li>
+      <li>He signs off the daily report by <strong>9pm every night</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ REPORT TAB ═══ -->
+<div class="tab-panel" id="tab-report">
+  <div class="section-title"><span class="icon">📝</span> Quick Report Builder</div>
+  <p style="font-size:0.78rem;color:var(--cream-dark);margin-bottom:12px;line-height:1.5;">Fill in the fields and tap Generate to create a formatted report you can copy and paste into WhatsApp.</p>
+
+  <div class="report-form" id="reportFormWrap">
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <button class="btn-primary" style="flex:1;padding:9px;" onclick="setReportType('midweek')" id="btnMid">Mid-Week</button>
+      <button class="btn-primary btn-gold" style="flex:1;padding:9px;" onclick="setReportType('endweek')" id="btnEnd">End of Week</button>
+    </div>
+
+    <div class="rf-field">
+      <div class="rf-label">Report Date</div>
+      <input class="rf-input" type="date" id="rDate"/>
+    </div>
+    <div class="rf-row">
+      <div class="rf-field">
+        <div class="rf-label">Total Eggs Collected</div>
+        <input class="rf-input" type="number" id="rEggs" placeholder="e.g. 1290"/>
+      </div>
+      <div class="rf-field">
+        <div class="rf-label">Eggs Sold (Trays)</div>
+        <input class="rf-input" type="number" id="rSold" placeholder="e.g. 15"/>
+      </div>
+    </div>
+    <div class="rf-row">
+      <div class="rf-field">
+        <div class="rf-label">Revenue (GHS)</div>
+        <input class="rf-input" type="number" id="rRevenue" placeholder="e.g. 600"/>
+      </div>
+      <div class="rf-field">
+        <div class="rf-label">Feed Bags Remaining</div>
+        <input class="rf-input" type="number" id="rFeed" placeholder="e.g. 14"/>
+      </div>
+    </div>
+    <div class="rf-row">
+      <div class="rf-field">
+        <div class="rf-label">Bird Deaths This Period</div>
+        <input class="rf-input" type="number" id="rDeaths" placeholder="e.g. 2"/>
+      </div>
+      <div class="rf-field">
+        <div class="rf-label">Current Lay Rate (%)</div>
+        <input class="rf-input" type="number" id="rLayRate" placeholder="e.g. 45"/>
+      </div>
+    </div>
+    <div class="rf-field">
+      <div class="rf-label">Health & Issues</div>
+      <textarea class="rf-textarea" id="rHealth" placeholder="Any sick birds, concerns, actions taken..."></textarea>
+    </div>
+    <div class="rf-field">
+      <div class="rf-label">Actions Taken / Next Steps</div>
+      <textarea class="rf-textarea" id="rActions" placeholder="What you actioned, what's coming up..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="generateReport()" style="margin-top:4px;">Generate Report ✨</button>
+  </div>
+
+  <div id="reportOutput" style="display:none;margin-top:14px;">
+    <div class="section-title"><span class="icon">📄</span> Generated Report</div>
+    <div class="copy-box" id="reportText"></div>
+    <button class="btn-primary btn-gold" onclick="copyReport()">📋 Copy to Clipboard</button>
+  </div>
+</div>
+
+<!-- ═══ RULES TAB ═══ -->
+<div class="tab-panel" id="tab-rules">
+  <div class="section-title"><span class="icon">⭐</span> Golden Rules</div>
+  <div class="rules-list" id="rulesList"></div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">🔔</span> Notification Log</div>
+  <div class="notif-log" id="notifLog">
+    <div class="notif-log-item"><div class="nlog-time">--:--</div><div class="nlog-msg" style="color:#bbb;font-style:italic;">No notifications sent yet today</div></div>
+  </div>
+
+  <div class="section-title" style="margin-top:22px"><span class="icon">⚙️</span> Notification Settings</div>
+  <div class="card">
+    <p style="font-size:0.8rem;color:var(--text-mid);margin-bottom:12px;line-height:1.5;">Reminders are scheduled daily. For best results, <strong>install this page as a home screen app</strong> and keep it open in the background.</p>
+    <button class="btn-primary" onclick="requestNotifications()" id="settingsNotifBtn">🔔 Enable / Re-enable Notifications</button>
+    <button class="btn-primary" onclick="testNotification()" style="margin-top:8px;background:linear-gradient(135deg,var(--green-dark),var(--green-mid));">🧪 Send Test Notification Now</button>
+    <div style="margin-top:12px;padding:10px;background:#f8f8f8;border-radius:9px;font-size:0.72rem;color:var(--text-light);line-height:1.6;">
+      <strong>📱 Install as App (iOS):</strong> Safari → Share → "Add to Home Screen"<br/>
+      <strong>📱 Install as App (Android):</strong> Chrome → Menu → "Add to Home Screen"
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════════════
+
+const DAILY_TASKS = [
+  { id:'d1', time:'By 8:00 AM', text:'Read the daily email report from Jalil', sub:'Note anything unusual — deaths, lay rate, feed, water', urgent:false },
+  { id:'d2', time:'By 9:00 AM', text:'Check the Farm App', sub:'Confirm lay rate, feed levels & bird count match email report', urgent:false },
+  { id:'d3', time:'By 9:30 AM', text:'Message Jalil in group chat', sub:'Bird health update? Overnight issues? Morning feed confirmed?', urgent:false },
+  { id:'d4', time:'Morning', text:'Respond to Stephen, Tobi & all team messages', sub:'WhatsApp responses within 1 hour — non-negotiable', urgent:true },
+  { id:'d5', time:'By 12:00 PM', text:'Confirm morning egg collection has happened', sub:'Update egg count. Message Jalil to confirm.', urgent:false },
+  { id:'d6', time:'Afternoon', text:'Check Damian dispatch status (Fridays)', sub:'Confirm egg collection & sale if it\'s a Friday', urgent:false },
+  { id:'d7', time:'By 6:00 PM', text:'Confirm afternoon egg collection with Jalil', sub:'Update daily running total', urgent:false },
+  { id:'d8', time:'By 9:00 PM', text:'Confirm Jalil has signed off daily report', sub:'If not signed off by 9pm — call Jalil immediately', urgent:true },
+  { id:'d9', time:'Daily', text:'Post summary in Farm Management group chat', sub:'Eggs today, any issues, feed status — every single day', urgent:false },
+  { id:'d10', time:'Daily', text:'Log all expenses in Notion', sub:'Same day — nothing should be unrecorded', urgent:false },
+  { id:'d11', time:'Daily', text:'Check for sick or unusual birds', sub:'Ask Jalil — isolate any sick or male birds spotted', urgent:false },
+  { id:'d12', time:'Daily', text:'Confirm footbath has fresh disinfectant', sub:'Biosecurity check — ask Jalil every day', urgent:false },
+];
+
+const WEEKLY_SCHEDULE = {
+  Monday: ['Review last week\'s egg totals & revenue', 'Send Monday summary to Stephen & Tobi'],
+  Tuesday: ['Check feed stock levels', 'Follow up on any outstanding issues from Monday'],
+  Wednesday: ['Send Mid-Week Report to Stephen & Tobi by 6pm', 'Check water supply status'],
+  Thursday: ['Prepare for Friday dispatch', 'Remind Jalil of any upcoming vaccinations or vet visits'],
+  Friday: ['Confirm Damian collecting & dispatching eggs', 'Get sale price & volume — log in Notion', 'Send End-of-Week Report to Stephen & Tobi by 6pm'],
+  Saturday: ['Send End-of-Week Report (if not sent Friday)', 'Review Notion expense log for the week'],
+  Sunday: ['Plan next week\'s visitor schedule', 'Check feed & water for the week ahead'],
+};
+
+const RECURRING_TASKS = [
+  '📊 Check feed stock — if below 14 days, coordinate Damian & Jalil for mill pickup',
+  '💧 Check water supply — arrange replenishment if needed (~GHS 800/month)',
+  '🐓 Ensure sick & male birds are isolated from main flock',
+  '📋 Review Notion expense log — flag anything unusual to owners',
+  '📅 Create schedule of expected farm visitors for coming week',
+  '💉 Check vaccination calendar — send Jalil reminders in advance',
+];
+
+const TEAM = [
+  { name:'Stephen Ofori-Addo', role:'Owner (London)', freq:'Daily', emoji:'👔', color:'#e8f4e8' },
+  { name:'Tobi Bakare', role:'Owner (London)', freq:'Daily', emoji:'👔', color:'#e8f4e8' },
+  { name:'Abdul Jalil', role:'Live-In Caretaker', freq:'Daily', emoji:'🧑‍🌾', color:'#fff8e8' },
+  { name:'Damian', role:'Consultant — Feed & Dispatch', freq:'Multiple/week', emoji:'🚚', color:'#f0f8ff' },
+  { name:'Francis', role:'General Assistant', freq:'As needed', emoji:'🔧', color:'#f5f5f5' },
+  { name:'Alex', role:'Veterinarian', freq:'Min. every 2 months', emoji:'👨‍⚕️', color:'#fff0f0' },
+  { name:'Razak', role:'Secondary Consultant', freq:'As needed', emoji:'📋', color:'#f5f5f5' },
+  { name:'Isaac', role:'Secondary Caretaker', freq:'Occasionally', emoji:'🧑‍🌾', color:'#f5f5f5' },
+  { name:'Cobby', role:'Secondary Manager', freq:'As needed', emoji:'👷', color:'#f5f5f5' },
+];
+
+const ESCALATIONS = [
+  { situation:'3+ bird deaths in one day', action:'Contact Alex the vet AND message Stephen/Tobi', urgency:'IMMEDIATE', cls:'esc-immediate' },
+  { situation:'Suspected disease outbreak', action:'Isolate affected birds, contact Alex, message owners', urgency:'IMMEDIATE', cls:'esc-immediate' },
+  { situation:'Jalil not responding for 12+ hours', action:'Try Francis, then Damian, then message owners', urgency:'SAME DAY', cls:'esc-sameday' },
+  { situation:'Feed stock below 5 days', action:'Emergency order — message owners for approval', urgency:'SAME DAY', cls:'esc-sameday' },
+  { situation:'Unexplained cash discrepancy', action:'Do NOT confront anyone — message owners privately', urgency:'SAME DAY', cls:'esc-sameday' },
+  { situation:'Water or utilities failure', action:'Coordinate fix with Jalil/Francis, notify owners', urgency:'SAME DAY', cls:'esc-sameday' },
+  { situation:'Lay rate drops 10%+ in one day', action:'Check report, confirm with Jalil, message owners', urgency:'WITHIN 2 HRS', cls:'esc-2hr' },
+  { situation:'Egg buyer cancels or doesn\'t pay', action:'Message owners, find alternative buyer', urgency:'WITHIN 2 HRS', cls:'esc-2hr' },
+  { situation:'Unapproved farm visitor or expense', action:'Get approval from owners BEFORE proceeding', urgency:'BEFORE ACTION', cls:'esc-2hr' },
+];
+
+const GOLDEN_RULES = [
+  'Always respond to WhatsApp messages within 1 hour during working hours. Speed of response is everything.',
+  'Never let feed stock drop below 7 days. This is a hard line — order before it becomes urgent.',
+  'Read the daily email report every morning without fail. It is your briefing for the day.',
+  'If you are unsure about something, ask Stephen or Tobi. Never guess on something important.',
+  'If you spot a problem, tell us immediately — even if you don\'t have a solution yet. No surprises.',
+  'All expenses go in Notion the same day they happen. Nothing should be unrecorded.',
+  'You are the hub. If something is not being communicated, it is your job to make sure it gets done.',
+  'Be honest at all times. We trust you completely and we expect that trust to be earned every day.',
+];
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+let checkedItems = JSON.parse(localStorage.getItem('checkedItems_' + todayKey()) || '{}');
+let reportType = 'midweek';
+let notifLog = [];
+
+function todayKey() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ════════════════════════════════════════════════
+//  CLOCK & DATE
+// ════════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('hDay').textContent = now.toLocaleDateString('en-US', {weekday:'long'});
+  document.getElementById('hDate').textContent = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  document.getElementById('hTime').textContent = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:true});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ════════════════════════════════════════════════
+//  RENDER CHECKLIST
+// ════════════════════════════════════════════════
+function renderChecklist() {
+  const wrap = document.getElementById('checklistWrap');
+  wrap.innerHTML = '';
+  DAILY_TASKS.forEach(task => {
+    const done = !!checkedItems[task.id];
+    const div = document.createElement('div');
+    div.className = 'check-item' + (done ? ' done' : '') + (task.urgent ? ' ci-urgent' : '');
+    div.innerHTML = `
+      <div class="check-box"></div>
+      <div class="ci-body">
+        <div class="ci-time">${task.time}</div>
+        <div class="ci-text">${task.text}</div>
+        ${task.sub ? `<div class="ci-sub">${task.sub}</div>` : ''}
+      </div>`;
+    div.addEventListener('click', () => toggleTask(task.id));
+    wrap.appendChild(div);
+  });
+  updateProgress();
+}
+
+function toggleTask(id) {
+  checkedItems[id] = !checkedItems[id];
+  localStorage.setItem('checkedItems_' + todayKey(), JSON.stringify(checkedItems));
+  renderChecklist();
+  showToast(checkedItems[id] ? '✅ Task marked done!' : '↩️ Task unmarked');
+}
+
+function updateProgress() {
+  const total = DAILY_TASKS.length;
+  const done = Object.values(checkedItems).filter(Boolean).length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('statDone').textContent = done + '/' + total;
+}
+
+// ════════════════════════════════════════════════
+//  RENDER WEEKLY
+// ════════════════════════════════════════════════
+function renderWeekly() {
+  const today = new Date().toLocaleDateString('en-US', {weekday:'long'});
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  Object.entries(WEEKLY_SCHEDULE).forEach(([day, tasks]) => {
+    const isToday = day === today;
+    const card = document.createElement('div');
+    card.className = 'week-day-card' + (isToday ? ' today' : '');
+    card.innerHTML = `<div class="week-day-name">${isToday ? '⭐ ' : ''}${day}</div>` +
+      tasks.map(t => `<div class="week-task">${t}</div>`).join('');
+    grid.appendChild(card);
+  });
+
+  const recWrap = document.getElementById('recurringList');
+  recWrap.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = RECURRING_TASKS.map(t =>
+    `<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:0.8rem;color:var(--text-dark);line-height:1.4;">${t}</div>`
+  ).join('').replace(/border-bottom:1px solid #f0f0f0;">[^<]+<\/div>$/, '">');
+  recWrap.appendChild(card);
+}
+
+// ════════════════════════════════════════════════
+//  RENDER TEAM
+// ════════════════════════════════════════════════
+function renderTeam() {
+  const list = document.getElementById('teamList');
+  list.innerHTML = '';
+  TEAM.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.innerHTML = `
+      <div class="team-avatar" style="background:${m.color}">${m.emoji}</div>
+      <div class="team-info">
+        <div class="team-name">${m.name}</div>
+        <div class="team-role">${m.role}</div>
+      </div>
+      <div class="team-freq">${m.freq}</div>`;
+    list.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  RENDER ESCALATIONS
+// ════════════════════════════════════════════════
+function renderEscalations() {
+  const list = document.getElementById('escalationList');
+  list.innerHTML = '';
+  ESCALATIONS.forEach(e => {
+    const div = document.createElement('div');
+    div.className = `escalation-item ${e.cls}`;
+    div.innerHTML = `
+      <div class="esc-header">
+        <div class="esc-situation">${e.situation}</div>
+        <div class="esc-badge">${e.urgency}</div>
+      </div>
+      <div class="esc-action">${e.action}</div>`;
+    list.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  RENDER RULES
+// ════════════════════════════════════════════════
+function renderRules() {
+  const list = document.getElementById('rulesList');
+  list.innerHTML = '';
+  GOLDEN_RULES.forEach((rule, i) => {
+    const div = document.createElement('div');
+    div.className = 'rule-item';
+    div.innerHTML = `<div class="rule-num">${i+1}</div><div class="rule-text">${rule}</div>`;
+    list.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  btn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+}
+
+// ════════════════════════════════════════════════
+//  NOTIFICATIONS
+// ════════════════════════════════════════════════
+const REMINDER_SCHEDULE = [
+  { h:7,  m:55, msg:'🌅 8:00 AM — Read the daily email report from Jalil now!' },
+  { h:8,  m:55, msg:'📱 9:00 AM — Check the Farm App. Confirm numbers match email.' },
+  { h:9,  m:25, msg:'💬 9:30 AM — Message Jalil: bird health update, overnight issues, morning feed done?' },
+  { h:11, m:55, msg:'🥚 12:00 PM — Confirm morning egg collection has happened. Update count.' },
+  { h:15, m:0,  msg:'📦 Afternoon check — Has Damian dispatched eggs today (if Friday)?' },
+  { h:17, m:55, msg:'🌇 6:00 PM — Confirm afternoon egg collection with Jalil. Update total.' },
+  { h:20, m:55, msg:'⚠️ 9:00 PM — Has Jalil signed off the daily report? If not — call him NOW!' },
+  { h:20, m:30, msg:'📊 Daily summary — Post brief update in Farm Management group chat.' },
+];
+
+// Wednesday reminder
+const WEDNESDAY_REMINDER = { h:10, m:0, msg:'📝 Wednesday — Mid-Week Report due to Stephen & Tobi by 6pm today!' };
+// Friday reminder
+const FRIDAY_REMINDER = { h:9, m:0, msg:'🚚 Friday — Confirm Damian dispatch + End-of-Week Report due by 6pm!' };
+// Monday reminder
+const MONDAY_REMINDER = { h:9, m:0, msg:'📈 Monday — Review last week\'s totals and send Monday summary to owners.' };
+
+let scheduledTimers = [];
+
+function requestNotifications() {
+  if (!('Notification' in window)) {
+    showToast('❌ Notifications not supported on this browser');
+    return;
+  }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      document.getElementById('notifBanner').classList.add('granted');
+      document.getElementById('notifBannerText').textContent = '✅ Notifications enabled — all daily reminders are set!';
+      showToast('🎉 Notifications enabled! You\'re all set.');
+      scheduleAllNotifications();
+    } else {
+      showToast('⚠️ Please allow notifications in browser settings');
+    }
+  });
+}
+
+function scheduleAllNotifications() {
+  // Clear old timers
+  scheduledTimers.forEach(clearTimeout);
+  scheduledTimers = [];
+
+  const now = new Date();
+  const allReminders = [...REMINDER_SCHEDULE];
+
+  // Add day-specific reminders
+  const day = now.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+  if (day === 1) allReminders.push(MONDAY_REMINDER);
+  if (day === 3) allReminders.push(WEDNESDAY_REMINDER);
+  if (day === 5) allReminders.push(FRIDAY_REMINDER);
+
+  allReminders.forEach(r => {
+    const target = new Date();
+    target.setHours(r.h, r.m, 0, 0);
+    const ms = target - now;
+    if (ms > 0) {
+      const timer = setTimeout(() => {
+        fireNotification('Nsawam Farms Reminder', r.msg);
+        addToNotifLog(r.msg);
+      }, ms);
+      scheduledTimers.push(timer);
+    }
+  });
+  showToast(`✅ ${allReminders.filter(r => {
+    const t = new Date(); t.setHours(r.h,r.m,0,0); return t > now;
+  }).length} reminders scheduled for today`);
+}
+
+function fireNotification(title, body) {
+  if (Notification.permission === 'granted') {
+    const n = new Notification(title, {
+      body,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌿</text></svg>',
+      badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌿</text></svg>',
+      requireInteraction: true,
+      tag: 'nsawam-' + Date.now(),
+    });
+    n.onclick = () => { window.focus(); n.close(); };
+  }
+}
+
+function testNotification() {
+  if (Notification.permission !== 'granted') {
+    requestNotifications();
+    return;
+  }
+  fireNotification('🧪 Test — Nsawam Farms', 'Your notifications are working perfectly! All daily reminders are active.');
+  addToNotifLog('🧪 Test notification sent');
+  showToast('✅ Test notification sent!');
+}
+
+function addToNotifLog(msg) {
+  const now = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:true});
+  notifLog.unshift({time: now, msg});
+  renderNotifLog();
+}
+
+function renderNotifLog() {
+  const log = document.getElementById('notifLog');
+  if (notifLog.length === 0) return;
+  log.innerHTML = notifLog.slice(0, 10).map(n =>
+    `<div class="notif-log-item"><div class="nlog-time">${n.time}</div><div class="nlog-msg">${n.msg}</div></div>`
+  ).join('');
+}
+
+// Check if already granted on load
+function checkNotifStatus() {
+  if (Notification.permission === 'granted') {
+    document.getElementById('notifBanner').classList.add('granted');
+    document.getElementById('notifBannerText').textContent = '✅ Notifications active — all daily reminders are running';
+    scheduleAllNotifications();
+  }
+}
+
+// ════════════════════════════════════════════════
+//  REPORT BUILDER
+// ════════════════════════════════════════════════
+function setReportType(type) {
+  reportType = type;
+  document.getElementById('btnMid').style.opacity = type === 'midweek' ? '1' : '0.5';
+  document.getElementById('btnEnd').style.opacity = type === 'endweek' ? '1' : '0.5';
+}
+
+function generateReport() {
+  const date = document.getElementById('rDate').value;
+  const eggs = document.getElementById('rEggs').value;
+  const sold = document.getElementById('rSold').value;
+  const revenue = document.getElementById('rRevenue').value;
+  const feed = document.getElementById('rFeed').value;
+  const deaths = document.getElementById('rDeaths').value;
+  const layRate = document.getElementById('rLayRate').value;
+  const health = document.getElementById('rHealth').value;
+  const actions = document.getElementById('rActions').value;
+
+  const label = reportType === 'midweek' ? 'MID-WEEK REPORT' : 'END-OF-WEEK REPORT';
+  const feedDays = feed ? Math.floor(feed / 2) : '?';
+
+  const report = `🌿 NSAWAM FARMS — ${label}
+📅 Date: ${date || 'N/A'}
+━━━━━━━━━━━━━━━━━━━
+
+🥚 PRODUCTION
+• Eggs collected: ${eggs || 'N/A'}
+• Lay rate: ${layRate ? layRate + '%' : 'N/A'} (target: 90% by Wk 26)
+
+💰 SALES & REVENUE
+• Eggs sold: ${sold ? sold + ' trays' : 'N/A'}
+• Revenue: ${revenue ? 'GHS ' + revenue : 'N/A'}
+
+🌾 FEED & WATER
+• Feed bags remaining: ${feed || 'N/A'} bags (~${feedDays} days of stock)
+• Water: [confirm with Jalil]
+
+🐔 FLOCK HEALTH
+• Deaths this period: ${deaths || '0'}
+• Health update: ${health || 'No issues reported'}
+
+✅ ACTIONS & NEXT STEPS
+${actions || 'No actions outstanding'}
+
+━━━━━━━━━━━━━━━━━━━
+Olamide — Nsawam Farms Operations`;
+
+  document.getElementById('reportText').textContent = report;
+  document.getElementById('reportOutput').style.display = 'block';
+  document.getElementById('reportOutput').scrollIntoView({behavior:'smooth'});
+}
+
+function copyReport() {
+  const text = document.getElementById('reportText').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('📋 Copied! Paste into WhatsApp.'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 Copied! Paste into WhatsApp.');
+  }
+}
+
+// ════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ════════════════════════════════════════════════
+//  AUTO RESET DAILY
+// ════════════════════════════════════════════════
+function checkDayReset() {
+  const savedDay = localStorage.getItem('lastDay');
+  const today = todayKey();
+  if (savedDay !== today) {
+    checkedItems = {};
+    localStorage.setItem('checkedItems_' + today, '{}');
+    localStorage.setItem('lastDay', today);
+  }
+}
+
+// Set today's date in report
+document.getElementById('rDate').value = new Date().toISOString().split('T')[0];
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
+checkDayReset();
+renderChecklist();
+renderWeekly();
+renderTeam();
+renderEscalations();
+renderRules();
+checkNotifStatus();
+
+// Midnight auto-reset
+const now = new Date();
+const midnight = new Date(now); midnight.setHours(24,0,5,0);
+setTimeout(() => {
+  checkedItems = {};
+  renderChecklist();
+  scheduleAllNotifications();
+}, midnight - now);
+
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('✅ Service Worker registered', reg))
+      .catch(err => console.error('❌ SW registration failed', err));
+  }
+</script>
+</body>
+</html>
