@@ -1577,20 +1577,12 @@ function checkDayReset(){
 
 // ═══════════════════════════════════════════════
 //  FIREBASE DATABASE SYNC
-//  1. Create a free Firebase project at https://console.firebase.google.com
-//  2. Add a Web App, copy the firebaseConfig object
-//  3. Replace the FIREBASE_CONFIG placeholder below with your config
-//  4. Enable Firestore Database (Start in test mode)
-//  Full step-by-step guide is in SETUP_GUIDE.md
+//  Using CDN imports — no build tools needed.
+//  Your Firebase project: nsawam-farms
 // ═══════════════════════════════════════════════
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
+// ✅ YOUR REAL FIREBASE CONFIG — already connected
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBgrp1QKol0Heaw6S67EhgLzZdFh_MNDM8",
   authDomain: "nsawam-farms.firebaseapp.com",
   projectId: "nsawam-farms",
@@ -1599,19 +1591,15 @@ const firebaseConfig = {
   appId: "1:334647320019:web:1b5ef37b5f5f49bb1b6326"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
 let db = null;
-const DB_DOC = 'nsawam/main';   // single Firestore document holding all state
 
 async function initFirebase() {
-  if (!FIREBASE_CONFIG) return;   // not configured yet
   try {
-    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
     const { getFirestore, doc, setDoc, getDoc, onSnapshot } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const app = initializeApp(FIREBASE_CONFIG);
-    db = getFirestore(app);
+    // Avoid re-initialising if already done (page reload in same session)
+    const firebaseApp = getApps().length === 0 ? initializeApp(FIREBASE_CONFIG) : getApps()[0];
+    db = getFirestore(firebaseApp);
     // Pull latest data on load
     await dbPull();
     // Live listener — updates on any device when data changes
@@ -1643,10 +1631,19 @@ function dbPayload() {
   };
 }
 
+// Cache Firestore functions after first import
+let _fs = null;
+async function getFs() {
+  if (_fs) return _fs;
+  const m = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  _fs = m;
+  return _fs;
+}
+
 async function dbSync() {
   if (!db) return;
   try {
-    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { doc, setDoc } = await getFs();
     await setDoc(doc(db, 'nsawam', 'main'), dbPayload(), { merge: true });
     ss('lastSync_ts', Date.now());
   } catch(e) { console.warn('DB sync error:', e); }
@@ -1655,7 +1652,7 @@ async function dbSync() {
 async function dbPull() {
   if (!db) return;
   try {
-    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { doc, getDoc } = await getFs();
     const snap = await getDoc(doc(db, 'nsawam', 'main'));
     if (snap.exists()) applyRemoteData(snap.data());
   } catch(e) { console.warn('DB pull error:', e); }
