@@ -1584,18 +1584,23 @@ function checkDayReset(){
 //  Full step-by-step guide is in SETUP_GUIDE.md
 // ═══════════════════════════════════════════════
 
-const FIREBASE_CONFIG = null;
-/*
-  PASTE YOUR CONFIG HERE — example shape:
-  const FIREBASE_CONFIG = {
-    apiKey: "AIza...",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123:web:abc"
-  };
-*/
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBgrp1QKol0Heaw6S67EhgLzZdFh_MNDM8",
+  authDomain: "nsawam-farms.firebaseapp.com",
+  projectId: "nsawam-farms",
+  storageBucket: "nsawam-farms.firebasestorage.app",
+  messagingSenderId: "334647320019",
+  appId: "1:334647320019:web:1b5ef37b5f5f49bb1b6326"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 let db = null;
 const DB_DOC = 'nsawam/main';   // single Firestore document holding all state
