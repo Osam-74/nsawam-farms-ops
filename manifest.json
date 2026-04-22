@@ -3,20 +3,37 @@
   "short_name": "Nsawam Ops",
   "description": "Daily operations hub for Nsawam Farms — checklists, reports, team, and notifications.",
   "start_url": "index.html",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "theme_color": "#1a2e1a",
   "background_color": "#0f2010",
   "orientation": "portrait",
+  "categories": ["productivity", "business"],
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/1995/1995572.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%231a3a1a'/><text y='140' x='20' font-size='140'>🌿</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/1995/1995572.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%231a3a1a'/><text y='380' x='40' font-size='380'>🌿</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Daily Checklist",
+      "url": "index.html#daily",
+      "description": "Open today's checklist"
+    },
+    {
+      "name": "Log Daily Data",
+      "url": "index.html#log",
+      "description": "Enter today's farm numbers"
     }
   ]
 }
