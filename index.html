@@ -148,7 +148,15 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gd);colo
 .ci-wa-btn{font-size:0.65rem;background:#25D366;color:#fff;border:none;border-radius:12px;padding:3px 8px;margin-top:5px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;}
 .ci-wa-btn:hover{background:#128C7E;}
 
-/* ── STANDING RULES ── */
+.check-item.missed{background:#fff5f5;border-color:#f5c0c0;border-left:4px solid var(--redl);}
+.check-item.missed .ci-time{color:var(--redl);}
+.check-item.missed .check-box{border-color:#f5c0c0;}
+.missed-badge{font-size:0.58rem;font-weight:900;background:var(--redl);color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px;letter-spacing:0.05em;text-transform:uppercase;vertical-align:middle;}
+@keyframes missedPulse{0%,100%{border-color:#f5c0c0;}50%{border-color:var(--redl);}}
+.check-item.missed{animation:missedPulse 2s infinite;}
+
+/* Read-only overlay for inputs */
+.readonly-overlay{pointer-events:none;opacity:0.6;user-select:none;}
 .rule-standing{background:#fff;border-radius:10px;padding:10px 13px;margin-bottom:6px;border-left:3px solid var(--gold);display:flex;align-items:flex-start;gap:10px;}
 .rs-icon{font-size:1.1rem;flex-shrink:0;}
 .rs-text{font-size:0.8rem;color:var(--td);line-height:1.4;font-weight:500;}
@@ -352,7 +360,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gd);colo
 <!-- ══ PIN LOCK ══ -->
 <div id="pinScreen">
   <div class="pin-logo">🌿 Nsawam Farms</div>
-  <div class="pin-sub">Secure Operations Hub</div>
+  <div class="pin-sub">Enter PIN to access</div>
   <div class="pin-dots" id="pinDots">
     <div class="pin-dot" id="pd0"></div>
     <div class="pin-dot" id="pd1"></div>
@@ -379,7 +387,13 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gd);colo
 <!-- ══ APP ══ -->
 <div id="app">
 
-  <!-- Priority Banner -->
+<!-- Read-only ribbon (shown when logged in as viewer) -->
+<div id="readonlyRibbon" style="display:none;background:#c0392b;color:#fff;padding:7px 14px;font-size:0.75rem;font-weight:700;text-align:center;gap:8px;align-items:center;justify-content:center;flex-shrink:0;">
+  🔒 VIEW-ONLY MODE &nbsp;·&nbsp; Enter PIN 0812 for full access &nbsp;
+  <span style="cursor:pointer;text-decoration:underline;" onclick="lockApp()">Switch</span>
+</div>
+
+<!-- Priority Banner -->
   <div id="priorityBanner" style="padding:0 12px;background:var(--gdk);"></div>
 
   <!-- Header -->
@@ -576,6 +590,13 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gd);colo
       <button class="btn" onclick="requestNotifications()" style="margin-bottom:8px;">🔔 Enable / Re-enable Notifications</button>
       <button class="btn btn-gold" onclick="testNotification()" style="margin-bottom:8px;">🧪 Test Notification + Voice</button>
       <button class="btn btn-grey" onclick="lockApp()" style="margin-bottom:12px;font-size:0.78rem;">🔒 Lock App</button>
+
+      <!-- Cloud sync status -->
+      <div style="background:#f0fff4;border:1px solid #b8ddb8;border-radius:9px;padding:11px 13px;margin-bottom:10px;">
+        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#1e6b1e;margin-bottom:6px;">☁️ Cloud Database</div>
+        <div id="dbStatusLine" style="font-size:0.78rem;color:var(--tm);margin-bottom:8px;">Not configured — follow SETUP_GUIDE.md to connect Firebase</div>
+        <button class="btn btn-gold" onclick="manualSync()" style="margin-bottom:0;padding:9px;font-size:0.76rem;">🔄 Sync Now</button>
+      </div>
       <div style="padding:9px;background:#f8f8f8;border-radius:8px;font-size:0.7rem;color:var(--tl);line-height:1.7;">
         <strong>📱 iOS:</strong> Safari → Share → "Add to Home Screen"<br/>
         <strong>📱 Android:</strong> Chrome → Menu → "Add to Home Screen"
@@ -601,60 +622,75 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gd);colo
 
 <script>
 // ═══════════════════════════════════════════════
-//  PIN LOCK
+//  PIN LOCK  —  0812 = master  |  8888 = view-only
 // ═══════════════════════════════════════════════
-const CORRECT_PIN = '0812';
+const PIN_MASTER    = '0812';
+const PIN_READONLY  = '8888';
+const SESSION_KEY   = 'nsawam_unlocked';   // 'master' | 'readonly'
 let pinEntry = '';
-const SESSION_KEY = 'nsawam_unlocked';
+let isReadOnly = false;   // runtime flag used throughout the app
 
 function pinKey(d) {
   if (pinEntry.length >= 4) return;
   pinEntry += d;
   updatePinDots();
-  if (pinEntry.length === 4) {
-    setTimeout(checkPin, 120);
-  }
+  if (pinEntry.length === 4) setTimeout(checkPin, 120);
 }
 function pinDel() {
-  pinEntry = pinEntry.slice(0, -1);
+  pinEntry = pinEntry.slice(0,-1);
   updatePinDots();
 }
-function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById('pd' + i).className = 'pin-dot' + (i < pinEntry.length ? ' filled' : '');
+function updatePinDots(cls) {
+  for (let i=0;i<4;i++) {
+    document.getElementById('pd'+i).className = 'pin-dot'+(i<pinEntry.length?' '+(cls||'filled'):'');
   }
 }
 function checkPin() {
-  if (pinEntry === CORRECT_PIN) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    document.getElementById('pinScreen').style.display = 'none';
-    document.getElementById('app').classList.add('visible');
-    initApp();
+  if (pinEntry === PIN_MASTER) {
+    sessionStorage.setItem(SESSION_KEY,'master');
+    unlockApp(false);
+  } else if (pinEntry === PIN_READONLY) {
+    sessionStorage.setItem(SESSION_KEY,'readonly');
+    unlockApp(true);
   } else {
-    const dots = document.getElementById('pinDots');
-    for (let i = 0; i < 4; i++) document.getElementById('pd' + i).className = 'pin-dot error';
+    const dots=document.getElementById('pinDots');
+    updatePinDots('error');
     dots.classList.add('shake');
-    document.getElementById('pinError').textContent = 'Incorrect PIN. Try again.';
-    setTimeout(() => {
-      dots.classList.remove('shake');
-      pinEntry = '';
-      updatePinDots();
-      document.getElementById('pinError').textContent = '';
-    }, 900);
+    document.getElementById('pinError').textContent='Incorrect PIN. Try again.';
+    setTimeout(()=>{dots.classList.remove('shake');pinEntry='';updatePinDots();document.getElementById('pinError').textContent='';},900);
   }
+}
+function unlockApp(readonly) {
+  isReadOnly = readonly;
+  document.getElementById('pinScreen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  // Show read-only ribbon if needed
+  const ribbon = document.getElementById('readonlyRibbon');
+  if (ribbon) ribbon.style.display = readonly ? 'flex' : 'none';
+  initApp();
 }
 function lockApp() {
   sessionStorage.removeItem(SESSION_KEY);
   document.getElementById('app').classList.remove('visible');
-  document.getElementById('pinScreen').style.display = 'flex';
-  pinEntry = '';
-  updatePinDots();
+  document.getElementById('pinScreen').style.display='flex';
+  isReadOnly=false; pinEntry=''; updatePinDots();
 }
-// Check session on load
-if (sessionStorage.getItem(SESSION_KEY) === '1') {
-  document.getElementById('pinScreen').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-  document.addEventListener('DOMContentLoaded', initApp);
+// Restore session on reload
+(function(){
+  const s=sessionStorage.getItem(SESSION_KEY);
+  if(s==='master'||s==='readonly'){
+    document.getElementById('pinScreen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',()=>unlockApp(s==='readonly'));}
+    else{unlockApp(s==='readonly');}
+  }
+})();
+
+// Guard: block any write action in read-only mode
+function guardWrite(action) {
+  if (isReadOnly) { showToast('🔒 View-only mode — login with master PIN to make changes'); return false; }
+  if (action) action();
+  return true;
 }
 
 // ═══════════════════════════════════════════════
@@ -818,6 +854,9 @@ function initApp() {
   const now = new Date();
   const midnight = new Date(now); midnight.setHours(24,0,5,0);
   setTimeout(() => { checkedItems={}; renderChecklist(); sendAlarmsToSW(); renderPriorityBanner(); }, midnight-now);
+
+  // Firebase — initialise after UI is ready
+  initFirebase();
 }
 
 // ═══════════════════════════════════════════════
@@ -1000,20 +1039,44 @@ function renderPriorityBanner() {
 // ═══════════════════════════════════════════════
 //  CHECKLIST (TIMED TASKS ONLY)
 // ═══════════════════════════════════════════════
+// Deadline map: task id → [hour, minute] deadline
+const TASK_DEADLINES = {
+  d1:[8,0], d2:[9,0], d3:[9,30], d4:[12,0],
+  d6:[18,0], d7:[21,0]
+  // d5 (Fri dispatch), d8/d9 (Daily) have no fixed deadline
+};
+
+function isTaskMissed(task) {
+  if (checkedItems[task.id]) return false;           // already done — not missed
+  const dl = TASK_DEADLINES[task.id];
+  if (!dl) return false;                              // no deadline set
+  const now = new Date();
+  const deadlineMinutes = dl[0]*60 + dl[1];
+  const nowMinutes = now.getHours()*60 + now.getMinutes();
+  return nowMinutes > deadlineMinutes;                // past deadline and not ticked
+}
+
 function renderChecklist() {
   const wrap = document.getElementById('checklistWrap');
   if (!wrap) return;
   wrap.innerHTML = '';
   DAILY_TASKS.forEach(task => {
     const done = !!checkedItems[task.id];
+    const missed = isTaskMissed(task);
     const d = document.createElement('div');
-    d.className = 'check-item' + (done ? ' done' : '');
-    const waBtn = (task.waMsg || task.waKey) ? `<button class="ci-wa-btn" onclick="event.stopPropagation();copyJalilMsg('${task.waKey||''}','${(task.waMsg||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')">💬 Copy WhatsApp Message</button>` : '';
-    d.innerHTML = `<div class="check-box"></div><div class="ci-body"><div class="ci-time">${task.time}</div><div class="ci-text">${task.text}</div>${task.sub?`<div class="ci-sub">${task.sub}</div>`:''}<div>${waBtn}</div></div>`;
-    d.addEventListener('click', () => toggleTask(task.id));
+    d.className = 'check-item' + (done ? ' done' : missed ? ' missed' : '');
+    const missedBadge = missed && !done ? '<span class="missed-badge">MISSED</span>' : '';
+    const waBtn = (task.waMsg || task.waKey) && !isReadOnly
+      ? `<button class="ci-wa-btn" onclick="event.stopPropagation();copyJalilMsg('${task.waKey||''}','${(task.waMsg||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')">💬 Copy WhatsApp Message</button>`
+      : '';
+    d.innerHTML = `<div class="check-box"></div><div class="ci-body"><div class="ci-time">${task.time}${missedBadge}</div><div class="ci-text">${task.text}</div>${task.sub?`<div class="ci-sub">${task.sub}</div>`:''}<div>${waBtn}</div></div>`;
+    if (!isReadOnly) d.addEventListener('click', () => toggleTask(task.id));
     wrap.appendChild(d);
   });
   updateProgress();
+  // Re-render every minute to update missed status in real time
+  clearTimeout(renderChecklist._timer);
+  renderChecklist._timer = setTimeout(renderChecklist, 60000);
 }
 
 function copyJalilMsg(key, directMsg) {
@@ -1023,10 +1086,12 @@ function copyJalilMsg(key, directMsg) {
 }
 
 function toggleTask(id) {
+  if (!guardWrite()) return;
   checkedItems[id] = !checkedItems[id];
   ss('checked_'+todayKey(), checkedItems);
   renderChecklist();
   showToast(checkedItems[id] ? '✅ Done!' : '↩ Unmarked');
+  dbSync();
 }
 
 function updateProgress() {
@@ -1058,6 +1123,7 @@ function renderStanding() {
 //  CUSTOM TASKS
 // ═══════════════════════════════════════════════
 function addCustomTask() {
+  if (!guardWrite()) return;
   const title = document.getElementById('at-title').value.trim();
   if (!title) { showToast('⚠ Please enter a task title'); return; }
   const task = {
@@ -1080,24 +1146,28 @@ function addCustomTask() {
   renderCustomTasks();
   renderPriorityBanner();
   sendAlarmsToSW();
+  dbSync();
   showToast('✅ Task added!');
   switchToTab('tasks');
 }
 
 function toggleCustomTask(id) {
+  if (!guardWrite()) return;
   const t = customTasks.find(x => x.id===id);
-  if (t) { t.done = !t.done; ss('customTasks',customTasks); renderCustomTasks(); renderPriorityBanner(); }
+  if (t) { t.done = !t.done; ss('customTasks',customTasks); renderCustomTasks(); renderPriorityBanner(); dbSync(); }
 }
 
 function deleteCustomTask(id) {
+  if (!guardWrite()) return;
   customTasks = customTasks.filter(x => x.id!==id);
-  ss('customTasks',customTasks); renderCustomTasks(); renderPriorityBanner(); sendAlarmsToSW();
+  ss('customTasks',customTasks); renderCustomTasks(); renderPriorityBanner(); sendAlarmsToSW(); dbSync();
   showToast('🗑 Task deleted');
 }
 
 function clearDoneTasks() {
+  if (!guardWrite()) return;
   customTasks = customTasks.filter(x => !x.done);
-  ss('customTasks',customTasks); renderCustomTasks();
+  ss('customTasks',customTasks); renderCustomTasks(); dbSync();
   showToast('✅ Completed tasks cleared');
 }
 
@@ -1185,6 +1255,7 @@ function parseInstructions() {
 }
 
 function confirmParsedTasks() {
+  if (!guardWrite()) return;
   let added = 0;
   parsedTasksBuffer.forEach((t, i) => {
     const cb = document.getElementById('apt'+i);
@@ -1197,6 +1268,7 @@ function confirmParsedTasks() {
   renderCustomTasks();
   renderPriorityBanner();
   sendAlarmsToSW();
+  dbSync();
   document.getElementById('apPreview').style.display='none';
   document.getElementById('apInput').value='';
   showToast(`✅ Added ${added} task${added!==1?'s':''}`);
@@ -1242,6 +1314,7 @@ function updateHeaderStats(td) {
 }
 
 function submitDailyLog() {
+  if (!guardWrite()) return;
   const eggs=parseFloat(document.getElementById('li-eggs').value)||0;
   const deaths=parseFloat(document.getElementById('li-deaths').value)||0;
   const feed=parseFloat(document.getElementById('li-feed').value)||0;
@@ -1272,6 +1345,7 @@ function submitDailyLog() {
   document.getElementById('rLayRate').value=layRate||'';
 
   updateHeaderStats(entry);
+  dbSync();   // ← push to Firebase
   runRulesEngine(entry,hist);
   renderCharts();
   renderPriorityBanner();
@@ -1502,14 +1576,118 @@ function checkDayReset(){
 }
 
 // ═══════════════════════════════════════════════
-//  START (if session already valid)
+//  FIREBASE DATABASE SYNC
+//  1. Create a free Firebase project at https://console.firebase.google.com
+//  2. Add a Web App, copy the firebaseConfig object
+//  3. Replace the FIREBASE_CONFIG placeholder below with your config
+//  4. Enable Firestore Database (Start in test mode)
+//  Full step-by-step guide is in SETUP_GUIDE.md
 // ═══════════════════════════════════════════════
-if(sessionStorage.getItem(SESSION_KEY)==='1'){
-  // Already handled above via DOMContentLoaded or direct call
-  // Ensure initApp runs after DOM is ready
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initApp);}
-  else{initApp();}
+
+const FIREBASE_CONFIG = null;
+/*
+  PASTE YOUR CONFIG HERE — example shape:
+  const FIREBASE_CONFIG = {
+    apiKey: "AIza...",
+    authDomain: "your-project.firebaseapp.com",
+    projectId: "your-project-id",
+    storageBucket: "your-project.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123:web:abc"
+  };
+*/
+
+let db = null;
+const DB_DOC = 'nsawam/main';   // single Firestore document holding all state
+
+async function initFirebase() {
+  if (!FIREBASE_CONFIG) return;   // not configured yet
+  try {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, doc, setDoc, getDoc, onSnapshot } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app = initializeApp(FIREBASE_CONFIG);
+    db = getFirestore(app);
+    // Pull latest data on load
+    await dbPull();
+    // Live listener — updates on any device when data changes
+    const ref = doc(db, 'nsawam', 'main');
+    onSnapshot(ref, snap => {
+      if (!snap.exists()) return;
+      const remote = snap.data();
+      const localTs = gs('lastSync_ts', 0);
+      if (remote.ts && remote.ts > localTs) {
+        applyRemoteData(remote);
+      }
+    });
+    showToast('☁️ Connected to cloud database');
+    updateDbStatus('connected');
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+    updateDbStatus('error');
+  }
 }
+
+function dbPayload() {
+  return {
+    checkedItems: gs('checked_'+todayKey(), {}),
+    checkedDate: todayKey(),
+    customTasks,
+    dayHistory: gs('dayHistory', []),
+    logToday: gs('logToday_'+todayKey(), null),
+    ts: Date.now()
+  };
+}
+
+async function dbSync() {
+  if (!db) return;
+  try {
+    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await setDoc(doc(db, 'nsawam', 'main'), dbPayload(), { merge: true });
+    ss('lastSync_ts', Date.now());
+  } catch(e) { console.warn('DB sync error:', e); }
+}
+
+async function dbPull() {
+  if (!db) return;
+  try {
+    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDoc(doc(db, 'nsawam', 'main'));
+    if (snap.exists()) applyRemoteData(snap.data());
+  } catch(e) { console.warn('DB pull error:', e); }
+}
+
+function applyRemoteData(remote) {
+  if (remote.customTasks) { customTasks = remote.customTasks; ss('customTasks', customTasks); }
+  if (remote.dayHistory)  { ss('dayHistory', remote.dayHistory); }
+  if (remote.checkedDate === todayKey() && remote.checkedItems) {
+    checkedItems = remote.checkedItems; ss('checked_'+todayKey(), checkedItems);
+  }
+  if (remote.logToday) ss('logToday_'+todayKey(), remote.logToday);
+  ss('lastSync_ts', remote.ts || Date.now());
+  // Re-render everything with fresh data
+  renderChecklist(); renderCustomTasks(); renderCharts(); renderPriorityBanner();
+  showToast('☁️ Data synced from cloud');
+  updateDbStatus('synced');
+}
+
+function updateDbStatus(state) {
+  const el = document.getElementById('dbStatusLine');
+  if (!el) return;
+  const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+  if (state === 'connected') el.textContent = '✅ Connected — syncing automatically';
+  else if (state === 'synced') el.textContent = '✅ Last sync: ' + now;
+  else if (state === 'error')  el.textContent = '⚠️ Connection failed — check your Firebase config';
+  else el.textContent = 'Not configured — follow SETUP_GUIDE.md to connect Firebase';
+}
+
+async function manualSync() {
+  if (!db) { showToast('⚠ Firebase not connected — see SETUP_GUIDE.md'); return; }
+  showToast('🔄 Syncing...');
+  await dbPull();
+  await dbSync();
+  showToast('✅ Sync complete!');
+}
+
 </script>
 </body>
 </html>
