@@ -1,117 +1,96 @@
-const CACHE_NAME = 'nsawam-ops-v2';
-const OFFLINE_URL = 'index.html';
-const urlsToCache = [
-  'index.html',
-  'manifest.json',
-  'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap'
-];
+const CACHE_NAME = 'nsawam-ops-v3';
 
-// ── INSTALL: cache all assets
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache.filter(u => !u.startsWith('http'))))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(c => c.addAll(['index.html','manifest.json'])).then(() => self.skipWaiting())
   );
 });
 
-// ── ACTIVATE: clean old caches
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(names =>
-      Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))
-    ).then(() => self.clients.claim())
+    caches.keys().then(names => Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))).then(() => self.clients.claim())
   );
 });
 
-// ── FETCH: cache-first with network fallback
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
     caches.match(event.request).then(cached => {
-      const networkFetch = fetch(event.request).then(response => {
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      const net = fetch(event.request).then(res => {
+        if (res && res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
         }
-        return response;
-      }).catch(() => cached || caches.match(OFFLINE_URL));
-      return cached || networkFetch;
+        return res;
+      }).catch(() => cached || caches.match('index.html'));
+      return cached || net;
     })
   );
 });
 
-// ── BACKGROUND PUSH NOTIFICATIONS (from server or self-triggered)
-self.addEventListener('push', event => {
-  const data = event.data ? event.data.json() : { title: 'Nsawam Farms', body: 'You have a farm reminder.' };
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Nsawam Farms', {
-      body: data.body,
-      icon: 'icon-192.png',
-      badge: 'icon-192.png',
-      requireInteraction: true,
-      vibrate: [200, 100, 200],
-      data: { url: data.url || '/' },
-      actions: [
-        { action: 'open', title: '📋 Open App' },
-        { action: 'dismiss', title: 'Dismiss' }
-      ]
-    })
-  );
-});
-
-// ── NOTIFICATION CLICK
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   if (event.action === 'dismiss') return;
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-      for (const client of clientList) {
-        if ('focus' in client) return client.focus();
-      }
-      return clients.openWindow('/');
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) { if ('focus' in c) return c.focus(); }
+      return clients.openWindow('./');
     })
   );
 });
 
-// ── SELF-SCHEDULED BACKGROUND REMINDERS via periodicsync (if available)
-self.addEventListener('periodicsync', event => {
-  if (event.tag === 'daily-check') {
-    event.waitUntil(checkAndNotify());
-  }
+self.addEventListener('push', event => {
+  const d = event.data ? event.data.json() : { title: 'Nsawam Farms', body: 'Farm reminder.' };
+  event.waitUntil(showNotif(d.title, d.body, d.tag || 'push'));
 });
 
-async function checkAndNotify() {
+// ── ALARM ENGINE ──
+// Main thread sends SET_ALARMS with array of {id, h, m, title, body}
+// SW checks every 30s and fires if within window
+self._alarms = [];
+self._firedToday = {};
+self._lastFiredDate = '';
+
+function checkAlarms() {
   const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const reminders = [
-    { h:7, m:55, msg:'🌅 Read the daily email report from Jalil now!' },
-    { h:8, m:55, msg:'📱 Check the Farm App — confirm numbers match the email.' },
-    { h:9, m:25, msg:'💬 Message Jalil: health update, overnight issues, morning feed done?' },
-    { h:11, m:55, msg:'🥚 Confirm morning egg collection. Update egg count.' },
-    { h:17, m:55, msg:'🌇 Confirm afternoon egg collection with Jalil. Update total.' },
-    { h:20, m:55, msg:'⚠️ Has Jalil signed off the daily report? If not — call him NOW!' },
-  ];
-  for (const r of reminders) {
-    if (h === r.h && m >= r.m && m < r.m + 10) {
-      await self.registration.showNotification('Nsawam Farms Reminder', {
-        body: r.msg, requireInteraction: true, vibrate: [200,100,200]
-      });
-    }
+  const todayStr = now.toISOString().split('T')[0];
+  if (self._lastFiredDate !== todayStr) {
+    self._firedToday = {};
+    self._lastFiredDate = todayStr;
   }
+  const nowM = now.getHours() * 60 + now.getMinutes();
+  (self._alarms || []).forEach(alarm => {
+    const key = alarm.id + '_' + todayStr;
+    if (self._firedToday[key]) return;
+    const alarmM = parseInt(alarm.h) * 60 + parseInt(alarm.m);
+    const diff = nowM - alarmM;
+    if (diff >= 0 && diff < 2) {
+      self._firedToday[key] = true;
+      showNotif(alarm.title || 'Nsawam Farms', alarm.body, 'alarm-' + alarm.id);
+      self.clients.matchAll().then(list => list.forEach(c => c.postMessage({ type: 'ALARM_FIRED', alarm })));
+    }
+  });
 }
 
-// ── SKIP WAITING on message
+// Start the interval loop immediately when SW loads
+setInterval(checkAlarms, 30000);
+checkAlarms();
+
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
-  // Scheduled alarm from main thread
-  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
-    self.registration.showNotification(event.data.title, {
-      body: event.data.body,
-      requireInteraction: true,
-      vibrate: [200, 100, 200],
-      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌿</text></svg>',
-    });
+  const d = event.data;
+  if (!d) return;
+  if (d.type === 'SKIP_WAITING') self.skipWaiting();
+  if (d.type === 'SHOW_NOTIFICATION') showNotif(d.title, d.body, d.tag || ('n-' + Date.now()));
+  if (d.type === 'SET_ALARMS') {
+    self._alarms = d.alarms || [];
+    checkAlarms(); // check immediately after update
   }
 });
+
+function showNotif(title, body, tag) {
+  return self.registration.showNotification(title, {
+    body, tag, requireInteraction: true, vibrate: [300, 100, 300, 100, 300],
+    icon: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#1a3a1a"/><text y="78" x="8" font-size="80">🌿</text></svg>'),
+    actions: [{ action: 'open', title: '📋 Open App' }, { action: 'dismiss', title: '✕ Dismiss' }]
+  });
+}
