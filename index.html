@@ -2,539 +2,592 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#1a2e1a"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Nsawam Farms"/>
 <link rel="manifest" href="manifest.json"/>
-<title>Nsawam Farms — Olamide's Ops Hub</title>
+<title>Nsawam Farms — Ops Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --green-deep:#0f2010; --green-dark:#1a3a1a; --green-mid:#2d5a2d;
-  --green-bright:#4a9a4a; --green-light:#7dc87d;
-  --gold:#d4a843; --gold-light:#f0c870;
-  --cream:#f5f0e8; --cream-dark:#e8e0d0;
-  --red-alert:#c0392b; --red-light:#e74c3c;
-  --orange:#e67e22; --blue:#2980b9;
-  --text-dark:#1a1a1a; --text-mid:#444; --text-light:#888;
-  --card-bg:rgba(255,255,255,0.97);
-  --shadow:0 4px 24px rgba(0,0,0,0.12);
-  --shadow-heavy:0 8px 40px rgba(0,0,0,0.2);
+:root{
+  --gd:#0f2010;--gdk:#1a3a1a;--gm:#2d5a2d;--gb:#4a9a4a;--gl:#7dc87d;
+  --gold:#d4a843;--goldl:#f0c870;
+  --cream:#f5f0e8;--creamd:#e8e0d0;
+  --red:#c0392b;--redl:#e74c3c;
+  --orange:#e67e22;--blue:#2980b9;
+  --td:#1a1a1a;--tm:#444;--tl:#888;
+  --card:rgba(255,255,255,0.97);
+  --sh:0 4px 24px rgba(0,0,0,0.12);
+  --shh:0 8px 40px rgba(0,0,0,0.2);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-html{font-size:16px;}
-body{font-family:'DM Sans',sans-serif;background:var(--green-deep);color:var(--text-dark);min-height:100vh;overflow-x:hidden;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gd);color:var(--td);overflow-x:hidden;}
 
-/* HEADER */
-.header{background:linear-gradient(135deg,var(--green-deep) 0%,var(--green-dark) 60%,var(--green-mid) 100%);padding:22px 20px 20px;position:relative;overflow:hidden;}
-.header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a9a4a' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+/* ── PIN LOCK SCREEN ── */
+#pinScreen{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(160deg,var(--gd) 0%,var(--gdk) 50%,var(--gm) 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px;
+}
+.pin-logo{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--goldl);margin-bottom:4px;}
+.pin-sub{font-size:0.72rem;color:var(--gl);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:40px;}
+.pin-dots{display:flex;gap:16px;margin-bottom:32px;}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--gl);background:transparent;transition:all 0.2s;}
+.pin-dot.filled{background:var(--goldl);border-color:var(--goldl);}
+.pin-dot.error{background:var(--redl);border-color:var(--redl);}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:260px;}
+.pin-key{
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  border-radius:16px;height:70px;font-size:1.6rem;font-weight:600;
+  color:var(--cream);cursor:pointer;transition:all 0.15s;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Sans',sans-serif;user-select:none;
+}
+.pin-key:active{background:rgba(212,168,67,0.3);border-color:var(--gold);transform:scale(0.94);}
+.pin-key.del{font-size:1.1rem;color:var(--gl);}
+.pin-key.empty{pointer-events:none;background:transparent;border:none;}
+.pin-error{font-size:0.8rem;color:var(--redl);margin-top:16px;min-height:20px;font-weight:600;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
+.shake{animation:shake 0.4s ease;}
+
+/* ── APP WRAPPER ── */
+#app{display:none;height:100%;flex-direction:column;}
+#app.visible{display:flex;}
+
+/* ── PRIORITY BANNER ── */
+#priorityBanner{background:var(--gdk);padding:0 12px;}
+.prio-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.07);
+  cursor:pointer;
+}
+.prio-item:last-child{border-bottom:none;}
+.prio-badge{
+  font-size:0.58rem;font-weight:900;padding:3px 8px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;white-space:nowrap;
+}
+.prio-critical{background:var(--redl);color:#fff;}
+.prio-high{background:var(--orange);color:#fff;}
+.prio-medium{background:var(--gold);color:var(--gd);}
+.prio-low{background:#888;color:#fff;}
+.prio-text{font-size:0.78rem;color:var(--cream);flex:1;line-height:1.3;}
+.prio-due{font-size:0.65rem;color:var(--gl);flex-shrink:0;}
+@keyframes flashRed{0%,100%{background:var(--gdk);}50%{background:rgba(231,76,60,0.15);}}
+.flash-critical{animation:flashRed 1.5s infinite;}
+.banner-empty{padding:10px 0;font-size:0.75rem;color:var(--gl);text-align:center;}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,var(--gd) 0%,var(--gdk) 60%,var(--gm) 100%);padding:18px 16px 16px;position:relative;overflow:hidden;flex-shrink:0;}
+.header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%234a9a4a' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
 .header-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;}
-.farm-name{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--gold-light);letter-spacing:0.02em;line-height:1.1;}
-.farm-sub{font-size:0.68rem;color:var(--green-light);letter-spacing:0.15em;text-transform:uppercase;margin-top:3px;}
-.header-date{text-align:right;}
-.date-day{font-size:0.65rem;color:var(--green-light);letter-spacing:0.1em;text-transform:uppercase;}
-.date-full{font-size:0.9rem;color:var(--cream);font-weight:500;margin-top:1px;}
-.time-now{font-size:1.35rem;color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums;}
-.header-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;position:relative;}
-.stat-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:11px;padding:9px 6px;text-align:center;backdrop-filter:blur(10px);cursor:pointer;transition:background 0.2s;}
+.farm-name{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--goldl);letter-spacing:0.02em;line-height:1.1;}
+.farm-sub{font-size:0.62rem;color:var(--gl);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px;}
+.hdr{text-align:right;}
+.hdd{font-size:0.6rem;color:var(--gl);letter-spacing:0.08em;text-transform:uppercase;}
+.hdf{font-size:0.85rem;color:var(--cream);font-weight:500;margin-top:1px;}
+.hdt{font-size:1.25rem;color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums;}
+.header-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:14px;position:relative;}
+.stat-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 5px;text-align:center;backdrop-filter:blur(10px);cursor:pointer;transition:background 0.2s;}
 .stat-pill:hover{background:rgba(255,255,255,0.14);}
-.stat-pill .val{font-size:1.05rem;font-weight:700;color:var(--gold-light);}
-.stat-pill .lbl{font-size:0.55rem;color:var(--green-light);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;}
+.stat-pill .val{font-size:1rem;font-weight:700;color:var(--goldl);}
+.stat-pill .lbl{font-size:0.52rem;color:var(--gl);letter-spacing:0.07em;text-transform:uppercase;margin-top:2px;}
 .stat-pill.alert-stat{border-color:rgba(231,76,60,0.5);background:rgba(231,76,60,0.12);}
 .stat-pill.alert-stat .val{color:#ff8a80;}
 
-/* INTELLIGENCE BANNER */
-.intel-bar{padding:0 16px;margin-top:0;}
-.intel-card{border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;font-size:0.8rem;line-height:1.45;}
-.intel-red{background:#fff0f0;border:1.5px solid #f5c0c0;}
-.intel-orange{background:#fff8f0;border:1.5px solid #f5d8a0;}
-.intel-green{background:#f0fff4;border:1.5px solid #b8ddb8;}
-.intel-blue{background:#f0f8ff;border:1.5px solid #b8d8f8;}
-.intel-icon{font-size:1.2rem;flex-shrink:0;}
-.intel-body{flex:1;}
-.intel-title{font-weight:700;margin-bottom:2px;}
-.intel-red .intel-title{color:var(--red-alert);}
-.intel-orange .intel-title{color:#b7650a;}
-.intel-green .intel-title{color:#1e6b1e;}
-.intel-blue .intel-title{color:#1a5276;}
-.intel-msg{color:var(--text-mid);}
-.intel-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.action-btn{font-size:0.7rem;font-weight:700;padding:5px 10px;border-radius:20px;border:none;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
-.action-btn-red{background:#fff0f0;color:var(--red-alert);border:1px solid #f5c0c0;}
-.action-btn-red:hover{background:var(--red-alert);color:#fff;}
-.action-btn-orange{background:#fff8f0;color:#b7650a;border:1px solid #f5d8a0;}
-.action-btn-orange:hover{background:var(--orange);color:#fff;}
-.action-btn-green{background:#f0fff4;color:#1e6b1e;border:1px solid #b8ddb8;}
-.action-btn-green:hover{background:var(--green-bright);color:#fff;}
-.action-btn-blue{background:#f0f8ff;color:#1a5276;border:1px solid #b8d8f8;}
-.action-btn-blue:hover{background:var(--blue);color:#fff;}
+/* ── NOTIF BANNER ── */
+.notif-banner{background:var(--gold);color:var(--gd);padding:9px 14px;font-size:0.78rem;font-weight:600;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.notif-banner:hover{background:var(--goldl);}
+.notif-banner.granted{background:var(--gb);color:#fff;}
 
-/* NOTIFICATION BANNER */
-.notif-banner{background:var(--gold);color:var(--green-deep);padding:10px 16px;font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background 0.2s;}
-.notif-banner:hover{background:var(--gold-light);}
-.notif-banner.granted{background:var(--green-bright);color:#fff;}
-
-/* NAV TABS */
-.nav-tabs{display:flex;overflow-x:auto;background:var(--green-dark);border-bottom:2px solid var(--green-mid);scrollbar-width:none;-ms-overflow-style:none;position:sticky;top:0;z-index:100;}
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;overflow-x:auto;background:var(--gdk);border-bottom:2px solid var(--gm);scrollbar-width:none;position:sticky;top:0;z-index:100;flex-shrink:0;}
 .nav-tabs::-webkit-scrollbar{display:none;}
-.tab-btn{flex-shrink:0;padding:12px 14px;font-size:0.72rem;font-weight:600;color:var(--green-light);background:none;border:none;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.tab-btn{flex-shrink:0;padding:11px 12px;font-size:0.68rem;font-weight:600;color:var(--gl);background:none;border:none;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;}
 .tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
 .tab-btn:hover:not(.active){color:var(--cream);}
-.tab-badge{display:inline-block;background:var(--red-light);color:#fff;font-size:0.55rem;font-weight:900;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle;}
 
-/* MAIN */
+/* ── SCROLL AREA ── */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .main{padding:14px;max-width:480px;margin:0 auto;padding-bottom:40px;}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
 
-/* SECTION TITLES */
-.section-title{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--cream);margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
-.section-badge{background:var(--gold);color:var(--green-deep);font-family:'DM Sans',sans-serif;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase;}
+/* ── SECTION TITLE ── */
+.st{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--cream);margin:16px 0 9px;display:flex;align-items:center;gap:7px;}
+.sb{background:var(--gold);color:var(--gd);font-family:'DM Sans',sans-serif;font-size:0.58rem;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase;}
 
-/* CARDS */
-.card{background:var(--card-bg);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
-.card-red{border-left:4px solid var(--red-light);}
+/* ── CARDS ── */
+.card{background:var(--card);border-radius:15px;padding:15px;margin-bottom:9px;box-shadow:var(--sh);}
+.card-red{border-left:4px solid var(--redl);}
 .card-gold{border-left:4px solid var(--gold);}
-.card-green{border-left:4px solid var(--green-bright);}
+.card-green{border-left:4px solid var(--gb);}
 
-/* CHECKLIST */
-.check-item{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-radius:11px;background:#fff;border:1.5px solid #e8e8e8;margin-bottom:7px;cursor:pointer;transition:all 0.18s;position:relative;}
-.check-item:hover{border-color:var(--green-bright);box-shadow:0 2px 12px rgba(74,154,74,0.1);}
+/* ── PROGRESS ── */
+.prog-wrap{margin-bottom:13px;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:0.73rem;color:var(--creamd);margin-bottom:5px;font-weight:500;}
+.prog-bar{background:rgba(255,255,255,0.1);border-radius:20px;height:7px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gb),var(--gold));border-radius:20px;transition:width 0.4s ease;}
+
+/* ── CHECKLIST ── */
+.check-item{display:flex;align-items:flex-start;gap:11px;padding:10px 13px;border-radius:10px;background:#fff;border:1.5px solid #e8e8e8;margin-bottom:6px;cursor:pointer;transition:all 0.18s;}
+.check-item:hover{border-color:var(--gb);}
 .check-item.done{background:#f0f9f0;border-color:#b8ddb8;}
-.check-item.done .ci-text{text-decoration:line-through;color:var(--text-light);}
+.check-item.done .ci-text{text-decoration:line-through;color:var(--tl);}
 .check-item.done .ci-time{color:#aaa;}
-.check-box{width:22px;height:22px;border-radius:6px;border:2px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all 0.18s;}
-.check-item.done .check-box{background:var(--green-bright);border-color:var(--green-bright);}
-.check-item.done .check-box::after{content:'✓';color:#fff;font-size:0.75rem;font-weight:700;}
+.check-box{width:21px;height:21px;border-radius:5px;border:2px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all 0.18s;}
+.check-item.done .check-box{background:var(--gb);border-color:var(--gb);}
+.check-item.done .check-box::after{content:'✓';color:#fff;font-size:0.72rem;font-weight:700;}
 .ci-body{flex:1;}
-.ci-time{font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
-.ci-text{font-size:0.855rem;color:var(--text-dark);line-height:1.4;font-weight:500;}
-.ci-sub{font-size:0.73rem;color:var(--text-light);margin-top:3px;}
-.ci-urgent{background:#fff5f5;border-color:#f5c0c0;}
-.ci-urgent .ci-time{color:var(--red-light);}
+.ci-time{font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
+.ci-text{font-size:0.83rem;color:var(--td);line-height:1.4;font-weight:500;}
+.ci-sub{font-size:0.71rem;color:var(--tl);margin-top:2px;}
+.ci-urgent .ci-time{color:var(--redl);}
+.ci-wa-btn{font-size:0.65rem;background:#25D366;color:#fff;border:none;border-radius:12px;padding:3px 8px;margin-top:5px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;}
+.ci-wa-btn:hover{background:#128C7E;}
 
-/* PROGRESS */
-.progress-wrap{margin-bottom:14px;}
-.progress-label{display:flex;justify-content:space-between;font-size:0.75rem;color:var(--cream-dark);margin-bottom:6px;font-weight:500;}
-.progress-bar{background:rgba(255,255,255,0.1);border-radius:20px;height:8px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--green-bright),var(--gold));border-radius:20px;transition:width 0.4s ease;}
+/* ── STANDING RULES ── */
+.rule-standing{background:#fff;border-radius:10px;padding:10px 13px;margin-bottom:6px;border-left:3px solid var(--gold);display:flex;align-items:flex-start;gap:10px;}
+.rs-icon{font-size:1.1rem;flex-shrink:0;}
+.rs-text{font-size:0.8rem;color:var(--td);line-height:1.4;font-weight:500;}
+.rs-sub{font-size:0.7rem;color:var(--tl);margin-top:2px;}
 
-/* ── DAILY LOG INPUT PANEL ── */
-.log-panel{background:var(--card-bg);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
-.log-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.log-field label{display:block;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light);margin-bottom:4px;}
-.log-field input{width:100%;border:1.5px solid #e0e0e0;border-radius:9px;padding:9px 10px;font-size:0.95rem;font-family:'DM Sans',sans-serif;color:var(--text-dark);outline:none;transition:border 0.2s;font-weight:600;}
-.log-field input:focus{border-color:var(--green-bright);}
+/* ── CUSTOM TASKS ── */
+.custom-task{background:#fff;border-radius:10px;padding:11px 13px;margin-bottom:6px;border:1.5px solid #e8e8e8;cursor:pointer;transition:all 0.18s;position:relative;}
+.custom-task:hover{border-color:var(--gb);}
+.custom-task.done-t{background:#f0f9f0;border-color:#b8ddb8;opacity:0.7;}
+.ct-header{display:flex;align-items:flex-start;gap:8px;}
+.ct-box{width:20px;height:20px;border-radius:5px;border:2px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all 0.18s;}
+.custom-task.done-t .ct-box{background:var(--gb);border-color:var(--gb);}
+.custom-task.done-t .ct-box::after{content:'✓';color:#fff;font-size:0.68rem;font-weight:700;}
+.ct-info{flex:1;}
+.ct-title{font-size:0.83rem;font-weight:600;color:var(--td);line-height:1.3;}
+.custom-task.done-t .ct-title{text-decoration:line-through;color:var(--tl);}
+.ct-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;align-items:center;}
+.ct-badge{font-size:0.58rem;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:0.05em;}
+.ct-crit{background:#fff0f0;color:var(--redl);}
+.ct-high{background:#fff8f0;color:var(--orange);}
+.ct-med{background:#fffbe8;color:#b7650a;}
+.ct-low{background:#f0f0f0;color:#888;}
+.ct-due{font-size:0.65rem;color:var(--tl);}
+.ct-due.overdue{color:var(--redl);font-weight:700;}
+.ct-notes{font-size:0.72rem;color:var(--tl);margin-top:4px;line-height:1.4;}
+.ct-del{position:absolute;top:9px;right:10px;background:none;border:none;font-size:1rem;color:#ddd;cursor:pointer;padding:2px;}
+.ct-del:hover{color:var(--redl);}
+
+/* ── ADD TASK FORM ── */
+.add-task-form{background:var(--card);border-radius:15px;padding:15px;margin-bottom:10px;box-shadow:var(--sh);}
+.atf-field{margin-bottom:10px;}
+.atf-label{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--tl);margin-bottom:4px;display:block;}
+.atf-input,.atf-select,.atf-textarea{width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 11px;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:var(--td);outline:none;transition:border 0.2s;background:#fff;}
+.atf-input:focus,.atf-select:focus,.atf-textarea:focus{border-color:var(--gb);}
+.atf-textarea{resize:vertical;min-height:60px;}
+.atf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ── AI PARSER ── */
+.ai-parser{background:linear-gradient(135deg,#0a1628,#1a2a4a);border-radius:15px;padding:15px;margin-bottom:10px;box-shadow:var(--sh);border:1px solid rgba(41,128,185,0.3);}
+.ap-title{font-family:'DM Serif Display',serif;font-size:0.95rem;color:#7eb8f7;margin-bottom:6px;}
+.ap-sub{font-size:0.73rem;color:#8ab4d4;margin-bottom:10px;line-height:1.4;}
+.ap-textarea{width:100%;border:1px solid rgba(41,128,185,0.3);border-radius:8px;padding:10px 12px;font-size:0.82rem;font-family:'DM Sans',sans-serif;color:#e0ecf8;background:rgba(255,255,255,0.06);outline:none;resize:vertical;min-height:90px;}
+.ap-textarea::placeholder{color:#5a7a9a;}
+.ap-textarea:focus{border-color:rgba(41,128,185,0.7);}
+.ap-btn{background:linear-gradient(135deg,#1a5276,#2980b9);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:0.82rem;font-weight:600;cursor:pointer;width:100%;margin-top:8px;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.ap-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(41,128,185,0.4);}
+.ap-preview{background:rgba(255,255,255,0.04);border-radius:10px;padding:12px;margin-top:10px;display:none;}
+.ap-preview-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.78rem;color:#c8dff0;}
+.ap-preview-item:last-child{border-bottom:none;}
+.ap-preview-item input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:var(--gb);}
+.ap-confirm-btn{background:linear-gradient(135deg,var(--gm),var(--gb));color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%;margin-top:8px;font-family:'DM Sans',sans-serif;}
+
+/* ── LOG DATA ── */
+.log-panel{background:var(--card);border-radius:15px;padding:15px;margin-bottom:10px;box-shadow:var(--sh);}
+.log-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px;}
+.log-field label{display:block;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--tl);margin-bottom:3px;}
+.log-field input{width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:0.95rem;font-family:'DM Sans',sans-serif;color:var(--td);outline:none;transition:border 0.2s;font-weight:600;}
+.log-field input:focus{border-color:var(--gb);}
 .log-field input.input-warn{border-color:var(--orange);background:#fff8f0;}
-.log-field input.input-danger{border-color:var(--red-light);background:#fff0f0;}
-.log-hint{font-size:0.65rem;color:var(--text-light);margin-top:3px;}
-.log-hint.hint-warn{color:var(--orange);}
-.log-hint.hint-danger{color:var(--red-alert);font-weight:700;}
-.btn-log{background:linear-gradient(135deg,var(--green-mid),var(--green-bright));color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:0.875rem;font-weight:600;cursor:pointer;width:100%;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
-.btn-log:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(74,154,74,0.35);}
-.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--green-deep);}
-.btn-gold:hover{box-shadow:0 4px 16px rgba(212,168,67,0.35);}
-.btn-red{background:linear-gradient(135deg,var(--red-alert),var(--red-light));color:#fff;}
+.log-field input.input-danger{border-color:var(--redl);background:#fff0f0;}
+.hint{font-size:0.62rem;color:var(--tl);margin-top:2px;}
+.hint.hw{color:var(--orange);font-weight:600;}
+.hint.hd{color:var(--red);font-weight:700;}
 
-/* WORKFLOW CHAIN */
-.workflow{background:var(--card-bg);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);}
-.workflow-title{font-size:0.78rem;font-weight:700;color:var(--text-dark);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.wf-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
-.wf-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;margin-top:1px;}
-.wf-dot-done{background:var(--green-bright);color:#fff;}
-.wf-dot-active{background:var(--gold);color:var(--green-deep);}
-.wf-dot-pending{background:#f0f0f0;color:#bbb;border:2px solid #e0e0e0;}
-.wf-line{width:2px;height:12px;background:#e0e0e0;margin-left:10px;margin-bottom:0;}
-.wf-text{flex:1;font-size:0.78rem;color:var(--text-dark);line-height:1.4;padding-top:3px;}
-.wf-text.pending{color:var(--text-light);}
-.wf-prompt{background:#f8f8f8;border-radius:9px;padding:9px 12px;margin-top:8px;font-size:0.78rem;color:var(--text-mid);}
-.wf-prompt strong{color:var(--text-dark);}
+/* ── INTEL ── */
+.intel-card{border-radius:12px;padding:12px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:9px;font-size:0.79rem;line-height:1.45;}
+.ic-red{background:#fff0f0;border:1.5px solid #f5c0c0;}
+.ic-orange{background:#fff8f0;border:1.5px solid #f5d8a0;}
+.ic-green{background:#f0fff4;border:1.5px solid #b8ddb8;}
+.ic-blue{background:#f0f8ff;border:1.5px solid #b8d8f8;}
+.ii{font-size:1.15rem;flex-shrink:0;}
+.ib{flex:1;}
+.it{font-weight:700;margin-bottom:2px;}
+.ic-red .it{color:var(--red);}
+.ic-orange .it{color:#b7650a;}
+.ic-green .it{color:#1e6b1e;}
+.ic-blue .it{color:#1a5276;}
+.im{color:var(--tm);}
+.ia{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
+.abt{font-size:0.68rem;font-weight:700;padding:4px 9px;border-radius:16px;border:none;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.ab-red{background:#fff0f0;color:var(--red);border:1px solid #f5c0c0;}
+.ab-red:hover{background:var(--red);color:#fff;}
+.ab-orange{background:#fff8f0;color:#b7650a;border:1px solid #f5d8a0;}
+.ab-orange:hover{background:var(--orange);color:#fff;}
+.ab-green{background:#f0fff4;color:#1e6b1e;border:1px solid #b8ddb8;}
+.ab-green:hover{background:var(--gb);color:#fff;}
+.ab-blue{background:#f0f8ff;color:#1a5276;border:1px solid #b8d8f8;}
+.ab-blue:hover{background:var(--blue);color:#fff;}
 
-/* TREND CHART */
-.trend-chart{background:var(--card-bg);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
-.chart-title{font-size:0.78rem;font-weight:700;color:var(--text-dark);margin-bottom:12px;}
-.chart-bars{display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:6px;}
-.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.bar{width:100%;border-radius:4px 4px 0 0;transition:height 0.4s ease;min-height:4px;}
-.bar-egg{background:linear-gradient(180deg,var(--gold-light),var(--gold));}
-.bar-death{background:linear-gradient(180deg,#ff8a80,var(--red-light));}
-.bar-label{font-size:0.55rem;color:var(--text-light);text-align:center;}
-.bar-val{font-size:0.6rem;color:var(--text-dark);font-weight:700;text-align:center;}
-.chart-legend{display:flex;gap:12px;}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:0.68rem;color:var(--text-light);}
-.legend-dot{width:10px;height:10px;border-radius:3px;}
+/* ── WORKFLOW ── */
+.workflow{background:var(--card);border-radius:13px;padding:13px;margin-bottom:9px;box-shadow:var(--sh);}
+.wf-title{font-size:0.76rem;font-weight:700;color:var(--td);margin-bottom:9px;}
+.wf-step{display:flex;align-items:flex-start;gap:9px;margin-bottom:6px;}
+.wf-dot{width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.wfd-done{background:var(--gb);color:#fff;}
+.wfd-active{background:var(--gold);color:var(--gd);}
+.wfd-pend{background:#f0f0f0;color:#bbb;border:2px solid #e0e0e0;}
+.wf-text{flex:1;font-size:0.76rem;color:var(--td);line-height:1.4;padding-top:3px;}
+.wf-text.pend{color:var(--tl);}
+.wf-prompt{background:#f8f8f8;border-radius:8px;padding:8px 11px;margin-top:7px;font-size:0.75rem;color:var(--tm);}
 
-/* TEAM */
-.team-list{display:grid;gap:8px;}
-.team-card{background:var(--card-bg);border-radius:13px;padding:13px 15px;display:flex;align-items:center;gap:13px;box-shadow:var(--shadow);}
-.team-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
-.team-info{flex:1;}
-.team-name{font-size:0.88rem;font-weight:600;color:var(--text-dark);}
-.team-role{font-size:0.7rem;color:var(--text-light);margin-top:1px;}
-.team-freq{font-size:0.65rem;background:#f0f0f0;color:var(--text-mid);padding:2px 7px;border-radius:20px;font-weight:600;}
+/* ── TREND CHART ── */
+.trend-chart{background:var(--card);border-radius:14px;padding:14px;margin-bottom:9px;box-shadow:var(--sh);}
+.chart-title{font-size:0.76rem;font-weight:700;color:var(--td);margin-bottom:11px;}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:75px;margin-bottom:5px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.bar{width:100%;border-radius:3px 3px 0 0;transition:height 0.4s ease;min-height:3px;}
+.bar-egg{background:linear-gradient(180deg,var(--goldl),var(--gold));}
+.bar-death{background:linear-gradient(180deg,#ff8a80,var(--redl));}
+.bar-label{font-size:0.52rem;color:var(--tl);}
+.bar-val{font-size:0.58rem;color:var(--td);font-weight:700;}
 
-/* JALIL MESSAGE TEMPLATES */
-.msg-template{background:var(--card-bg);border-radius:13px;padding:13px 15px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:all 0.18s;border:1.5px solid transparent;}
-.msg-template:hover{border-color:var(--green-bright);transform:translateX(2px);}
-.msg-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);margin-bottom:4px;}
-.msg-text{font-size:0.8rem;color:var(--text-dark);line-height:1.45;}
-.msg-copy-hint{font-size:0.68rem;color:var(--green-bright);margin-top:5px;font-weight:600;}
-
-/* ESCALATION */
-.escalation-item{background:var(--card-bg);border-radius:13px;padding:13px 15px;margin-bottom:8px;border-left:4px solid #ccc;box-shadow:var(--shadow);}
-.esc-immediate{border-color:var(--red-light);}
-.esc-sameday{border-color:var(--orange);}
-.esc-2hr{border-color:var(--gold);}
-.esc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:8px;}
-.esc-situation{font-size:0.82rem;font-weight:600;color:var(--text-dark);flex:1;}
-.esc-badge{font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:0.05em;flex-shrink:0;}
-.esc-immediate .esc-badge{background:#fff0f0;color:var(--red-light);}
-.esc-sameday .esc-badge{background:#fff8f0;color:var(--orange);}
-.esc-2hr .esc-badge{background:#fffbe8;color:#b7650a;}
-.esc-action{font-size:0.73rem;color:var(--text-light);line-height:1.4;margin-bottom:8px;}
-.esc-btns{display:flex;gap:6px;flex-wrap:wrap;}
-
-/* RED FLAGS */
-.red-flags{display:grid;gap:8px;}
-.rf-flag{background:#fff;border-radius:13px;padding:13px 15px;display:flex;align-items:flex-start;gap:12px;box-shadow:var(--shadow);border-left:4px solid var(--red-light);}
-.rflag-icon{font-size:1.3rem;flex-shrink:0;}
-.rflag-title{font-size:0.83rem;font-weight:700;color:var(--red-alert);}
-.rflag-desc{font-size:0.73rem;color:var(--text-mid);margin-top:2px;line-height:1.4;}
-
-/* RULES */
-.rules-list{display:grid;gap:8px;}
-.rule-item{background:var(--card-bg);border-radius:13px;padding:13px 15px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow);}
-.rule-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--green-deep);font-size:0.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.rule-text{font-size:0.8rem;color:var(--text-dark);line-height:1.5;padding-top:4px;}
-
-/* REPORT */
-.report-form{background:var(--card-bg);border-radius:16px;padding:16px;box-shadow:var(--shadow);}
-.rf-field{margin-bottom:12px;}
-.rf-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light);margin-bottom:5px;}
-.rf-input,.rf-textarea{width:100%;border:1.5px solid #e0e0e0;border-radius:9px;padding:9px 12px;font-size:0.875rem;font-family:'DM Sans',sans-serif;color:var(--text-dark);outline:none;transition:border 0.2s;}
-.rf-input:focus,.rf-textarea:focus{border-color:var(--green-bright);}
-.rf-textarea{resize:vertical;min-height:65px;}
-.rf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.copy-box{background:#f8f8f8;border:1px solid #e0e0e0;border-radius:10px;padding:12px 14px;font-size:0.76rem;font-family:monospace;color:var(--text-dark);line-height:1.6;white-space:pre-wrap;word-break:break-word;margin-bottom:10px;}
-
-/* NOTIF LOG */
-.notif-log{background:var(--card-bg);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
-.notif-log-item{padding:10px 15px;border-bottom:1px solid #f0f0f0;font-size:0.78rem;display:flex;gap:10px;align-items:flex-start;}
-.notif-log-item:last-child{border-bottom:none;}
-.nlog-time{color:var(--gold);font-weight:700;font-size:0.68rem;flex-shrink:0;margin-top:2px;}
-.nlog-msg{color:var(--text-mid);line-height:1.4;}
-
-/* WEEKLY GRID */
-.week-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.week-day-card{background:var(--card-bg);border-radius:13px;padding:13px;box-shadow:var(--shadow);}
-.week-day-name{font-size:0.63rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-light);margin-bottom:6px;}
+/* ── WEEKLY ── */
+.week-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.week-day-card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--sh);}
+.week-day-name{font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--tl);margin-bottom:5px;}
 .week-day-card.today .week-day-name{color:var(--gold);}
-.week-task{font-size:0.73rem;color:var(--text-mid);padding:4px 0;border-bottom:1px solid #f0f0f0;line-height:1.35;}
+.week-task{font-size:0.72rem;color:var(--tm);padding:3px 0;border-bottom:1px solid #f0f0f0;line-height:1.3;}
 .week-task:last-child{border-bottom:none;}
 
-/* TOAST */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green-dark);color:var(--cream);padding:11px 20px;border-radius:25px;font-size:0.82rem;font-weight:500;box-shadow:var(--shadow-heavy);z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;border:1px solid var(--green-bright);max-width:90vw;text-align:center;}
+/* ── TEAM ── */
+.team-list{display:grid;gap:7px;}
+.team-card{background:var(--card);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);}
+.team-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.team-info{flex:1;}
+.team-name{font-size:0.85rem;font-weight:600;color:var(--td);}
+.team-role{font-size:0.68rem;color:var(--tl);margin-top:1px;}
+.team-freq{font-size:0.62rem;background:#f0f0f0;color:var(--tm);padding:2px 6px;border-radius:16px;font-weight:600;}
+
+/* ── MSG TEMPLATES ── */
+.msg-template{background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:7px;box-shadow:var(--sh);cursor:pointer;transition:all 0.18s;border:1.5px solid transparent;}
+.msg-template:hover{border-color:var(--gb);transform:translateX(2px);}
+.msg-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);margin-bottom:3px;}
+.msg-text{font-size:0.78rem;color:var(--td);line-height:1.45;}
+.msg-hint{font-size:0.65rem;color:var(--gb);margin-top:4px;font-weight:600;}
+
+/* ── ESCALATION ── */
+.escalation-item{background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:7px;border-left:4px solid #ccc;box-shadow:var(--sh);}
+.esc-immediate{border-color:var(--redl);}
+.esc-sameday{border-color:var(--orange);}
+.esc-2hr{border-color:var(--gold);}
+.esc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;}
+.esc-situation{font-size:0.8rem;font-weight:600;color:var(--td);flex:1;}
+.esc-badge{font-size:0.58rem;font-weight:700;padding:2px 7px;border-radius:16px;text-transform:uppercase;letter-spacing:0.05em;flex-shrink:0;}
+.esc-immediate .esc-badge{background:#fff0f0;color:var(--redl);}
+.esc-sameday .esc-badge{background:#fff8f0;color:var(--orange);}
+.esc-2hr .esc-badge{background:#fffbe8;color:#b7650a;}
+.esc-action{font-size:0.72rem;color:var(--tl);line-height:1.4;margin-bottom:7px;}
+.esc-btns{display:flex;gap:5px;flex-wrap:wrap;}
+
+/* ── RULES TAB ── */
+.rules-list{display:grid;gap:7px;}
+.rule-item{background:var(--card);border-radius:12px;padding:12px 14px;display:flex;gap:11px;align-items:flex-start;box-shadow:var(--sh);}
+.rule-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--goldl));color:var(--gd);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rule-text{font-size:0.78rem;color:var(--td);line-height:1.5;padding-top:3px;}
+
+/* ── NOTIF LOG ── */
+.notif-log{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--sh);}
+.notif-log-item{padding:9px 14px;border-bottom:1px solid #f0f0f0;font-size:0.76rem;display:flex;gap:9px;align-items:flex-start;}
+.notif-log-item:last-child{border-bottom:none;}
+.nlog-time{color:var(--gold);font-weight:700;font-size:0.65rem;flex-shrink:0;margin-top:2px;}
+.nlog-msg{color:var(--tm);line-height:1.4;}
+
+/* ── BUTTONS ── */
+.btn{background:linear-gradient(135deg,var(--gm),var(--gb));color:#fff;border:none;border-radius:9px;padding:11px 16px;font-size:0.85rem;font-weight:600;cursor:pointer;width:100%;transition:all 0.2s;font-family:'DM Sans',sans-serif;margin-bottom:8px;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(74,154,74,0.35);}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--goldl));color:var(--gd);}
+.btn-red{background:linear-gradient(135deg,var(--red),var(--redl));color:#fff;}
+.btn-grey{background:linear-gradient(135deg,#555,#777);color:#fff;}
+
+/* ── REPORT ── */
+.rf-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--tl);margin-bottom:4px;display:block;}
+.rf-input,.rf-textarea{width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 11px;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:var(--td);outline:none;transition:border 0.2s;margin-bottom:10px;}
+.rf-input:focus,.rf-textarea:focus{border-color:var(--gb);}
+.rf-textarea{resize:vertical;min-height:62px;}
+.rf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.copy-box{background:#f8f8f8;border:1px solid #e0e0e0;border-radius:9px;padding:11px 13px;font-size:0.73rem;font-family:monospace;color:var(--td);line-height:1.6;white-space:pre-wrap;word-break:break-word;margin-bottom:9px;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gdk);color:var(--cream);padding:10px 18px;border-radius:22px;font-size:0.8rem;font-weight:500;box-shadow:var(--shh);z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;border:1px solid var(--gb);max-width:90vw;text-align:center;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* ALERT MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:flex-end;justify-content:center;}
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;display:none;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
-.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;}
-.modal-title{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--red-alert);margin-bottom:6px;}
-.modal-sub{font-size:0.82rem;color:var(--text-mid);margin-bottom:16px;line-height:1.5;}
-.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-light);}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;position:relative;}
+.modal-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--red);margin-bottom:5px;}
+.modal-sub{font-size:0.8rem;color:var(--tm);margin-bottom:14px;line-height:1.5;}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--tl);}
 
-/* MISC */
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-.pulse{animation:pulse 2s infinite;}
-@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-4px);}40%,80%{transform:translateX(4px);}}
-.shake{animation:shake 0.4s ease;}
-::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--green-mid);border-radius:4px;}
+::-webkit-scrollbar-thumb{background:var(--gm);border-radius:3px;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.pulse{animation:pulse 1.8s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-top">
-    <div class="farm-logo">
-      <div class="farm-name">🌿 Nsawam Farms</div>
-      <div class="farm-sub">Olamide · Ops Intelligence Hub</div>
-    </div>
-    <div class="header-date">
-      <div class="date-day" id="hDay"></div>
-      <div class="date-full" id="hDate"></div>
-      <div class="time-now" id="hTime"></div>
-    </div>
+<!-- ══ PIN LOCK ══ -->
+<div id="pinScreen">
+  <div class="pin-logo">🌿 Nsawam Farms</div>
+  <div class="pin-sub">Secure Operations Hub</div>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
   </div>
-  <div class="header-stats">
-    <div class="stat-pill" onclick="switchToTab('log')" title="Tap to log data">
-      <div class="val" id="statDone">0/12</div>
-      <div class="lbl">Tasks Done</div>
-    </div>
-    <div class="stat-pill" id="statEggsPill" onclick="switchToTab('log')">
-      <div class="val" id="statEggs">—</div>
-      <div class="lbl">Eggs Today</div>
-    </div>
-    <div class="stat-pill" id="statFeedPill" onclick="switchToTab('log')">
-      <div class="val" id="statFeed">—</div>
-      <div class="lbl">Feed Days</div>
-    </div>
-    <div class="stat-pill" id="statDeathsPill" onclick="switchToTab('log')">
-      <div class="val" id="statDeaths">—</div>
-      <div class="lbl">Deaths</div>
-    </div>
+  <div class="pin-keypad">
+    <div class="pin-key" onclick="pinKey('1')">1</div>
+    <div class="pin-key" onclick="pinKey('2')">2</div>
+    <div class="pin-key" onclick="pinKey('3')">3</div>
+    <div class="pin-key" onclick="pinKey('4')">4</div>
+    <div class="pin-key" onclick="pinKey('5')">5</div>
+    <div class="pin-key" onclick="pinKey('6')">6</div>
+    <div class="pin-key" onclick="pinKey('7')">7</div>
+    <div class="pin-key" onclick="pinKey('8')">8</div>
+    <div class="pin-key" onclick="pinKey('9')">9</div>
+    <div class="pin-key empty"></div>
+    <div class="pin-key" onclick="pinKey('0')">0</div>
+    <div class="pin-key del" onclick="pinDel()">⌫</div>
   </div>
+  <div class="pin-error" id="pinError"></div>
 </div>
 
-<!-- INTELLIGENCE ALERTS (dynamic) -->
-<div class="intel-bar" id="intelBar"></div>
+<!-- ══ APP ══ -->
+<div id="app">
 
-<!-- NOTIFICATION BANNER -->
-<div class="notif-banner" id="notifBanner" onclick="requestNotifications()">
-  <span>🔔</span>
-  <span id="notifBannerText">Tap here to enable push notifications for all reminders</span>
-</div>
+  <!-- Priority Banner -->
+  <div id="priorityBanner" style="padding:0 12px;background:var(--gdk);"></div>
 
-<!-- NAV TABS -->
-<div class="nav-tabs">
-  <button class="tab-btn active" onclick="switchTab('daily',this)">📋 Daily</button>
-  <button class="tab-btn" onclick="switchTab('log',this)" id="tabLog">📊 Log Data</button>
-  <button class="tab-btn" onclick="switchTab('weekly',this)">📅 Weekly</button>
-  <button class="tab-btn" onclick="switchTab('alerts',this)">🚨 Alerts</button>
-  <button class="tab-btn" onclick="switchTab('team',this)">👥 Team</button>
-  <button class="tab-btn" onclick="switchTab('report',this)">📝 Report</button>
-  <button class="tab-btn" onclick="switchTab('rules',this)">⭐ Rules</button>
-</div>
-
-<div class="main">
-
-<!-- ═══ DAILY TAB ═══ -->
-<div class="tab-panel active" id="tab-daily">
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Today's Progress</span><span id="progressPct">0%</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-  </div>
-  <div class="section-title"><span>🌅</span> Daily Checklist</div>
-  <div id="checklistWrap"></div>
-  <div class="section-title" style="margin-top:20px"><span>📊</span> Red Flags</div>
-  <div class="red-flags">
-    <div class="rf-flag"><div class="rflag-icon">💀</div><div><div class="rflag-title">3+ Bird Deaths Today</div><div class="rflag-desc">Call Alex vet immediately + message Stephen & Tobi</div></div></div>
-    <div class="rf-flag"><div class="rflag-icon">📉</div><div><div class="rflag-title">Lay Rate Drops 10%+ in One Day</div><div class="rflag-desc">Check report, confirm with Jalil, alert owners within 2 hours</div></div></div>
-    <div class="rf-flag"><div class="rflag-icon">🌾</div><div><div class="rflag-title">Feed Below 7 Days Stock</div><div class="rflag-desc">Emergency order — message owners for approval immediately</div></div></div>
-    <div class="rf-flag"><div class="rflag-icon">💧</div><div><div class="rflag-title">Water Below 200ml or Above 450ml/Bird</div><div class="rflag-desc">Investigate immediately with Jalil</div></div></div>
-    <div class="rf-flag"><div class="rflag-icon">💰</div><div><div class="rflag-title">Cash Discrepancy</div><div class="rflag-desc">Do NOT confront anyone — message owners privately, same day</div></div></div>
-  </div>
-</div>
-
-<!-- ═══ LOG DATA TAB ═══ -->
-<div class="tab-panel" id="tab-log">
-  <div class="section-title"><span>📊</span> Log Today's Numbers <span class="section-badge">LIVE ENGINE</span></div>
-  <p style="font-size:0.78rem;color:var(--cream-dark);margin-bottom:12px;line-height:1.5;">Enter the numbers from Jalil's daily report. The app will detect issues and guide your next steps automatically.</p>
-
-  <div class="log-panel">
-    <div class="log-grid">
-      <div class="log-field">
-        <label>Eggs Collected</label>
-        <input type="number" id="li-eggs" placeholder="e.g. 430" oninput="liveValidate()"/>
-        <div class="log-hint" id="hint-eggs">Target: ~430 now, rising to ~900</div>
-      </div>
-      <div class="log-field">
-        <label>Lay Rate (%)</label>
-        <input type="number" id="li-layrate" placeholder="e.g. 43" min="0" max="100" oninput="liveValidate()"/>
-        <div class="log-hint" id="hint-layrate">Target: 90% by Week 26</div>
-      </div>
-      <div class="log-field">
-        <label>Deaths Today</label>
-        <input type="number" id="li-deaths" placeholder="0" min="0" oninput="liveValidate()"/>
-        <div class="log-hint" id="hint-deaths">Target: &lt;5 per week</div>
-      </div>
-      <div class="log-field">
-        <label>Feed Bags Left</label>
-        <input type="number" id="li-feed" placeholder="e.g. 14" min="0" oninput="liveValidate()"/>
-        <div class="log-hint" id="hint-feed">~2 bags/day consumed</div>
-      </div>
-      <div class="log-field">
-        <label>Water (ml/bird)</label>
-        <input type="number" id="li-water" placeholder="e.g. 300" oninput="liveValidate()"/>
-        <div class="log-hint" id="hint-water">Normal: 200–450ml/bird</div>
-      </div>
-      <div class="log-field">
-        <label>Eggs Sold (Trays)</label>
-        <input type="number" id="li-sold" placeholder="e.g. 10" oninput="liveValidate()"/>
-        <div class="log-hint" id="hint-sold">Friday dispatch day</div>
-      </div>
-      <div class="log-field">
-        <label>Revenue (GHS)</label>
-        <input type="number" id="li-revenue" placeholder="e.g. 450" oninput="liveValidate()"/>
-        <div class="log-hint">Log every sale</div>
-      </div>
-      <div class="log-field">
-        <label>Active Birds</label>
-        <input type="number" id="li-birds" placeholder="997" oninput="liveValidate()"/>
-        <div class="log-hint">Started: 997</div>
-      </div>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div><div class="farm-name">🌿 Nsawam Farms</div><div class="farm-sub">Olamide · Ops Hub</div></div>
+      <div class="hdr"><div class="hdd" id="hDay"></div><div class="hdf" id="hDate"></div><div class="hdt" id="hTime"></div></div>
     </div>
-    <button class="btn-log" onclick="submitDailyLog()">✅ Submit & Analyse</button>
-  </div>
-
-  <!-- DECISION OUTPUT — shown after submit -->
-  <div id="decisionOutput" style="display:none">
-    <div class="section-title"><span>🧠</span> Decision Engine Results</div>
-    <div id="decisionCards"></div>
-
-    <div class="section-title" style="margin-top:18px"><span>🔗</span> Workflow Chains</div>
-    <div id="workflowChains"></div>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="section-title" style="margin-top:20px"><span>📈</span> Trend (Last 7 Days)</div>
-  <div class="trend-chart">
-    <div class="chart-title">🥚 Eggs Collected per Day</div>
-    <div class="chart-bars" id="eggChart"></div>
-    <div class="chart-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Eggs</div>
-    </div>
-  </div>
-  <div class="trend-chart">
-    <div class="chart-title">💀 Deaths per Day</div>
-    <div class="chart-bars" id="deathChart"></div>
-    <div class="chart-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--red-light)"></div>Deaths</div>
+    <div class="header-stats">
+      <div class="stat-pill" onclick="switchToTab('daily')"><div class="val" id="statDone">0/9</div><div class="lbl">Done</div></div>
+      <div class="stat-pill" id="statEggsPill" onclick="switchToTab('log')"><div class="val" id="statEggs">—</div><div class="lbl">Eggs</div></div>
+      <div class="stat-pill" id="statFeedPill" onclick="switchToTab('log')"><div class="val" id="statFeed">—</div><div class="lbl">Feed</div></div>
+      <div class="stat-pill" id="statDeathsPill" onclick="switchToTab('log')"><div class="val" id="statDeaths">—</div><div class="lbl">Deaths</div></div>
     </div>
   </div>
 
-  <button class="btn-log" style="margin-top:8px;background:linear-gradient(135deg,#555,#777);font-size:0.75rem;padding:9px;" onclick="clearHistory()">🗑 Clear All History</button>
-</div>
-
-<!-- ═══ WEEKLY TAB ═══ -->
-<div class="tab-panel" id="tab-weekly">
-  <div class="section-title"><span>📅</span> This Week's Tasks</div>
-  <div class="week-grid" id="weekGrid"></div>
-  <div class="section-title" style="margin-top:20px"><span>🔄</span> Recurring Every Week</div>
-  <div id="recurringList"></div>
-</div>
-
-<!-- ═══ ALERTS TAB ═══ -->
-<div class="tab-panel" id="tab-alerts">
-  <div class="section-title"><span>🚨</span> Escalation Protocol</div>
-  <p style="font-size:0.78rem;color:var(--cream-dark);margin-bottom:12px;line-height:1.5;">Contact Stephen or Tobi immediately. WhatsApp first — call if no response within 30 minutes.</p>
-  <div id="escalationList"></div>
-
-  <div class="section-title" style="margin-top:20px"><span>🦠</span> Biosecurity Warning Signs</div>
-  <div class="card card-red">
-    <p style="font-size:0.78rem;color:var(--text-mid);line-height:1.6;">Ask Jalil about these <strong>every morning</strong>:</p>
-    <ul style="padding-left:18px;margin-top:8px;font-size:0.8rem;color:var(--text-dark);line-height:2;">
-      <li>Sneezing, coughing, or rattling sounds</li>
-      <li>Watery, green, or blood-stained droppings</li>
-      <li>Lethargic, hunched birds not eating</li>
-      <li>Swollen eyes, face, or unusual symptoms</li>
-      <li>Sudden drop in egg production or feed intake</li>
-    </ul>
-    <div style="margin-top:12px;padding:10px;background:#fff5f5;border-radius:9px;font-size:0.78rem;color:var(--red-alert);font-weight:600;line-height:1.5;">⚡ If any sign appears: Isolate bird → Photo it → WhatsApp Alex → Alert owners immediately</div>
+  <!-- Notif Banner -->
+  <div class="notif-banner" id="notifBanner" onclick="requestNotifications()">
+    <span>🔔</span><span id="notifBannerText">Tap to enable push notifications & voice readout</span>
   </div>
 
-  <div class="section-title" style="margin-top:20px"><span>⚖️</span> Spending Authority</div>
-  <div class="card">
-    <div style="display:grid;gap:0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:0.82rem">Up to GHS 200</span>
-        <span style="background:#f0fff4;color:#1e6b1e;font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:20px;">✓ YOUR CALL + notify</span>
+  <!-- Tabs -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('daily',this)">📋 Daily</button>
+    <button class="tab-btn" onclick="switchTab('standing',this)">📌 Always</button>
+    <button class="tab-btn" onclick="switchTab('tasks',this)" id="tabTasks">✅ Tasks</button>
+    <button class="tab-btn" onclick="switchTab('log',this)">📊 Log</button>
+    <button class="tab-btn" onclick="switchTab('weekly',this)">📅 Weekly</button>
+    <button class="tab-btn" onclick="switchTab('team',this)">👥 Team</button>
+    <button class="tab-btn" onclick="switchTab('report',this)">📝 Report</button>
+    <button class="tab-btn" onclick="switchTab('rules',this)">⭐ Rules</button>
+  </div>
+
+  <div class="scroll-area">
+  <div class="main">
+
+  <!-- ═══ DAILY TAB ═══ -->
+  <div class="tab-panel active" id="tab-daily">
+    <div class="prog-wrap">
+      <div class="prog-lbl"><span>Today's Checklist Progress</span><span id="progressPct">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="st"><span>⏰</span> Timed Daily Tasks</div>
+    <p style="font-size:0.73rem;color:var(--creamd);margin-bottom:10px;line-height:1.5;">These are scheduled reminders. Tap to mark done. Push notifications fire at the right time.</p>
+    <div id="checklistWrap"></div>
+  </div>
+
+  <!-- ═══ STANDING TAB ═══ -->
+  <div class="tab-panel" id="tab-standing">
+    <div class="st"><span>📌</span> Standing Rules <span class="sb">Always On</span></div>
+    <p style="font-size:0.73rem;color:var(--creamd);margin-bottom:10px;line-height:1.5;">These are not tasks to tick — they are principles and habits that must be maintained every single day without exception.</p>
+    <div id="standingList"></div>
+  </div>
+
+  <!-- ═══ TASKS TAB ═══ -->
+  <div class="tab-panel" id="tab-tasks">
+    <div class="st"><span>✅</span> Custom Tasks <span class="sb">Your To-Dos</span></div>
+
+    <!-- AI PARSER -->
+    <div class="ai-parser">
+      <div class="ap-title">🤖 Paste Instructions → Auto-Convert</div>
+      <div class="ap-sub">Drop any message, instruction, or email here. The system will extract tasks automatically.</div>
+      <textarea class="ap-textarea" id="apInput" placeholder="e.g. 'Hi Olamide, please make sure Damian picks up 20 bags from the mill by Friday and follow up with Alex about the vaccination schedule. Also check if the water bill has been paid this month...'"></textarea>
+      <button class="ap-btn" onclick="parseInstructions()">🔍 Extract Tasks from Text</button>
+      <div class="ap-preview" id="apPreview">
+        <div style="font-size:0.72rem;font-weight:700;color:#7eb8f7;margin-bottom:8px;">Found tasks — select which to add:</div>
+        <div id="apItems"></div>
+        <button class="ap-confirm-btn" onclick="confirmParsedTasks()">✅ Add Selected Tasks</button>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:0.82rem">GHS 200 – 1,000</span>
-        <span style="background:#fff8f0;color:#b7650a;font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:20px;">⚠ WhatsApp approval</span>
+    </div>
+
+    <!-- ADD TASK FORM -->
+    <div class="st"><span>➕</span> Add Task Manually</div>
+    <div class="add-task-form">
+      <div class="atf-field"><label class="atf-label">Task Title *</label><input class="atf-input" id="at-title" placeholder="What needs to be done?"/></div>
+      <div class="atf-row">
+        <div class="atf-field"><label class="atf-label">Priority</label>
+          <select class="atf-select" id="at-priority">
+            <option value="critical">🔴 Critical</option>
+            <option value="high">🟠 High</option>
+            <option value="medium" selected>🟡 Medium</option>
+            <option value="low">⚪ Low</option>
+          </select>
+        </div>
+        <div class="atf-field"><label class="atf-label">Due Date</label><input class="atf-input" type="date" id="at-due"/></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;">
-        <span style="font-size:0.82rem">Above GHS 1,000</span>
-        <span style="background:#fff0f0;color:var(--red-light);font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:20px;">🚫 Written approval</span>
+      <div class="atf-row">
+        <div class="atf-field"><label class="atf-label">Reminder Time</label><input class="atf-input" type="time" id="at-time"/></div>
+        <div class="atf-field"><label class="atf-label">Reminder Date</label><input class="atf-input" type="date" id="at-rdate"/></div>
+      </div>
+      <div class="atf-field"><label class="atf-label">Notes / Details</label><textarea class="atf-textarea" id="at-notes" placeholder="Any extra details, context, or instructions..."></textarea></div>
+      <button class="btn" onclick="addCustomTask()">➕ Add Task</button>
+    </div>
+
+    <!-- TASK LIST -->
+    <div class="st"><span>📋</span> Active Tasks</div>
+    <div id="taskListActive"></div>
+    <div class="st" style="margin-top:18px"><span>✅</span> Completed</div>
+    <div id="taskListDone"></div>
+    <button class="btn btn-grey" onclick="clearDoneTasks()" style="margin-top:6px;font-size:0.76rem;padding:9px;">🗑 Clear Completed Tasks</button>
+  </div>
+
+  <!-- ═══ LOG DATA TAB ═══ -->
+  <div class="tab-panel" id="tab-log">
+    <div class="st"><span>📊</span> Daily Log <span class="sb">Live Engine</span></div>
+    <p style="font-size:0.73rem;color:var(--creamd);margin-bottom:10px;line-height:1.5;">Enter numbers from Jalil's report. The engine will detect issues and tell you exactly what to do.</p>
+    <div class="log-panel">
+      <div class="log-grid">
+        <div class="log-field"><label>Eggs Collected</label><input type="number" id="li-eggs" placeholder="e.g. 430" oninput="liveValidate()"/><div class="hint" id="hint-eggs">Target ~430 now, ~900 peak</div></div>
+        <div class="log-field"><label>Lay Rate (%)</label><input type="number" id="li-layrate" placeholder="e.g. 43" oninput="liveValidate()"/><div class="hint" id="hint-layrate">Target: 90% by Wk 26</div></div>
+        <div class="log-field"><label>Deaths Today</label><input type="number" id="li-deaths" placeholder="0" oninput="liveValidate()"/><div class="hint" id="hint-deaths">Target: &lt;5/week</div></div>
+        <div class="log-field"><label>Feed Bags Left</label><input type="number" id="li-feed" placeholder="e.g. 14" oninput="liveValidate()"/><div class="hint" id="hint-feed">~2 bags/day</div></div>
+        <div class="log-field"><label>Water (ml/bird)</label><input type="number" id="li-water" placeholder="e.g. 300" oninput="liveValidate()"/><div class="hint" id="hint-water">Normal: 200–450ml</div></div>
+        <div class="log-field"><label>Eggs Sold (Trays)</label><input type="number" id="li-sold" placeholder="e.g. 10" oninput="liveValidate()"/><div class="hint">Friday dispatch</div></div>
+        <div class="log-field"><label>Revenue (GHS)</label><input type="number" id="li-revenue" placeholder="e.g. 450" oninput="liveValidate()"/><div class="hint">Log every sale</div></div>
+        <div class="log-field"><label>Active Birds</label><input type="number" id="li-birds" placeholder="997" oninput="liveValidate()"/><div class="hint">Started: 997</div></div>
+      </div>
+      <button class="btn" onclick="submitDailyLog()">✅ Submit & Analyse</button>
+    </div>
+    <div id="decisionOutput" style="display:none">
+      <div class="st"><span>🧠</span> Decision Engine</div>
+      <div id="decisionCards"></div>
+      <div class="st" style="margin-top:16px"><span>🔗</span> Workflow Chains</div>
+      <div id="workflowChains"></div>
+    </div>
+    <div class="st" style="margin-top:18px"><span>📈</span> Trend — Last 7 Days</div>
+    <div class="trend-chart"><div class="chart-title">🥚 Eggs Collected</div><div class="chart-bars" id="eggChart"></div></div>
+    <div class="trend-chart"><div class="chart-title">💀 Deaths per Day</div><div class="chart-bars" id="deathChart"></div></div>
+    <button class="btn btn-grey" onclick="clearHistory()" style="font-size:0.74rem;padding:9px;">🗑 Clear All History</button>
+  </div>
+
+  <!-- ═══ WEEKLY TAB ═══ -->
+  <div class="tab-panel" id="tab-weekly">
+    <div class="st"><span>📅</span> This Week's Schedule</div>
+    <div class="week-grid" id="weekGrid"></div>
+    <div class="st" style="margin-top:18px"><span>🔄</span> Recurring Every Week</div>
+    <div id="recurringList"></div>
+  </div>
+
+  <!-- ═══ TEAM TAB ═══ -->
+  <div class="tab-panel" id="tab-team">
+    <div class="st"><span>👥</span> The Team</div>
+    <div class="team-list" id="teamList"></div>
+    <div class="st" style="margin-top:18px"><span>💬</span> Quick Jalil Messages</div>
+    <p style="font-size:0.73rem;color:var(--creamd);margin-bottom:10px;">Tap any message to copy it — paste straight into WhatsApp.</p>
+    <div id="jalilMessages"></div>
+    <div class="st" style="margin-top:18px"><span>🚨</span> Escalation Protocol</div>
+    <p style="font-size:0.73rem;color:var(--creamd);margin-bottom:10px;line-height:1.5;">WhatsApp first. Call if no response in 30 minutes.</p>
+    <div id="escalationList"></div>
+  </div>
+
+  <!-- ═══ REPORT TAB ═══ -->
+  <div class="tab-panel" id="tab-report">
+    <div class="st"><span>📝</span> Report Builder</div>
+    <p style="font-size:0.73rem;color:var(--creamd);margin-bottom:10px;line-height:1.5;">Fields auto-fill from today's log. Generate and copy directly into WhatsApp.</p>
+    <div class="card">
+      <div style="display:flex;gap:7px;margin-bottom:12px;">
+        <button class="btn" style="flex:1;margin:0;padding:9px;" onclick="setReportType('midweek')" id="btnMid">Mid-Week</button>
+        <button class="btn btn-gold" style="flex:1;margin:0;padding:9px;" onclick="setReportType('endweek')" id="btnEnd">End of Week</button>
+      </div>
+      <label class="rf-label">Report Date</label><input class="rf-input" type="date" id="rDate"/>
+      <div class="rf-row">
+        <div><label class="rf-label">Eggs Collected</label><input class="rf-input" type="number" id="rEggs" placeholder="e.g. 1290"/></div>
+        <div><label class="rf-label">Eggs Sold (Trays)</label><input class="rf-input" type="number" id="rSold" placeholder="e.g. 15"/></div>
+      </div>
+      <div class="rf-row">
+        <div><label class="rf-label">Revenue (GHS)</label><input class="rf-input" type="number" id="rRevenue" placeholder="e.g. 600"/></div>
+        <div><label class="rf-label">Feed Bags Left</label><input class="rf-input" type="number" id="rFeed" placeholder="e.g. 14"/></div>
+      </div>
+      <div class="rf-row">
+        <div><label class="rf-label">Deaths</label><input class="rf-input" type="number" id="rDeaths" placeholder="0"/></div>
+        <div><label class="rf-label">Lay Rate (%)</label><input class="rf-input" type="number" id="rLayRate" placeholder="e.g. 45"/></div>
+      </div>
+      <label class="rf-label">Health & Issues</label><textarea class="rf-textarea" id="rHealth" placeholder="Any sick birds, concerns, actions taken..."></textarea>
+      <label class="rf-label">Actions & Next Steps</label><textarea class="rf-textarea" id="rActions" placeholder="What you actioned, what's coming..."></textarea>
+      <button class="btn" onclick="generateReport()">Generate Report ✨</button>
+    </div>
+    <div id="reportOutput" style="display:none;margin-top:12px;">
+      <div class="st"><span>📄</span> Your Report</div>
+      <div class="copy-box" id="reportText"></div>
+      <button class="btn btn-gold" onclick="copyReport()">📋 Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <!-- ═══ RULES TAB ═══ -->
+  <div class="tab-panel" id="tab-rules">
+    <div class="st"><span>⭐</span> Golden Rules</div>
+    <div class="rules-list" id="rulesList"></div>
+    <div class="st" style="margin-top:18px"><span>🔔</span> Notification Log</div>
+    <div class="notif-log" id="notifLog"><div class="notif-log-item"><div class="nlog-time">--:--</div><div class="nlog-msg" style="color:#bbb;font-style:italic;">No notifications yet</div></div></div>
+    <div class="st" style="margin-top:18px"><span>⚙️</span> Settings</div>
+    <div class="card">
+      <p style="font-size:0.78rem;color:var(--tm);margin-bottom:11px;line-height:1.5;">Install as a home screen app and keep the browser running in background for reliable notifications.</p>
+      <button class="btn" onclick="requestNotifications()" style="margin-bottom:8px;">🔔 Enable / Re-enable Notifications</button>
+      <button class="btn btn-gold" onclick="testNotification()" style="margin-bottom:8px;">🧪 Test Notification + Voice</button>
+      <button class="btn btn-grey" onclick="lockApp()" style="margin-bottom:12px;font-size:0.78rem;">🔒 Lock App</button>
+      <div style="padding:9px;background:#f8f8f8;border-radius:8px;font-size:0.7rem;color:var(--tl);line-height:1.7;">
+        <strong>📱 iOS:</strong> Safari → Share → "Add to Home Screen"<br/>
+        <strong>📱 Android:</strong> Chrome → Menu → "Add to Home Screen"
       </div>
     </div>
   </div>
-</div>
 
-<!-- ═══ TEAM TAB ═══ -->
-<div class="tab-panel" id="tab-team">
-  <div class="section-title"><span>👥</span> The Team</div>
-  <div class="team-list" id="teamList"></div>
+  </div><!-- /main -->
+  </div><!-- /scroll-area -->
+</div><!-- /app -->
 
-  <div class="section-title" style="margin-top:20px"><span>💬</span> Quick Jalil Messages</div>
-  <p style="font-size:0.78rem;color:var(--cream-dark);margin-bottom:10px;">Tap any message to copy it instantly — paste into WhatsApp.</p>
-  <div id="jalilMessages"></div>
-
-  <div class="section-title" style="margin-top:20px"><span>💬</span> Group Chats</div>
-  <div class="card">
-    <div style="display:grid;gap:10px;">
-      <div><div style="font-size:0.72rem;font-weight:700;color:var(--green-mid);text-transform:uppercase;letter-spacing:0.08em;">Farm Full Team</div><div style="font-size:0.78rem;color:var(--text-mid);margin-top:3px;">Stephen, Tobi, Damian, Jalil — Main operational updates</div></div>
-      <div style="border-top:1px solid #f0f0f0;padding-top:10px;"><div style="font-size:0.72rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;">Farm Management ⭐ YOUR PRIMARY CHANNEL</div><div style="font-size:0.78rem;color:var(--text-mid);margin-top:3px;">Stephen, Tobi, Francis, Olamide</div></div>
-      <div style="border-top:1px solid #f0f0f0;padding-top:10px;"><div style="font-size:0.72rem;font-weight:700;color:var(--green-mid);text-transform:uppercase;letter-spacing:0.08em;">Farm Vet</div><div style="font-size:0.78rem;color:var(--text-mid);margin-top:3px;">Stephen, Tobi, Alex — Health & vaccination matters</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ REPORT TAB ═══ -->
-<div class="tab-panel" id="tab-report">
-  <div class="section-title"><span>📝</span> Report Builder</div>
-  <p style="font-size:0.78rem;color:var(--cream-dark);margin-bottom:12px;line-height:1.5;">Fields auto-fill from today's log if you've already entered data. Edit and generate.</p>
-  <div class="report-form">
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <button class="btn-log" style="flex:1;padding:9px;" onclick="setReportType('midweek')" id="btnMid">Mid-Week</button>
-      <button class="btn-log btn-gold" style="flex:1;padding:9px;" onclick="setReportType('endweek')" id="btnEnd">End of Week</button>
-    </div>
-    <div class="rf-field"><div class="rf-label">Report Date</div><input class="rf-input" type="date" id="rDate"/></div>
-    <div class="rf-row">
-      <div class="rf-field"><div class="rf-label">Total Eggs Collected</div><input class="rf-input" type="number" id="rEggs" placeholder="e.g. 1290"/></div>
-      <div class="rf-field"><div class="rf-label">Eggs Sold (Trays)</div><input class="rf-input" type="number" id="rSold" placeholder="e.g. 15"/></div>
-    </div>
-    <div class="rf-row">
-      <div class="rf-field"><div class="rf-label">Revenue (GHS)</div><input class="rf-input" type="number" id="rRevenue" placeholder="e.g. 600"/></div>
-      <div class="rf-field"><div class="rf-label">Feed Bags Remaining</div><input class="rf-input" type="number" id="rFeed" placeholder="e.g. 14"/></div>
-    </div>
-    <div class="rf-row">
-      <div class="rf-field"><div class="rf-label">Deaths This Period</div><input class="rf-input" type="number" id="rDeaths" placeholder="e.g. 2"/></div>
-      <div class="rf-field"><div class="rf-label">Current Lay Rate (%)</div><input class="rf-input" type="number" id="rLayRate" placeholder="e.g. 45"/></div>
-    </div>
-    <div class="rf-field"><div class="rf-label">Health & Issues</div><textarea class="rf-textarea" id="rHealth" placeholder="Any sick birds, concerns, actions taken..."></textarea></div>
-    <div class="rf-field"><div class="rf-label">Actions Taken / Next Steps</div><textarea class="rf-textarea" id="rActions" placeholder="What you actioned, what's coming..."></textarea></div>
-    <button class="btn-log" onclick="generateReport()">Generate Report ✨</button>
-  </div>
-  <div id="reportOutput" style="display:none;margin-top:14px;">
-    <div class="section-title"><span>📄</span> Generated Report</div>
-    <div class="copy-box" id="reportText"></div>
-    <button class="btn-log btn-gold" onclick="copyReport()">📋 Copy to Clipboard</button>
-  </div>
-</div>
-
-<!-- ═══ RULES TAB ═══ -->
-<div class="tab-panel" id="tab-rules">
-  <div class="section-title"><span>⭐</span> Golden Rules</div>
-  <div class="rules-list" id="rulesList"></div>
-
-  <div class="section-title" style="margin-top:20px"><span>🔔</span> Notification Log</div>
-  <div class="notif-log" id="notifLog">
-    <div class="notif-log-item"><div class="nlog-time">--:--</div><div class="nlog-msg" style="color:#bbb;font-style:italic;">No notifications sent yet</div></div>
-  </div>
-
-  <div class="section-title" style="margin-top:20px"><span>⚙️</span> Notification Settings</div>
-  <div class="card">
-    <p style="font-size:0.8rem;color:var(--text-mid);margin-bottom:12px;line-height:1.5;">For best results, install as a home screen app and keep browser open in the background.</p>
-    <button class="btn-log" onclick="requestNotifications()" style="margin-bottom:8px;">🔔 Enable / Re-enable Notifications</button>
-    <button class="btn-log" onclick="testNotification()" style="background:linear-gradient(135deg,var(--green-dark),var(--green-mid));margin-bottom:12px;">🧪 Send Test Notification</button>
-    <div style="padding:10px;background:#f8f8f8;border-radius:9px;font-size:0.72rem;color:var(--text-light);line-height:1.7;">
-      <strong>📱 iOS:</strong> Safari → Share → "Add to Home Screen"<br/>
-      <strong>📱 Android:</strong> Chrome → Menu → "Add to Home Screen"<br/>
-      <strong>💻 Desktop:</strong> Chrome → Address bar install icon
-    </div>
-  </div>
-</div>
-
-</div><!-- /main -->
-
-<!-- ESCALATION MODAL -->
+<!-- MODAL -->
 <div class="modal-overlay" id="escModal" onclick="closeModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -547,22 +600,87 @@ body{font-family:'DM Sans',sans-serif;background:var(--green-deep);color:var(--t
 <div id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════════════════
-//  CORE DATA
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  PIN LOCK
+// ═══════════════════════════════════════════════
+const CORRECT_PIN = '0812';
+let pinEntry = '';
+const SESSION_KEY = 'nsawam_unlocked';
+
+function pinKey(d) {
+  if (pinEntry.length >= 4) return;
+  pinEntry += d;
+  updatePinDots();
+  if (pinEntry.length === 4) {
+    setTimeout(checkPin, 120);
+  }
+}
+function pinDel() {
+  pinEntry = pinEntry.slice(0, -1);
+  updatePinDots();
+}
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd' + i).className = 'pin-dot' + (i < pinEntry.length ? ' filled' : '');
+  }
+}
+function checkPin() {
+  if (pinEntry === CORRECT_PIN) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('pinScreen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    initApp();
+  } else {
+    const dots = document.getElementById('pinDots');
+    for (let i = 0; i < 4; i++) document.getElementById('pd' + i).className = 'pin-dot error';
+    dots.classList.add('shake');
+    document.getElementById('pinError').textContent = 'Incorrect PIN. Try again.';
+    setTimeout(() => {
+      dots.classList.remove('shake');
+      pinEntry = '';
+      updatePinDots();
+      document.getElementById('pinError').textContent = '';
+    }, 900);
+  }
+}
+function lockApp() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('pinScreen').style.display = 'flex';
+  pinEntry = '';
+  updatePinDots();
+}
+// Check session on load
+if (sessionStorage.getItem(SESSION_KEY) === '1') {
+  document.getElementById('pinScreen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  document.addEventListener('DOMContentLoaded', initApp);
+}
+
+// ═══════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════
 const DAILY_TASKS = [
-  {id:'d1',time:'By 8:00 AM',text:'Read daily email report from Jalil',sub:'Note anything unusual — deaths, lay rate, feed, water',urgent:false},
-  {id:'d2',time:'By 9:00 AM',text:'Check Farm App — confirm numbers match email',sub:'Lay rate, feed levels, bird count',urgent:false},
-  {id:'d3',time:'By 9:30 AM',text:'Message Jalil: morning check-in',sub:'Bird health? Overnight issues? Morning feed done?',urgent:false},
-  {id:'d4',time:'Morning',text:'Respond to all WhatsApp messages within 1 hour',sub:'Stephen, Tobi, all team members — non-negotiable',urgent:true},
-  {id:'d5',time:'By 12:00 PM',text:'Confirm morning egg collection',sub:'Update egg count. Message Jalil to confirm.',urgent:false},
-  {id:'d6',time:'Afternoon (Fri)',text:'Check Damian dispatch — get price & volume',sub:'Log in Notion same day',urgent:false},
-  {id:'d7',time:'By 6:00 PM',text:'Confirm afternoon egg collection with Jalil',sub:'Update daily running total',urgent:false},
-  {id:'d8',time:'By 9:00 PM',text:'Confirm Jalil has signed off daily report',sub:'If not signed off — call him immediately',urgent:true},
-  {id:'d9',time:'Daily',text:'Post summary in Farm Management group chat',sub:'Eggs today, issues, feed status',urgent:false},
-  {id:'d10',time:'Daily',text:'Log all expenses in Notion',sub:'Same day — nothing unrecorded ever',urgent:false},
-  {id:'d11',time:'Daily',text:'Check for sick or male birds',sub:'Ask Jalil — isolate any spotted immediately',urgent:false},
-  {id:'d12',time:'Daily',text:'Confirm footbath has fresh disinfectant',sub:'Biosecurity check with Jalil',urgent:false},
+  {id:'d1',time:'By 8:00 AM',text:'Read daily email report from Jalil',sub:'Note lay rate, deaths, feed, water — anything unusual',waMsg:'Morning Jalil, please make sure your daily report is ready by 8am. Thank you!'},
+  {id:'d2',time:'By 9:00 AM',text:'Check Farm App — confirm numbers match email',sub:'Lay rate, feed levels, bird count'},
+  {id:'d3',time:'By 9:30 AM',text:'Message Jalil: morning check-in',sub:'Bird health? Overnight issues? Morning feed given?',waMsg:null,waKey:'morning'},
+  {id:'d4',time:'By 12:00 PM',text:'Confirm morning egg collection with Jalil',sub:'Update daily egg count',waMsg:null,waKey:'eggs'},
+  {id:'d5',time:'Afternoon (Fri)',text:'Confirm Damian dispatch — get price & volume',sub:'Log in Notion same day',waMsg:'Hi Damian, are you collecting and dispatching eggs today? Please confirm volume and price when done. Thank you.'},
+  {id:'d6',time:'By 6:00 PM',text:'Confirm afternoon egg collection with Jalil',sub:'Update running total for the day',waMsg:null,waKey:'evening'},
+  {id:'d7',time:'By 9:00 PM',text:'Confirm Jalil has signed off daily report',sub:'If not signed off by 9pm — call him immediately',waMsg:null,waKey:'signoff'},
+  {id:'d8',time:'Daily',text:'Post summary in Farm Management group chat',sub:'Eggs today, issues, feed status — every single day'},
+  {id:'d9',time:'Daily',text:'Log all expenses in Notion',sub:'Same day, every time — nothing unrecorded'},
+];
+
+const STANDING_RULES = [
+  {icon:'💬',text:'Respond to all WhatsApp messages within 1 hour',sub:'Stephen, Tobi, all team members — non-negotiable. Speed of response is everything.'},
+  {icon:'🥚',text:'Never let eggs sit unsold for more than 1 week',sub:'Eggs lose freshness and value. Actively find buyers.'},
+  {icon:'🌾',text:'Feed stock must never drop below 7 days',sub:'Hard minimum. Order before it becomes urgent.'},
+  {icon:'🐓',text:'Isolate any sick or male bird immediately',sub:'Do not wait. Ask Jalil to act the moment one is spotted.'},
+  {icon:'🦺',text:'All visitors must use the footbath — no exceptions',sub:'Biosecurity is the foundation of everything.'},
+  {icon:'💰',text:'Never approve spending over GHS 200 without owner notification',sub:'GHS 200–1000: WhatsApp approval. Over GHS 1000: written approval first.'},
+  {icon:'📊',text:'All expenses logged in Notion the same day',sub:'If it happened and isn\'t in Notion, it doesn\'t exist.'},
+  {icon:'🔔',text:'If you spot a problem, tell owners immediately',sub:'Even if you don\'t have a solution yet. No surprises, ever.'},
 ];
 
 const WEEKLY_SCHEDULE = {
@@ -570,27 +688,26 @@ const WEEKLY_SCHEDULE = {
   Tuesday:['Check feed stock levels','Follow up any outstanding issues'],
   Wednesday:['Send Mid-Week Report to owners by 6pm','Check water supply status'],
   Thursday:['Prepare for Friday dispatch','Remind Jalil of upcoming vaccinations or vet visits'],
-  Friday:['Confirm Damian collecting & dispatching','Get sale price & volume → log in Notion','Send End-of-Week Report to owners by 6pm'],
-  Saturday:['Send End-of-Week Report (if not sent Friday)','Review Notion expense log'],
-  Sunday:['Plan next week\'s visitor schedule','Check feed & water for week ahead'],
+  Friday:['Confirm Damian collecting & dispatching','Log sale price & volume in Notion','Send End-of-Week Report to owners by 6pm'],
+  Saturday:['Send End-of-Week Report (if not sent Friday)','Review Notion expense log for week'],
+  Sunday:['Plan next week visitor schedule','Check feed & water for week ahead'],
 };
 
 const RECURRING_TASKS = [
   '📊 Feed stock — if below 14 days, coordinate Damian & Jalil for mill pickup',
   '💧 Water supply — arrange replenishment if needed (~GHS 800/month)',
-  '🐓 Ensure sick & male birds isolated from main flock',
-  '📋 Review Notion expense log — flag anything unusual to owners',
+  '📋 Review Notion expense log — flag anything unusual',
   '📅 Create schedule of expected farm visitors for coming week',
   '💉 Check vaccination calendar — send Jalil advance reminders',
-  '🏥 Schedule Alex vet visit if 2 months have passed since last visit',
-  '🪵 Monitor wood shavings — coordinate change every 3–6 months per vet advice',
+  '🏥 Schedule Alex vet visit if 2 months since last (you arrange this)',
+  '🪵 Monitor wood shavings — change every 3–6 months per vet advice',
 ];
 
 const TEAM = [
   {name:'Stephen Ofori-Addo',role:'Owner (London)',freq:'Daily',emoji:'👔',color:'#e8f4e8'},
   {name:'Tobi Bakare',role:'Owner (London)',freq:'Daily',emoji:'👔',color:'#e8f4e8'},
   {name:'Abdul Jalil',role:'Live-In Caretaker',freq:'Daily',emoji:'🧑‍🌾',color:'#fff8e8'},
-  {name:'Damian',role:'Consultant — Feed & Egg Dispatch',freq:'Multiple/week',emoji:'🚚',color:'#f0f8ff'},
+  {name:'Damian',role:'Consultant — Feed & Dispatch',freq:'Multiple/week',emoji:'🚚',color:'#f0f8ff'},
   {name:'Francis',role:'General Assistant',freq:'As needed',emoji:'🔧',color:'#f5f5f5'},
   {name:'Alex',role:'Veterinarian',freq:'Min. every 2 months',emoji:'👨‍⚕️',color:'#fff0f0'},
   {name:'Razak',role:'Secondary Consultant',freq:'As needed',emoji:'📋',color:'#f5f5f5'},
@@ -599,26 +716,26 @@ const TEAM = [
 ];
 
 const JALIL_MESSAGES = [
-  {label:'Morning Check-In',text:'Good morning Jalil! Please give me an update:\n1. How are the birds today? Any sick or unusual ones?\n2. Any issues overnight?\n3. Has morning feed been given?\n4. How many eggs collected so far?\nThank you 🙏'},
-  {label:'Confirm Egg Collection',text:'Hi Jalil, please confirm:\n- Morning egg collection: how many?\n- Any broken or cracked eggs?\n- All birds looking okay?\nKindly update me when you can.'},
-  {label:'Evening Sign-Off',text:'Jalil, please send your evening sign-off:\n- Total eggs collected today\n- Any deaths today?\n- Feed bags remaining\n- Water supply okay?\n- Any issues to report?\nThank you, have a good night!'},
-  {label:'Urgent — Bird Health',text:'⚠️ URGENT Jalil — I need you to:\n1. Immediately isolate any sick bird you see\n2. Take a photo and send it to me NOW\n3. Keep sick birds completely away from the flock\nPlease respond immediately. This is urgent.'},
-  {label:'Feed Stock Check',text:'Hi Jalil, how many feed bags do we have left right now? Please check and let me know today — I need to know if we need to arrange a pickup from the mill. Thank you!'},
-  {label:'Vaccination Reminder',text:'Hi Jalil, just a reminder — vaccination is coming up soon. Please make sure everything is ready and let me know if you need anything from me. I will confirm the date and arrange Alex if needed.'},
-  {label:'Biosecurity Check',text:'Good morning Jalil! Today\'s biosecurity check:\n✅ Footbath — fresh disinfectant?\n✅ Dead birds removed?\n✅ Sick birds isolated?\n✅ Feed & water containers clean?\nPlease confirm each one. Thank you!'},
-  {label:'Vet Visit Prep',text:'Hi Jalil, Alex the vet is visiting soon. Please:\n1. Have all birds accessible for inspection\n2. Note any birds that seem sick or unusual\n3. Have the vaccination records ready\n4. Let me know the current wood shavings condition\nThank you!'},
+  {label:'Morning Check-In',key:'morning',text:'Good morning Jalil! Please give me an update:\n1. How are the birds? Any sick or unusual ones?\n2. Any issues overnight?\n3. Has morning feed been given?\n4. How many eggs collected so far?\nThank you 🙏'},
+  {label:'Confirm Egg Collection',key:'eggs',text:'Hi Jalil, please confirm:\n• Morning egg collection total\n• Any broken or cracked eggs?\n• All birds looking okay?\nKindly update me now.'},
+  {label:'Evening Sign-Off',key:'evening',text:'Jalil, please send your evening sign-off:\n• Total eggs collected today\n• Any deaths today?\n• Feed bags remaining\n• Water supply okay?\n• Any issues to report?\nThank you, good night!'},
+  {label:'Daily Report Sign-Off',key:'signoff',text:'Jalil, please sign off the daily report now if you haven\'t already. I need it confirmed before 9pm. Thank you!'},
+  {label:'Urgent — Bird Health',key:'urgent-health',text:'⚠️ URGENT Jalil — Please:\n1. Isolate any sick bird immediately\n2. Take a photo and send to me NOW\n3. Keep sick birds away from the flock\nPlease respond immediately!'},
+  {label:'Feed Stock Check',key:'feed-check',text:'Hi Jalil, how many feed bags do we have right now? Please check and let me know today. I need to know if we arrange a mill pickup.'},
+  {label:'Biosecurity Check',key:'bio',text:'Good morning Jalil! Biosecurity check:\n✅ Footbath — fresh disinfectant?\n✅ Dead birds removed and disposed?\n✅ Sick birds isolated?\n✅ Feed & water containers clean?\nPlease confirm each. Thank you!'},
+  {label:'Vet Visit Prep',key:'vet-prep',text:'Hi Jalil, Alex the vet is visiting soon. Please:\n1. Have all birds accessible\n2. Note any sick or unusual birds\n3. Have vaccination records ready\n4. Check the wood shavings condition\nThank you!'},
 ];
 
 const ESCALATIONS = [
   {situation:'3+ bird deaths in one day',action:'Contact Alex the vet AND message Stephen/Tobi',urgency:'IMMEDIATE',cls:'esc-immediate',alex:true,owners:true},
   {situation:'Suspected disease outbreak',action:'Isolate affected birds, contact Alex, message owners',urgency:'IMMEDIATE',cls:'esc-immediate',alex:true,owners:true},
-  {situation:'Jalil not responding for 12+ hours',action:'Try Francis, then Damian, then message owners',urgency:'SAME DAY',cls:'esc-sameday',alex:false,owners:true},
-  {situation:'Feed stock below 5 days',action:'Emergency order — message owners for approval',urgency:'SAME DAY',cls:'esc-sameday',alex:false,owners:true},
+  {situation:'Jalil not responding 12+ hours',action:'Try Francis, then Damian, then message owners',urgency:'SAME DAY',cls:'esc-sameday',alex:false,owners:true},
+  {situation:'Feed stock below 5 days',action:'Emergency order — message owners for approval NOW',urgency:'SAME DAY',cls:'esc-sameday',alex:false,owners:true},
   {situation:'Unexplained cash discrepancy',action:'Do NOT confront anyone — message owners privately',urgency:'SAME DAY',cls:'esc-sameday',alex:false,owners:true},
   {situation:'Water or utilities failure',action:'Coordinate fix with Jalil/Francis, notify owners',urgency:'SAME DAY',cls:'esc-sameday',alex:false,owners:true},
   {situation:'Lay rate drops 10%+ in one day',action:'Check report, confirm with Jalil, message owners',urgency:'WITHIN 2 HRS',cls:'esc-2hr',alex:false,owners:true},
   {situation:'Egg buyer cancels or doesn\'t pay',action:'Message owners, find alternative buyer',urgency:'WITHIN 2 HRS',cls:'esc-2hr',alex:false,owners:true},
-  {situation:'Unapproved farm visitor or expense',action:'Get approval from owners BEFORE proceeding',urgency:'BEFORE ACTION',cls:'esc-2hr',alex:false,owners:true},
+  {situation:'Unapproved visitor or expense',action:'Get approval from owners BEFORE proceeding',urgency:'BEFORE ACTION',cls:'esc-2hr',alex:false,owners:true},
 ];
 
 const GOLDEN_RULES = [
@@ -632,123 +749,499 @@ const GOLDEN_RULES = [
   'Be honest at all times. We trust you completely and we expect that trust to be earned every day.',
 ];
 
-// ════════════════════════════════════════════════════════
-//  STATE & STORAGE
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════
 function todayKey(){return new Date().toISOString().split('T')[0];}
+function gs(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch{return d;}}
+function ss(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
-function getStore(key,def){try{return JSON.parse(localStorage.getItem(key))||def;}catch{return def;}}
-function setStore(key,val){localStorage.setItem(key,JSON.stringify(val));}
-
-let checkedItems = getStore('checked_'+todayKey(),{});
+let checkedItems = gs('checked_'+todayKey(),{});
+let customTasks = gs('customTasks',[]);
 let reportType = 'midweek';
-let notifLog = getStore('notifLog',[]);
+let notifLog = gs('notifLog',[]);
+let swRegistration = null;
 let scheduledTimers = [];
+let parsedTasksBuffer = [];
 
-// Day history: array of {date,eggs,deaths,feed,water,layRate,birds,sold,revenue}
-function getDayHistory(){return getStore('dayHistory',[]);}
-function saveDayHistory(arr){setStore('dayHistory',arr);}
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+function initApp() {
+  checkDayReset();
+  renderChecklist();
+  renderStanding();
+  renderCustomTasks();
+  renderWeekly();
+  renderTeam();
+  renderEscalations();
+  renderRules();
+  renderCharts();
+  renderNotifLog();
+  renderPriorityBanner();
+  checkNotifStatus();
+  updateClock();
+  setInterval(updateClock, 1000);
+  document.getElementById('rDate').value = todayKey();
+  document.getElementById('at-due').value = todayKey();
+  document.getElementById('at-rdate').value = todayKey();
+  // Restore log data if saved today
+  const td = gs('logToday_'+todayKey(),null);
+  if (td) {
+    if(td.eggs) document.getElementById('li-eggs').value=td.eggs;
+    if(td.layRate) document.getElementById('li-layrate').value=td.layRate;
+    if(td.deaths) document.getElementById('li-deaths').value=td.deaths;
+    if(td.feed) document.getElementById('li-feed').value=td.feed;
+    if(td.water) document.getElementById('li-water').value=td.water;
+    if(td.sold) document.getElementById('li-sold').value=td.sold;
+    if(td.revenue) document.getElementById('li-revenue').value=td.revenue;
+    if(td.birds) document.getElementById('li-birds').value=td.birds;
+    updateHeaderStats(td);
+  }
+  // SW registration
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      swRegistration = reg;
+      if (reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+      // Send alarms to SW
+      sendAlarmsToSW();
+    }).catch(e => console.warn('SW error:', e));
+    // Listen for alarm fired events
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.type === 'ALARM_FIRED') {
+        addToNotifLog(event.data.alarm.body);
+        speakText(event.data.alarm.body);
+      }
+    });
+  }
+  // Midnight reset timer
+  const now = new Date();
+  const midnight = new Date(now); midnight.setHours(24,0,5,0);
+  setTimeout(() => { checkedItems={}; renderChecklist(); sendAlarmsToSW(); renderPriorityBanner(); }, midnight-now);
+}
 
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 //  CLOCK
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function updateClock(){
   const n=new Date();
   document.getElementById('hDay').textContent=n.toLocaleDateString('en-US',{weekday:'long'});
   document.getElementById('hDate').textContent=n.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
   document.getElementById('hTime').textContent=n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
 }
-setInterval(updateClock,1000);updateClock();
 
-// ════════════════════════════════════════════════════════
-//  CHECKLIST
-// ════════════════════════════════════════════════════════
-function renderChecklist(){
-  const wrap=document.getElementById('checklistWrap');
-  wrap.innerHTML='';
-  DAILY_TASKS.forEach(task=>{
-    const done=!!checkedItems[task.id];
-    const d=document.createElement('div');
-    d.className='check-item'+(done?' done':'')+(task.urgent?' ci-urgent':'');
-    d.innerHTML=`<div class="check-box"></div><div class="ci-body"><div class="ci-time">${task.time}</div><div class="ci-text">${task.text}</div>${task.sub?`<div class="ci-sub">${task.sub}</div>`:''}</div>`;
-    d.addEventListener('click',()=>toggleTask(task.id));
+// ═══════════════════════════════════════════════
+//  VOICE READOUT
+// ═══════════════════════════════════════════════
+function speakText(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-GB';
+  u.rate = 0.9;
+  u.pitch = 1;
+  window.speechSynthesis.speak(u);
+}
+
+// ═══════════════════════════════════════════════
+//  NOTIFICATIONS — SW ALARM ENGINE
+// ═══════════════════════════════════════════════
+// Build full alarm list and send to SW for reliable background firing
+function buildAlarms() {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun,1=Mon...5=Fri
+  const base = [
+    {id:'a1',h:7,m:55,title:'🌅 Nsawam Farms',body:'8:00 AM — Read the daily email report from Jalil NOW!'},
+    {id:'a2',h:8,m:55,title:'📱 Nsawam Farms',body:'9:00 AM — Check Farm App. Confirm numbers match the email.'},
+    {id:'a3',h:9,m:25,title:'💬 Nsawam Farms',body:'9:30 AM — Message Jalil: health update, overnight issues, morning feed done?'},
+    {id:'a4',h:11,m:55,title:'🥚 Nsawam Farms',body:'12:00 PM — Confirm morning egg collection with Jalil. Update count.'},
+    {id:'a5',h:15,m:0,title:'📦 Nsawam Farms',body:'Afternoon — Has Damian collected and dispatched today? (Friday dispatch)'},
+    {id:'a6',h:17,m:55,title:'🌇 Nsawam Farms',body:'6:00 PM — Confirm afternoon egg collection with Jalil. Update total.'},
+    {id:'a7',h:20,m:28,title:'📊 Nsawam Farms',body:'Post your daily summary in the Farm Management group chat now.'},
+    {id:'a8',h:20,m:55,title:'⚠️ Nsawam Farms',body:'9:00 PM — Has Jalil signed off the daily report? If not — CALL HIM NOW!'},
+  ];
+  if (day===1) base.push({id:'amon',h:9,m:0,title:'📈 Nsawam Farms — Monday',body:'Monday: Review last week totals and send Monday summary to Stephen & Tobi.'});
+  if (day===3) base.push({id:'awed',h:10,m:0,title:'📝 Nsawam Farms — Wednesday',body:'Wednesday: Mid-Week Report due to Stephen & Tobi by 6pm today!'});
+  if (day===5) base.push({id:'afri',h:9,m:0,title:'🚚 Nsawam Farms — Friday',body:'Friday: Confirm Damian dispatch + End-of-Week Report due by 6pm!'});
+  // Add custom task reminders
+  customTasks.forEach(t => {
+    if (t.reminderDate && t.reminderTime && !t.done) {
+      const rd = t.reminderDate;
+      const [rh, rm] = (t.reminderTime||'09:00').split(':').map(Number);
+      if (rd === todayKey()) {
+        base.push({id:'ct_'+t.id, h:rh, m:rm, title:'⏰ Task Reminder', body: t.title + (t.notes ? '\n'+t.notes.slice(0,80) : '')});
+      }
+    }
+  });
+  return base;
+}
+
+function sendAlarmsToSW() {
+  if (!navigator.serviceWorker || !navigator.serviceWorker.controller) {
+    // Retry once SW is ready
+    setTimeout(sendAlarmsToSW, 2000);
+    return;
+  }
+  const alarms = buildAlarms();
+  navigator.serviceWorker.controller.postMessage({type:'SET_ALARMS', alarms});
+  // Also do a client-side setTimeout fallback for when app is open
+  scheduledTimers.forEach(clearTimeout);
+  scheduledTimers = [];
+  const now = new Date();
+  alarms.forEach(a => {
+    const t = new Date(); t.setHours(a.h, a.m, 0, 0);
+    const ms = t - now;
+    if (ms > 0 && ms < 86400000) {
+      scheduledTimers.push(setTimeout(() => {
+        fireNotification(a.title, a.body, a.id);
+        addToNotifLog(a.body);
+        speakText(a.body);
+      }, ms));
+    }
+  });
+}
+
+function requestNotifications() {
+  if (!('Notification' in window)) { showToast('❌ Notifications not supported'); return; }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      document.getElementById('notifBanner').classList.add('granted');
+      document.getElementById('notifBannerText').textContent = '✅ Notifications + voice readout active!';
+      showToast('🎉 Notifications enabled!');
+      sendAlarmsToSW();
+    } else { showToast('⚠ Allow notifications in browser settings'); }
+  });
+}
+
+function fireNotification(title, body, tag) {
+  if (Notification.permission !== 'granted') return;
+  // Prefer SW for reliable delivery
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({type:'SHOW_NOTIFICATION', title, body, tag: tag||('n-'+Date.now())});
+  } else {
+    const n = new Notification(title, {body, requireInteraction:true, tag:tag||('n-'+Date.now()),
+      icon:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#1a3a1a"/><text y="78" x="8" font-size="80">🌿</text></svg>')
+    });
+    n.onclick=()=>{window.focus();n.close();};
+  }
+}
+
+function testNotification() {
+  if (Notification.permission !== 'granted') { requestNotifications(); return; }
+  const msg = 'Notifications and voice readout are working perfectly! All daily reminders are active and will fire on time.';
+  fireNotification('🧪 Nsawam Farms Test', msg, 'test');
+  addToNotifLog('🧪 Test notification sent');
+  speakText(msg);
+  showToast('✅ Test sent + voice reading!');
+}
+
+function checkNotifStatus() {
+  if (Notification.permission === 'granted') {
+    document.getElementById('notifBanner').classList.add('granted');
+    document.getElementById('notifBannerText').textContent = '✅ Notifications active — all reminders running';
+  }
+}
+
+function addToNotifLog(msg) {
+  const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+  notifLog.unshift({time:now, msg});
+  if (notifLog.length > 30) notifLog.splice(30);
+  ss('notifLog', notifLog);
+  renderNotifLog();
+}
+
+function renderNotifLog() {
+  const log = document.getElementById('notifLog');
+  if (!log) return;
+  if (notifLog.length === 0) return;
+  log.innerHTML = notifLog.slice(0,20).map(n=>`<div class="notif-log-item"><div class="nlog-time">${n.time}</div><div class="nlog-msg">${n.msg}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  PRIORITY BANNER
+// ═══════════════════════════════════════════════
+function renderPriorityBanner() {
+  const banner = document.getElementById('priorityBanner');
+  const now = new Date();
+  const urgent = [];
+  // Check overdue tasks
+  customTasks.filter(t => !t.done).forEach(t => {
+    if (t.due) {
+      const diff = (new Date(t.due) - now) / 86400000;
+      if (diff < 0) urgent.push({priority:'critical', text: '⏰ OVERDUE: '+t.title, due:'overdue'});
+      else if (diff < 1) urgent.push({priority:'high', text: t.title, due:'Due today'});
+      else if (diff < 2) urgent.push({priority:'medium', text: t.title, due:'Due tomorrow'});
+    }
+  });
+  // Check farm data alerts
+  const td = gs('logToday_'+todayKey(), null);
+  if (td) {
+    const fd = td.feed ? Math.floor(td.feed/2) : 0;
+    if (td.deaths >= 3) urgent.unshift({priority:'critical', text:'🚨 '+td.deaths+' bird deaths today — call Alex & alert owners!', due:'NOW'});
+    if (fd > 0 && fd < 5) urgent.unshift({priority:'critical', text:'🌾 Feed emergency: only '+fd+' days left!', due:'NOW'});
+    if (fd > 0 && fd < 7 && fd >= 5) urgent.push({priority:'high', text:'🌾 Feed warning: '+fd+' days remaining', due:'Order now'});
+  }
+  if (urgent.length === 0) {
+    banner.innerHTML = '<div class="banner-empty">🌿 No urgent tasks — all clear</div>';
+    banner.className = '';
+    banner.style.cssText = 'background:var(--gdk);padding:0 12px;';
+    return;
+  }
+  const hasCritical = urgent.some(u => u.priority === 'critical');
+  banner.style.cssText = 'background:var(--gdk);padding:0 12px;' + (hasCritical ? 'animation:flashRed 1.5s infinite;' : '');
+  banner.innerHTML = urgent.slice(0,4).map(u => `
+    <div class="prio-item" onclick="switchToTab('tasks')">
+      <span class="prio-badge prio-${u.priority}">${u.priority.toUpperCase()}</span>
+      <span class="prio-text">${u.text}</span>
+      <span class="prio-due">${u.due||''}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  CHECKLIST (TIMED TASKS ONLY)
+// ═══════════════════════════════════════════════
+function renderChecklist() {
+  const wrap = document.getElementById('checklistWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  DAILY_TASKS.forEach(task => {
+    const done = !!checkedItems[task.id];
+    const d = document.createElement('div');
+    d.className = 'check-item' + (done ? ' done' : '');
+    const waBtn = (task.waMsg || task.waKey) ? `<button class="ci-wa-btn" onclick="event.stopPropagation();copyJalilMsg('${task.waKey||''}','${(task.waMsg||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')">💬 Copy WhatsApp Message</button>` : '';
+    d.innerHTML = `<div class="check-box"></div><div class="ci-body"><div class="ci-time">${task.time}</div><div class="ci-text">${task.text}</div>${task.sub?`<div class="ci-sub">${task.sub}</div>`:''}<div>${waBtn}</div></div>`;
+    d.addEventListener('click', () => toggleTask(task.id));
     wrap.appendChild(d);
   });
   updateProgress();
 }
-function toggleTask(id){
-  checkedItems[id]=!checkedItems[id];
-  setStore('checked_'+todayKey(),checkedItems);
+
+function copyJalilMsg(key, directMsg) {
+  let msg = directMsg;
+  if (key) { const jm = JALIL_MESSAGES.find(m => m.key === key); if (jm) msg = jm.text; }
+  if (msg) { copyText(msg.replace(/\\n/g,'\n')); showToast('📋 Copied! Paste into WhatsApp'); }
+}
+
+function toggleTask(id) {
+  checkedItems[id] = !checkedItems[id];
+  ss('checked_'+todayKey(), checkedItems);
   renderChecklist();
-  showToast(checkedItems[id]?'✅ Task done!':'↩ Task unmarked');
-}
-function updateProgress(){
-  const total=DAILY_TASKS.length;
-  const done=Object.values(checkedItems).filter(Boolean).length;
-  const pct=Math.round((done/total)*100);
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('progressPct').textContent=pct+'%';
-  document.getElementById('statDone').textContent=done+'/'+total;
+  showToast(checkedItems[id] ? '✅ Done!' : '↩ Unmarked');
 }
 
-// ════════════════════════════════════════════════════════
-//  DAILY DATA LOG + RULES ENGINE
-// ════════════════════════════════════════════════════════
-function liveValidate(){
+function updateProgress() {
+  const total = DAILY_TASKS.length;
+  const done = Object.values(checkedItems).filter(Boolean).length;
+  const pct = Math.round((done/total)*100);
+  const pf = document.getElementById('progressFill');
+  const pp = document.getElementById('progressPct');
+  const sd = document.getElementById('statDone');
+  if(pf) pf.style.width = pct+'%';
+  if(pp) pp.textContent = pct+'%';
+  if(sd) sd.textContent = done+'/'+total;
+}
+
+// ═══════════════════════════════════════════════
+//  STANDING RULES
+// ═══════════════════════════════════════════════
+function renderStanding() {
+  const list = document.getElementById('standingList');
+  if (!list) return;
+  list.innerHTML = STANDING_RULES.map(r => `
+    <div class="rule-standing">
+      <div class="rs-icon">${r.icon}</div>
+      <div><div class="rs-text">${r.text}</div><div class="rs-sub">${r.sub}</div></div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  CUSTOM TASKS
+// ═══════════════════════════════════════════════
+function addCustomTask() {
+  const title = document.getElementById('at-title').value.trim();
+  if (!title) { showToast('⚠ Please enter a task title'); return; }
+  const task = {
+    id: Date.now().toString(),
+    title,
+    priority: document.getElementById('at-priority').value,
+    due: document.getElementById('at-due').value,
+    reminderDate: document.getElementById('at-rdate').value,
+    reminderTime: document.getElementById('at-time').value,
+    notes: document.getElementById('at-notes').value.trim(),
+    done: false,
+    created: todayKey(),
+  };
+  customTasks.unshift(task);
+  ss('customTasks', customTasks);
+  // Clear form
+  document.getElementById('at-title').value='';
+  document.getElementById('at-notes').value='';
+  document.getElementById('at-time').value='';
+  renderCustomTasks();
+  renderPriorityBanner();
+  sendAlarmsToSW();
+  showToast('✅ Task added!');
+  switchToTab('tasks');
+}
+
+function toggleCustomTask(id) {
+  const t = customTasks.find(x => x.id===id);
+  if (t) { t.done = !t.done; ss('customTasks',customTasks); renderCustomTasks(); renderPriorityBanner(); }
+}
+
+function deleteCustomTask(id) {
+  customTasks = customTasks.filter(x => x.id!==id);
+  ss('customTasks',customTasks); renderCustomTasks(); renderPriorityBanner(); sendAlarmsToSW();
+  showToast('🗑 Task deleted');
+}
+
+function clearDoneTasks() {
+  customTasks = customTasks.filter(x => !x.done);
+  ss('customTasks',customTasks); renderCustomTasks();
+  showToast('✅ Completed tasks cleared');
+}
+
+function renderCustomTasks() {
+  const active = document.getElementById('taskListActive');
+  const done = document.getElementById('taskListDone');
+  if (!active || !done) return;
+  const now = new Date();
+  const priOrder = {critical:0,high:1,medium:2,low:3};
+  const sorted = [...customTasks].sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return (priOrder[a.priority]||2) - (priOrder[b.priority]||2);
+  });
+  const activeTasks = sorted.filter(t => !t.done);
+  const doneTasks = sorted.filter(t => t.done);
+
+  function renderTask(t) {
+    const diff = t.due ? (new Date(t.due) - now) / 86400000 : null;
+    const overdue = diff !== null && diff < 0;
+    const dueText = diff === null ? '' : overdue ? 'OVERDUE' : diff < 1 ? 'Due today' : diff < 2 ? 'Due tomorrow' : 'Due '+t.due;
+    return `<div class="custom-task ${t.done?'done-t':''}" onclick="toggleCustomTask('${t.id}')">
+      <button class="ct-del" onclick="event.stopPropagation();deleteCustomTask('${t.id}')">🗑</button>
+      <div class="ct-header">
+        <div class="ct-box"></div>
+        <div class="ct-info">
+          <div class="ct-title">${t.title}</div>
+          <div class="ct-meta">
+            <span class="ct-badge ct-${t.priority}">${t.priority.toUpperCase()}</span>
+            ${t.due?`<span class="ct-due ${overdue?'overdue':''}">${dueText}</span>`:''}
+            ${t.reminderTime?`<span class="ct-due">⏰ ${t.reminderTime}</span>`:''}
+          </div>
+          ${t.notes?`<div class="ct-notes">${t.notes}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  active.innerHTML = activeTasks.length ? activeTasks.map(renderTask).join('') : '<div style="font-size:0.78rem;color:var(--creamd);padding:8px 0;">No active tasks — add one above or paste instructions.</div>';
+  done.innerHTML = doneTasks.length ? doneTasks.map(renderTask).join('') : '<div style="font-size:0.78rem;color:var(--creamd);padding:8px 0;">No completed tasks yet.</div>';
+}
+
+// ═══════════════════════════════════════════════
+//  AI INSTRUCTION PARSER
+// ═══════════════════════════════════════════════
+function parseInstructions() {
+  const input = document.getElementById('apInput').value.trim();
+  if (!input) { showToast('⚠ Paste some text first'); return; }
+  // Simple rule-based extraction — no API needed
+  const lines = input.split(/[.\n!?]+/).map(s => s.trim()).filter(s => s.length > 10);
+  const taskKeywords = ['make sure','please','ensure','check','confirm','follow up','arrange','coordinate','send','call','contact','remind','update','review','collect','dispatch','schedule','pick up','pay','buy','organize','prepare','get','find','email','whatsapp','message','log'];
+  const parsed = [];
+  lines.forEach(line => {
+    const lower = line.toLowerCase();
+    const hasKeyword = taskKeywords.some(k => lower.includes(k));
+    if (hasKeyword && line.length < 200) {
+      // Detect priority
+      let priority = 'medium';
+      if (/urgent|immediately|asap|emergency|critical|now/i.test(line)) priority = 'critical';
+      else if (/important|priority|soon|today/i.test(line)) priority = 'high';
+      else if (/when you can|at some point|eventually/i.test(line)) priority = 'low';
+      // Detect due date hints
+      let due = todayKey();
+      if (/friday/i.test(line)) { const d=new Date();d.setDate(d.getDate()+(5-d.getDay()+7)%7||7);due=d.toISOString().split('T')[0]; }
+      else if (/tomorrow/i.test(line)) { const d=new Date();d.setDate(d.getDate()+1);due=d.toISOString().split('T')[0]; }
+      else if (/next week/i.test(line)) { const d=new Date();d.setDate(d.getDate()+7);due=d.toISOString().split('T')[0]; }
+      // Clean up task title
+      const title = line.replace(/^(please|hi olamide|olamide|hi|hey|also|and)\s*/i,'').replace(/\s+/g,' ').trim();
+      if (title.length > 5) parsed.push({title: title.charAt(0).toUpperCase()+title.slice(1), priority, due});
+    }
+  });
+  parsedTasksBuffer = parsed;
+  const preview = document.getElementById('apPreview');
+  const items = document.getElementById('apItems');
+  if (parsed.length === 0) { showToast('⚠ No tasks found — try more specific text'); return; }
+  items.innerHTML = parsed.map((t,i) => `
+    <div class="ap-preview-item">
+      <input type="checkbox" checked id="apt${i}"/>
+      <div>
+        <div style="font-weight:600;">${t.title}</div>
+        <div style="font-size:0.68rem;color:#8ab4d4;margin-top:2px;">Priority: ${t.priority} · Due: ${t.due}</div>
+      </div>
+    </div>`).join('');
+  preview.style.display = 'block';
+  showToast(`🔍 Found ${parsed.length} task${parsed.length!==1?'s':''}`);
+}
+
+function confirmParsedTasks() {
+  let added = 0;
+  parsedTasksBuffer.forEach((t, i) => {
+    const cb = document.getElementById('apt'+i);
+    if (cb && cb.checked) {
+      customTasks.unshift({id: Date.now().toString()+(i), title: t.title, priority: t.priority, due: t.due, notes:'', done:false, created:todayKey()});
+      added++;
+    }
+  });
+  ss('customTasks', customTasks);
+  renderCustomTasks();
+  renderPriorityBanner();
+  sendAlarmsToSW();
+  document.getElementById('apPreview').style.display='none';
+  document.getElementById('apInput').value='';
+  showToast(`✅ Added ${added} task${added!==1?'s':''}`);
+}
+
+// ═══════════════════════════════════════════════
+//  DAILY LOG + RULES ENGINE
+// ═══════════════════════════════════════════════
+function liveValidate() {
+  const deaths = parseFloat(document.getElementById('li-deaths').value)||0;
+  const feed = parseFloat(document.getElementById('li-feed').value)||0;
+  const water = parseFloat(document.getElementById('li-water').value)||0;
+  const layRate = parseFloat(document.getElementById('li-layrate').value)||0;
+  const feedDays = feed>0 ? Math.floor(feed/2) : 0;
+
+  const de=document.getElementById('li-deaths'); const dh=document.getElementById('hint-deaths');
+  if(deaths>=3){de.className='input-danger';dh.textContent='🚨 CRITICAL — call Alex & alert owners NOW';dh.className='hint hd';}
+  else if(deaths>0){de.className='input-warn';dh.textContent='⚠ Monitor closely';dh.className='hint hw';}
+  else{de.className='';dh.textContent='Target: <5/week';dh.className='hint';}
+
+  const fe=document.getElementById('li-feed'); const fh=document.getElementById('hint-feed');
+  if(feed>0&&feedDays<5){fe.className='input-danger';fh.textContent='🚨 ONLY '+feedDays+' DAYS — EMERGENCY ORDER';fh.className='hint hd';}
+  else if(feed>0&&feedDays<7){fe.className='input-danger';fh.textContent='⚠ '+feedDays+' days — order immediately';fh.className='hint hw';}
+  else if(feed>0&&feedDays<14){fe.className='input-warn';fh.textContent=feedDays+' days — arrange pickup';fh.className='hint hw';}
+  else{fe.className='';fh.textContent=feedDays>0?'~'+feedDays+' days of stock':'~2 bags/day';fh.className='hint';}
+
+  const we=document.getElementById('li-water'); const wh=document.getElementById('hint-water');
+  if(water>0&&(water<200||water>450)){we.className='input-danger';wh.textContent='🚨 OUT OF RANGE — investigate NOW';wh.className='hint hd';}
+  else{we.className='';wh.textContent='Normal: 200–450ml/bird';wh.className='hint';}
+
   const eggs=parseFloat(document.getElementById('li-eggs').value)||0;
-  const deaths=parseFloat(document.getElementById('li-deaths').value)||0;
-  const feed=parseFloat(document.getElementById('li-feed').value)||0;
-  const water=parseFloat(document.getElementById('li-water').value)||0;
-  const layRate=parseFloat(document.getElementById('li-layrate').value)||0;
-  const feedDays=feed>0?Math.floor(feed/2):0;
-
-  // Deaths
-  const deathEl=document.getElementById('li-deaths');
-  const deathHint=document.getElementById('hint-deaths');
-  if(deaths>=3){deathEl.className='input-danger';deathHint.textContent='🚨 CRITICAL — Call Alex & alert owners NOW';deathHint.className='log-hint hint-danger';}
-  else if(deaths>0){deathEl.className='input-warn';deathHint.textContent='⚠ Monitor closely';deathHint.className='log-hint hint-warn';}
-  else{deathEl.className='';deathHint.textContent='Target: <5 per week';deathHint.className='log-hint';}
-
-  // Feed
-  const feedEl=document.getElementById('li-feed');
-  const feedHint=document.getElementById('hint-feed');
-  if(feed>0&&feedDays<5){feedEl.className='input-danger';feedHint.textContent=`🚨 ONLY ${feedDays} DAYS LEFT — EMERGENCY ORDER`;feedHint.className='log-hint hint-danger';}
-  else if(feed>0&&feedDays<7){feedEl.className='input-danger';feedHint.textContent=`⚠ ${feedDays} days left — order immediately`;feedHint.className='log-hint hint-warn';}
-  else if(feed>0&&feedDays<14){feedEl.className='input-warn';feedHint.textContent=`${feedDays} days left — coordinate pickup soon`;feedHint.className='log-hint hint-warn';}
-  else{feedEl.className='';feedHint.textContent=feedDays>0?`~${feedDays} days of stock`:'~2 bags/day consumed';feedHint.className='log-hint';}
-
-  // Water
-  const waterEl=document.getElementById('li-water');
-  const waterHint=document.getElementById('hint-water');
-  if(water>0&&(water<200||water>450)){waterEl.className='input-danger';waterHint.textContent='🚨 OUT OF RANGE — investigate with Jalil';waterHint.className='log-hint hint-danger';}
-  else{waterEl.className='';waterHint.textContent='Normal: 200–450ml/bird';waterHint.className='log-hint';}
-
-  // Lay rate
-  const layEl=document.getElementById('li-layrate');
-  const layHint=document.getElementById('hint-layrate');
-  if(layRate>0){
-    const hist=getDayHistory();
-    const lastRate=hist.length>0?hist[hist.length-1].layRate:0;
-    const drop=lastRate>0?lastRate-layRate:0;
-    if(drop>=10){layEl.className='input-danger';layHint.textContent=`🚨 Dropped ${drop.toFixed(1)}% — alert owners within 2hrs`;layHint.className='log-hint hint-danger';}
-    else if(drop>=5){layEl.className='input-warn';layHint.textContent=`⚠ Dropped ${drop.toFixed(1)}% — monitor closely`;layHint.className='log-hint hint-warn';}
-    else{layEl.className='';layHint.textContent='Target: 90% by Week 26';layHint.className='log-hint';}
-  }
-
-  // Update header stats live
+  const ep=document.getElementById('statEggsPill');
   if(eggs>0){document.getElementById('statEggs').textContent=eggs;}
-  if(feedDays>0){
-    document.getElementById('statFeed').textContent=feedDays+'d';
-    const fp=document.getElementById('statFeedPill');
-    fp.className='stat-pill'+(feedDays<7?' alert-stat':'');
-  }
-  if(deaths>0){
-    document.getElementById('statDeaths').textContent=deaths;
-    document.getElementById('statDeathsPill').className='stat-pill'+(deaths>=3?' alert-stat':'');
-  }
+  if(feedDays>0){document.getElementById('statFeed').textContent=feedDays+'d';if(ep)ep.className='stat-pill'+(feedDays<7?' alert-stat':'');}
+  if(deaths>0){document.getElementById('statDeaths').textContent=deaths;const dp=document.getElementById('statDeathsPill');if(dp)dp.className='stat-pill'+(deaths>=3?' alert-stat':'');}
 }
 
-function submitDailyLog(){
+function updateHeaderStats(td) {
+  const feedDays=td.feed?Math.floor(td.feed/2):0;
+  if(td.eggs) document.getElementById('statEggs').textContent=td.eggs;
+  if(feedDays>0){document.getElementById('statFeed').textContent=feedDays+'d';const fp=document.getElementById('statFeedPill');if(fp)fp.className='stat-pill'+(feedDays<7?' alert-stat':'');}
+  if(td.deaths>0){document.getElementById('statDeaths').textContent=td.deaths;const dp=document.getElementById('statDeathsPill');if(dp)dp.className='stat-pill'+(td.deaths>=3?' alert-stat':'');}
+}
+
+function submitDailyLog() {
   const eggs=parseFloat(document.getElementById('li-eggs').value)||0;
   const deaths=parseFloat(document.getElementById('li-deaths').value)||0;
   const feed=parseFloat(document.getElementById('li-feed').value)||0;
@@ -758,19 +1251,19 @@ function submitDailyLog(){
   const revenue=parseFloat(document.getElementById('li-revenue').value)||0;
   const birds=parseFloat(document.getElementById('li-birds').value)||997;
   const feedDays=feed>0?Math.floor(feed/2):0;
+  const entry={date:todayKey(),eggs,deaths,feed,feedDays,water,layRate,sold,revenue,birds,ts:Date.now()};
+
+  // Save today's log
+  ss('logToday_'+todayKey(), entry);
 
   // Save to history
-  const hist=getDayHistory();
-  const todayEntry={date:todayKey(),eggs,deaths,feed,feedDays,water,layRate,sold,revenue,birds,ts:Date.now()};
-  const existingIdx=hist.findIndex(h=>h.date===todayKey());
-  if(existingIdx>=0)hist[existingIdx]=todayEntry; else hist.push(todayEntry);
+  const hist=gs('dayHistory',[]);
+  const idx=hist.findIndex(h=>h.date===todayKey());
+  if(idx>=0)hist[idx]=entry; else hist.push(entry);
   if(hist.length>30)hist.splice(0,hist.length-30);
-  saveDayHistory(hist);
+  ss('dayHistory',hist);
 
-  // Run rules engine
-  runRulesEngine(todayEntry,hist);
-
-  // Auto-fill report fields
+  // Auto-fill report
   document.getElementById('rEggs').value=eggs||'';
   document.getElementById('rSold').value=sold||'';
   document.getElementById('rRevenue').value=revenue||'';
@@ -778,406 +1271,197 @@ function submitDailyLog(){
   document.getElementById('rDeaths').value=deaths||'';
   document.getElementById('rLayRate').value=layRate||'';
 
-  // Update charts
+  updateHeaderStats(entry);
+  runRulesEngine(entry,hist);
   renderCharts();
-
-  // Show results
+  renderPriorityBanner();
   document.getElementById('decisionOutput').style.display='block';
   document.getElementById('decisionOutput').scrollIntoView({behavior:'smooth'});
-  showToast('✅ Data logged and analysed!');
-  updateIntelBar();
+  showToast('✅ Logged and analysed!');
 }
 
-function runRulesEngine(d, hist){
-  const cards=document.getElementById('decisionCards');
-  const chains=document.getElementById('workflowChains');
-  const alerts=[];
-  const workflows=[];
+function runRulesEngine(d, hist) {
+  const alerts=[];const workflows=[];
   const prev=hist.length>1?hist[hist.length-2]:null;
-  const feedDays=d.feedDays;
+  const fd=d.feedDays||0;
 
-  // RULE 1: Deaths ≥ 3
   if(d.deaths>=3){
-    alerts.push({
-      type:'red',icon:'💀',title:`🚨 ${d.deaths} Birds Died Today — IMMEDIATE ACTION REQUIRED`,
-      msg:'This exceeds the 3-death threshold. You must contact Alex the vet and alert Stephen & Tobi immediately. Do not wait.',
-      actions:[
-        {label:'📞 Call Alex (Vet)',type:'red',fn:"copyMsg('Call Alex the vet now — '+"+d.deaths+" deaths today at Nsawam Farms. Need immediate guidance.')"},
-        {label:'💬 Alert Owners',type:'red',fn:"openEscModal('"+d.deaths+" bird deaths today','Alert Stephen & Tobi on WhatsApp immediately, then call if no response in 30 mins.')"},
-        {label:'📋 Log Issue',type:'green',fn:"showToast('Logged — also record in Notion')"}
-      ]
-    });
-    workflows.push(buildWorkflow('🐔 Death Response Workflow',[
+    alerts.push({t:'red',i:'💀',h:`🚨 ${d.deaths} Bird Deaths — IMMEDIATE ACTION`,m:'This exceeds the critical threshold. Call Alex the vet and alert Stephen & Tobi RIGHT NOW.',
+      a:[{l:'💬 Alert Owners Now',t:'red',f:`openEscModal('${d.deaths} bird deaths today','Alert Stephen & Tobi on WhatsApp immediately, then call if no response in 30 minutes.')`},
+         {l:'📞 Call Vet (Alex)',t:'red',f:`copyText('Alex, emergency at Nsawam Farms — ${d.deaths} bird deaths today. Need immediate guidance.');showToast('📋 Copied — call Alex NOW')`},
+         {l:'📋 Tell Jalil to Isolate',t:'orange',f:`copyText('Jalil, please immediately remove dead birds, isolate any sick birds, and send me photos. This is urgent.');showToast('📋 Copied')`}]});
+    workflows.push(buildWorkflow('🐔 Death Response',[
       {text:'Confirm death count with Jalil',done:true},
       {text:'Contact Alex the vet via WhatsApp',done:false,active:true},
-      {text:'Message Stephen & Tobi immediately',done:false},
-      {text:'Ask Jalil to remove & dispose of dead birds',done:false},
-      {text:'Monitor remaining flock for symptoms',done:false},
-      {text:'Log in Notion with full details',done:false},
-    ],'What did Alex say? Does Jalil need to isolate more birds?'));
+      {text:'Alert Stephen & Tobi now',done:false},
+      {text:'Jalil: remove dead birds immediately',done:false},
+      {text:'Jalil: isolate any sick birds',done:false},
+      {text:'Log full details in Notion',done:false},
+    ],'What did Alex advise? Are there any more sick birds?'));
   }
 
-  // RULE 2: Feed critical
-  if(feedDays>0 && feedDays<5){
-    alerts.push({
-      type:'red',icon:'🌾',title:`🚨 Feed CRITICAL — Only ${feedDays} Days Left!`,
-      msg:`You have approximately ${feedDays} days of feed remaining. This is below the 5-day emergency threshold. Order immediately. This requires owner approval.`,
-      actions:[
-        {label:'💬 Message Owners Now',type:'red',fn:"openEscModal('Feed Emergency: "+feedDays+" days left','Contact Stephen & Tobi for emergency order approval right now.')"},
-        {label:'📞 Call Damian & Jalil',type:'orange',fn:"showToast('Call Damian to arrange emergency pickup from the mill')"},
-      ]
-    });
-    workflows.push(buildWorkflow('🌾 Emergency Feed Workflow',[
-      {text:'Confirm exact bag count with Jalil',done:true},
-      {text:'Message Stephen & Tobi for approval',done:false,active:true},
-      {text:'Call Damian to arrange mill pickup',done:false},
-      {text:'Confirm Jalil receives the feed',done:false},
-      {text:'Log expense in Notion',done:false},
-    ],'Do you have owner approval? Has Damian confirmed pickup time?'));
-  } else if(feedDays>0 && feedDays<7){
-    alerts.push({
-      type:'orange',icon:'🌾',title:`⚠ Feed Warning — ${feedDays} Days Remaining`,
-      msg:'Stock is below the 7-day hard minimum. Coordinate feed pickup with Damian and Jalil now — before it becomes an emergency.',
-      actions:[
-        {label:'📞 Coordinate Damian & Jalil',type:'orange',fn:"showToast('Arrange feed pickup — notify owners same day')"},
-        {label:'💬 Notify Owners',type:'orange',fn:"openEscModal('Feed below 7 days: "+feedDays+" days left','Update Stephen & Tobi — arrange pickup with Damian today.')"},
-      ]
-    });
-  } else if(feedDays>0 && feedDays<14){
-    alerts.push({
-      type:'orange',icon:'🌾',title:`⚠ Feed Notice — ${feedDays} Days Remaining`,
-      msg:'Below 14 days. Coordinate Damian and Jalil for a mill pickup this week.',
-      actions:[{label:'📋 Schedule Pickup',type:'green',fn:"showToast('Schedule mill pickup with Damian this week')"}]
-    });
+  if(fd>0&&fd<5){
+    alerts.push({t:'red',i:'🌾',h:`🚨 Feed Emergency — Only ${fd} Days Left`,m:`Stock is critically low. Message owners for emergency order approval NOW. Then coordinate with Damian.`,
+      a:[{l:'💬 Message Owners',t:'red',f:`openEscModal('Feed Emergency: ${fd} days left','Contact Stephen & Tobi NOW for emergency order approval. Then call Damian.')`},
+         {l:'📞 Call Damian',t:'orange',f:`copyText('Damian, urgent — we have only ${fd} days of feed left at Nsawam Farms. We need to arrange emergency pickup from the mill as soon as possible. Please call me.');showToast('📋 Copied — call Damian')`}]});
+  } else if(fd>0&&fd<7){
+    alerts.push({t:'orange',i:'🌾',h:`⚠ Feed Warning — ${fd} Days Left`,m:`Below the 7-day hard minimum. Coordinate pickup with Damian and Jalil today.`,
+      a:[{l:'📋 Coordinate Pickup',t:'orange',f:`copyText('Damian, feed stock is at ${fd} days at Nsawam Farms. We need to arrange a mill pickup this week. Please confirm when you are available.');showToast('📋 Copied')`}]});
+  } else if(fd>0&&fd<14){
+    alerts.push({t:'orange',i:'🌾',h:`Feed Notice — ${fd} Days Remaining`,m:'Coordinate Damian and Jalil for a mill pickup this week.',
+      a:[{l:'📋 Schedule Pickup',t:'green',f:`showToast('Schedule mill pickup with Damian this week')`}]});
   }
 
-  // RULE 3: Lay rate drop
-  if(prev && prev.layRate>0 && d.layRate>0){
+  if(prev&&prev.layRate>0&&d.layRate>0){
     const drop=prev.layRate-d.layRate;
-    if(drop>=10){
-      alerts.push({
-        type:'red',icon:'📉',title:`🚨 Lay Rate Dropped ${drop.toFixed(1)}% in One Day`,
-        msg:`Lay rate fell from ${prev.layRate}% to ${d.layRate}% — this exceeds the 10% threshold. Alert owners within 2 hours.`,
-        actions:[
-          {label:'💬 Alert Owners (2hr)',type:'red',fn:"openEscModal('Lay rate dropped "+drop.toFixed(1)+"%','Message Stephen & Tobi with full details. Check with Jalil what changed — feed, water, disturbance?')"},
-          {label:'❓ Ask Jalil Why',type:'orange',fn:"copyMsg('Hi Jalil, our lay rate has dropped significantly today. Can you tell me: did anything change with the feed, water, or disturbances to the birds? Please let me know urgently.')"},
-        ]
-      });
-    } else if(drop>=5){
-      alerts.push({type:'orange',icon:'📉',title:`⚠ Lay Rate Dropped ${drop.toFixed(1)}%`,msg:'Monitor closely. Investigate with Jalil if it continues tomorrow.',
-        actions:[{label:'❓ Check with Jalil',type:'orange',fn:"copyMsg('Hi Jalil, I noticed egg production dipped today. Is everything okay with the birds? Any changes to feed or water?')"}]
-      });
-    }
+    if(drop>=10) alerts.push({t:'red',i:'📉',h:`🚨 Lay Rate Dropped ${drop.toFixed(1)}%`,m:`From ${prev.layRate}% to ${d.layRate}% — this is a 10%+ single-day drop. Alert owners within 2 hours.`,
+      a:[{l:'💬 Alert Owners',t:'red',f:`openEscModal('Lay rate dropped ${drop.toFixed(1)}% today','Message Stephen & Tobi with full explanation. Investigate with Jalil what changed.')`},
+         {l:'❓ Ask Jalil',t:'orange',f:`copyText('Jalil, our egg production has dropped significantly today. Did anything change with feed, water, or the birds? Please give me a full update urgently.');showToast('📋 Copied')`}]});
+    else if(drop>=5) alerts.push({t:'orange',i:'📉',h:`Lay Rate Dipped ${drop.toFixed(1)}%`,m:'Monitor closely. Investigate if it continues tomorrow.',
+      a:[{l:'❓ Ask Jalil',t:'orange',f:`copyText('Hi Jalil, egg production dipped a bit today. Is everything okay with the birds? Any changes to feed or water?');showToast('📋 Copied')`}]});
   }
 
-  // RULE 4: Water out of range
-  if(d.water>0 && (d.water<200||d.water>450)){
-    alerts.push({
-      type:'red',icon:'💧',title:`🚨 Water Out of Range — ${d.water}ml/bird`,
-      msg:`Normal range is 200–450ml/bird. Current: ${d.water}ml. This can cause disease and reduce egg production. Investigate with Jalil immediately.`,
-      actions:[{label:'💬 Ask Jalil',type:'red',fn:"copyMsg('Jalil, water consumption is abnormal today at "+d.water+"ml per bird. Please check the water system, containers, and that birds are drinking normally. Report back to me urgently.')"}]
+  if(d.water>0&&(d.water<200||d.water>450)){
+    alerts.push({t:'red',i:'💧',h:`🚨 Water Abnormal — ${d.water}ml/bird`,m:'Normal range: 200–450ml/bird. Investigate with Jalil immediately.',
+      a:[{l:'❓ Ask Jalil',t:'red',f:`copyText('Jalil, water consumption is abnormal today at ${d.water}ml per bird (normal is 200-450ml). Please check the water system and containers immediately and report back.');showToast('📋 Copied')`}]});
+  }
+
+  if(alerts.length===0&&d.eggs>0){
+    alerts.push({t:'green',i:'✅',h:'All Numbers Look Good!',m:`Eggs: ${d.eggs} | Deaths: ${d.deaths} | Feed: ~${fd} days | Lay: ${d.layRate}%. Great work keeping everything on track.`,
+      a:[{l:'📊 Generate Report',t:'green',f:`switchToTab('report')`}]});
+  }
+
+  const cards=document.getElementById('decisionCards');
+  if(cards){
+    cards.innerHTML='';
+    alerts.forEach(a=>{
+      const div=document.createElement('div');
+      div.className='intel-card ic-'+a.t;
+      div.innerHTML=`<div class="ii">${a.i}</div><div class="ib"><div class="it">${a.h}</div><div class="im">${a.m}</div><div class="ia">${a.a.map(ac=>`<button class="abt ab-${ac.t}" onclick="${ac.f}">${ac.l}</button>`).join('')}</div></div>`;
+      cards.appendChild(div);
     });
   }
+  const chains=document.getElementById('workflowChains');
+  if(chains){chains.innerHTML='';workflows.forEach(w=>chains.appendChild(w));}
 
-  // RULE 5: All good
-  if(alerts.length===0 && d.eggs>0){
-    alerts.push({
-      type:'green',icon:'✅',title:'All Numbers Look Good Today!',
-      msg:`Eggs: ${d.eggs} | Deaths: ${d.deaths} | Feed: ~${feedDays} days | Lay rate: ${d.layRate}%.\n\nKeep Jalil informed and post your daily summary in the Farm Management group chat.`,
-      actions:[{label:'📊 Post Daily Summary',type:'green',fn:"autoFillAndGoReport()"}]
-    });
-  }
-
-  // Render alerts
-  cards.innerHTML='';
-  alerts.forEach(a=>{
-    const div=document.createElement('div');
-    div.className=`intel-card intel-${a.type}`;
-    div.innerHTML=`<div class="intel-icon">${a.icon}</div><div class="intel-body"><div class="intel-title">${a.title}</div><div class="intel-msg">${a.msg}</div><div class="intel-actions">${
-      a.actions.map(ac=>`<button class="action-btn action-btn-${ac.type}" onclick="${ac.fn}">${ac.label}</button>`).join('')
-    }</div></div>`;
-    cards.appendChild(div);
-  });
-
-  // Render workflows
-  chains.innerHTML='';
-  workflows.forEach(w=>chains.appendChild(w));
-
-  // Fire alert notifications if needed
-  if(d.deaths>=3) triggerAlertNotif('🚨 3+ Deaths','Call Alex the vet and alert Stephen & Tobi NOW');
-  if(feedDays>0&&feedDays<5) triggerAlertNotif('🚨 Feed Emergency',`Only ${feedDays} days of feed left — order immediately`);
-  if(prev&&prev.layRate>0&&d.layRate>0&&(prev.layRate-d.layRate)>=10) triggerAlertNotif('🚨 Lay Rate Drop','Dropped 10%+ — alert owners within 2 hours');
-
-  updateIntelBar();
+  // Fire alert notifications
+  if(d.deaths>=3) { fireNotification('🚨 CRITICAL',''+d.deaths+' bird deaths — call Alex & alert owners NOW','death-alert'); addToNotifLog('🚨 '+d.deaths+' deaths — critical alert fired'); speakText('Warning! '+d.deaths+' birds died today. Call Alex the vet and alert the owners immediately.'); }
+  if(fd>0&&fd<5) { fireNotification('🌾 Feed Emergency','Only '+fd+' days of feed left — emergency order needed','feed-alert'); addToNotifLog('🌾 Feed emergency: '+fd+' days'); speakText('Feed emergency! Only '+fd+' days of feed remaining. Contact the owners for emergency order approval now.'); }
 }
 
 function buildWorkflow(title,steps,prompt){
-  const div=document.createElement('div');
-  div.className='workflow';
-  div.innerHTML=`<div class="workflow-title">${title}</div>`+
-    steps.map((s,i)=>`
-      <div class="wf-step">
-        <div class="wf-dot ${s.done?'wf-dot-done':s.active?'wf-dot-active':'wf-dot-pending'}">${s.done?'✓':i+1}</div>
-        <div class="wf-text ${s.done||s.active?'':'pending'}">${s.text}</div>
-      </div>${i<steps.length-1?'<div class="wf-line" style="margin-left:10px;height:10px;width:2px;background:#e0e0e0;margin-bottom:4px;"></div>':''}`).join('')+
-    `<div class="wf-prompt"><strong>Next question:</strong> ${prompt}</div>`;
+  const div=document.createElement('div');div.className='workflow';
+  div.innerHTML=`<div class="wf-title">${title}</div>`+steps.map((s,i)=>`<div class="wf-step"><div class="wf-dot ${s.done?'wfd-done':s.active?'wfd-active':'wfd-pend'}">${s.done?'✓':i+1}</div><div class="wf-text ${s.done||s.active?'':'pend'}">${s.text}</div></div>`).join('')+`<div class="wf-prompt"><strong>Next question:</strong> ${prompt}</div>`;
   return div;
 }
 
-// ════════════════════════════════════════════════════════
-//  INTELLIGENCE BANNER (top of page)
-// ════════════════════════════════════════════════════════
-function updateIntelBar(){
-  const bar=document.getElementById('intelBar');
-  const hist=getDayHistory();
-  const today=hist.find(h=>h.date===todayKey());
-  if(!today){
-    bar.innerHTML=`<div style="padding:10px 0 4px"><div class="intel-card intel-blue"><div class="intel-icon">📊</div><div class="intel-body"><div class="intel-title">No Data Yet Today</div><div class="intel-msg">Go to <strong>Log Data</strong> tab and enter today's numbers to activate the decision engine.</div><div class="intel-actions"><button class="action-btn action-btn-blue" onclick="switchToTab('log')">📊 Log Today's Data</button></div></div></div></div>`;
-    return;
-  }
-  const issues=[];
-  const feedDays=today.feedDays||0;
-  if(today.deaths>=3) issues.push({type:'red',icon:'💀',msg:`${today.deaths} deaths today — call Alex & alert owners`});
-  if(feedDays>0&&feedDays<7) issues.push({type:'red',icon:'🌾',msg:`Feed: ${feedDays} days left — order now`});
-  if(today.water>0&&(today.water<200||today.water>450)) issues.push({type:'red',icon:'💧',msg:`Water abnormal: ${today.water}ml/bird`});
-  if(issues.length===0) issues.push({type:'green',icon:'✅',msg:`Today: ${today.eggs||'?'} eggs | ${today.deaths} deaths | ~${feedDays} feed days`});
-  bar.innerHTML='<div style="padding:8px 0 2px">'+issues.map(i=>`<div class="intel-card intel-${i.type}" style="margin-bottom:6px"><div class="intel-icon">${i.icon}</div><div class="intel-body"><div class="intel-msg" style="font-weight:600">${i.msg}</div></div></div>`).join('')+'</div>';
-}
-
-// ════════════════════════════════════════════════════════
-//  TREND CHARTS
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  CHARTS
+// ═══════════════════════════════════════════════
 function renderCharts(){
-  const hist=getDayHistory().slice(-7);
-  if(hist.length===0) return;
-  const maxEggs=Math.max(...hist.map(h=>h.eggs||0),1);
-  const maxDeaths=Math.max(...hist.map(h=>h.deaths||0),1);
-
-  function buildChart(containerId,data,max,color){
-    const c=document.getElementById(containerId);
-    if(!c)return;
-    c.innerHTML=data.map(h=>{
-      const val=h.eggs!==undefined?h.eggs:h.deaths;
-      const maxV=max;
-      const pct=maxV>0?Math.max(4,(val/maxV)*100):4;
-      const label=h.date?h.date.slice(5):h.date;
-      return `<div class="bar-wrap"><div class="bar-val">${val}</div><div class="bar ${color}" style="height:${pct}%"></div><div class="bar-label">${label}</div></div>`;
-    }).join('');
-  }
-  buildChart('eggChart',hist.map(h=>({eggs:h.eggs||0,date:h.date})),maxEggs,'bar-egg');
-  buildChart('deathChart',hist.map(h=>({deaths:h.deaths||0,date:h.date})),maxDeaths,'bar-death');
+  const hist=gs('dayHistory',[]).slice(-7);
+  if(!hist.length)return;
+  const maxE=Math.max(...hist.map(h=>h.eggs||0),1);
+  const maxD=Math.max(...hist.map(h=>h.deaths||0),1);
+  const ec=document.getElementById('eggChart'); const dc=document.getElementById('deathChart');
+  if(ec)ec.innerHTML=hist.map(h=>{const pct=Math.max(4,((h.eggs||0)/maxE)*100);return`<div class="bar-wrap"><div class="bar-val">${h.eggs||0}</div><div class="bar bar-egg" style="height:${pct}%"></div><div class="bar-label">${(h.date||'').slice(5)}</div></div>`;}).join('');
+  if(dc)dc.innerHTML=hist.map(h=>{const pct=Math.max(4,((h.deaths||0)/maxD)*100);return`<div class="bar-wrap"><div class="bar-val">${h.deaths||0}</div><div class="bar bar-death" style="height:${pct}%"></div><div class="bar-label">${(h.date||'').slice(5)}</div></div>`;}).join('');
 }
 
-function clearHistory(){
-  if(confirm('Clear all historical data?')){saveDayHistory([]);renderCharts();showToast('History cleared');}
+function clearHistory(){if(confirm('Clear all farm history?')){ss('dayHistory',[]);renderCharts();showToast('History cleared');}}
+
+// ═══════════════════════════════════════════════
+//  WEEKLY
+// ═══════════════════════════════════════════════
+function renderWeekly(){
+  const today=new Date().toLocaleDateString('en-US',{weekday:'long'});
+  const grid=document.getElementById('weekGrid');
+  if(!grid)return;
+  grid.innerHTML='';
+  Object.entries(WEEKLY_SCHEDULE).forEach(([day,tasks])=>{
+    const isToday=day===today;
+    const d=document.createElement('div');d.className='week-day-card'+(isToday?' today':'');
+    d.innerHTML=`<div class="week-day-name">${isToday?'⭐ ':''}${day}</div>`+tasks.map(t=>`<div class="week-task">${t}</div>`).join('');
+    grid.appendChild(d);
+  });
+  const rec=document.getElementById('recurringList');
+  if(rec){const c=document.createElement('div');c.className='card';c.innerHTML=RECURRING_TASKS.map(t=>`<div style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:0.77rem;color:var(--td);line-height:1.4;">${t}</div>`).join('');rec.innerHTML='';rec.appendChild(c);}
 }
 
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 //  TEAM & JALIL MESSAGES
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function renderTeam(){
   const list=document.getElementById('teamList');
+  if(!list)return;
   list.innerHTML='';
-  TEAM.forEach(m=>{
-    const d=document.createElement('div');
-    d.className='team-card';
-    d.innerHTML=`<div class="team-avatar" style="background:${m.color}">${m.emoji}</div><div class="team-info"><div class="team-name">${m.name}</div><div class="team-role">${m.role}</div></div><div class="team-freq">${m.freq}</div>`;
-    list.appendChild(d);
-  });
+  TEAM.forEach(m=>{const d=document.createElement('div');d.className='team-card';d.innerHTML=`<div class="team-avatar" style="background:${m.color}">${m.emoji}</div><div class="team-info"><div class="team-name">${m.name}</div><div class="team-role">${m.role}</div></div><div class="team-freq">${m.freq}</div>`;list.appendChild(d);});
   const jm=document.getElementById('jalilMessages');
+  if(!jm)return;
   jm.innerHTML='';
   JALIL_MESSAGES.forEach(m=>{
-    const d=document.createElement('div');
-    d.className='msg-template';
-    d.innerHTML=`<div class="msg-label">${m.label}</div><div class="msg-text">${m.text.replace(/\n/g,'<br>')}</div><div class="msg-copy-hint">👆 Tap to copy</div>`;
+    const d=document.createElement('div');d.className='msg-template';
+    d.innerHTML=`<div class="msg-label">${m.label}</div><div class="msg-text">${m.text.replace(/\n/g,'<br>')}</div><div class="msg-hint">👆 Tap to copy + paste into WhatsApp</div>`;
     d.addEventListener('click',()=>{copyText(m.text);showToast('📋 Copied! Paste into WhatsApp');});
     jm.appendChild(d);
   });
 }
 
-// ════════════════════════════════════════════════════════
-//  WEEKLY, ESCALATION, RULES
-// ════════════════════════════════════════════════════════
-function renderWeekly(){
-  const today=new Date().toLocaleDateString('en-US',{weekday:'long'});
-  const grid=document.getElementById('weekGrid');
-  grid.innerHTML='';
-  Object.entries(WEEKLY_SCHEDULE).forEach(([day,tasks])=>{
-    const isToday=day===today;
-    const d=document.createElement('div');
-    d.className='week-day-card'+(isToday?' today':'');
-    d.innerHTML=`<div class="week-day-name">${isToday?'⭐ ':''}${day}</div>`+tasks.map(t=>`<div class="week-task">${t}</div>`).join('');
-    grid.appendChild(d);
-  });
-  const rec=document.getElementById('recurringList');
-  rec.innerHTML='';
-  const card=document.createElement('div');
-  card.className='card';
-  card.innerHTML=RECURRING_TASKS.map(t=>`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:0.79rem;color:var(--text-dark);line-height:1.4;">${t}</div>`).join('');
-  rec.appendChild(card);
-}
-
+// ═══════════════════════════════════════════════
+//  ESCALATIONS
+// ═══════════════════════════════════════════════
 function renderEscalations(){
   const list=document.getElementById('escalationList');
+  if(!list)return;
   list.innerHTML='';
   ESCALATIONS.forEach(e=>{
-    const d=document.createElement('div');
-    d.className=`escalation-item ${e.cls}`;
-    d.innerHTML=`<div class="esc-header"><div class="esc-situation">${e.situation}</div><div class="esc-badge">${e.urgency}</div></div><div class="esc-action">${e.action}</div><div class="esc-btns">${
-      e.owners?`<button class="action-btn action-btn-red" onclick="openEscModal('${e.situation}','${e.action}')">💬 Alert Owners</button>`:''}${
-      e.alex?`<button class="action-btn action-btn-orange" onclick="showToast('Call Alex the vet immediately')">📞 Call Vet</button>`:''}</div>`;
+    const d=document.createElement('div');d.className=`escalation-item ${e.cls}`;
+    d.innerHTML=`<div class="esc-header"><div class="esc-situation">${e.situation}</div><div class="esc-badge">${e.urgency}</div></div><div class="esc-action">${e.action}</div><div class="esc-btns">${e.owners?`<button class="abt ab-red" onclick="openEscModal('${e.situation}','${e.action}')">💬 Alert Owners</button>`:''}${e.alex?`<button class="abt ab-orange" onclick="showToast('Call Alex the vet immediately')">📞 Call Vet</button>`:''}</div>`;
     list.appendChild(d);
   });
 }
 
+// ═══════════════════════════════════════════════
+//  RULES
+// ═══════════════════════════════════════════════
 function renderRules(){
   const list=document.getElementById('rulesList');
+  if(!list)return;
   list.innerHTML='';
-  GOLDEN_RULES.forEach((rule,i)=>{
-    const d=document.createElement('div');
-    d.className='rule-item';
-    d.innerHTML=`<div class="rule-num">${i+1}</div><div class="rule-text">${rule}</div>`;
-    list.appendChild(d);
-  });
+  GOLDEN_RULES.forEach((rule,i)=>{const d=document.createElement('div');d.className='rule-item';d.innerHTML=`<div class="rule-num">${i+1}</div><div class="rule-text">${rule}</div>`;list.appendChild(d);});
 }
 
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 //  TABS
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function switchTab(name,btn){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  const panel=document.getElementById('tab-'+name);
+  if(panel)panel.classList.add('active');
   if(btn)btn.classList.add('active');
   if(btn)btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
 }
 function switchToTab(name){
-  const btn=document.querySelector(`.tab-btn[onclick*="'${name}'"]`);
-  switchTab(name,btn);
+  const btn=[...document.querySelectorAll('.tab-btn')].find(b=>b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'"));
+  switchTab(name,btn||null);
 }
 
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 //  MODAL
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function openEscModal(title,msg){
   document.getElementById('modalTitle').textContent='🚨 '+title;
   document.getElementById('modalSub').textContent=msg;
-  document.getElementById('modalActions').innerHTML=`
-    <button class="btn-log btn-red" onclick="copyMsg('🚨 URGENT — Nsawam Farms\\n'+document.getElementById('modalTitle').textContent+'\\n'+document.getElementById('modalSub').textContent);closeModal()" style="margin-bottom:8px;">📋 Copy Message for WhatsApp</button>
-    <button class="btn-log" onclick="closeModal()" style="background:#888;">Close</button>`;
+  document.getElementById('modalActions').innerHTML=`<button class="btn btn-red" onclick="copyText('🚨 URGENT — Nsawam Farms\\n${title}\\n${msg}');showToast('📋 Copied — paste into WhatsApp');closeModal()" style="margin-bottom:8px;">📋 Copy Alert Message</button><button class="btn btn-grey" onclick="closeModal()">Close</button>`;
   document.getElementById('escModal').classList.add('open');
 }
 function closeModal(){document.getElementById('escModal').classList.remove('open');}
 
-// ════════════════════════════════════════════════════════
-//  NOTIFICATIONS
-// ════════════════════════════════════════════════════════
-const REMINDER_SCHEDULE=[
-  {h:7,m:55,msg:'🌅 8:00 AM — Read daily email report from Jalil NOW'},
-  {h:8,m:55,msg:'📱 9:00 AM — Check Farm App. Confirm numbers match email.'},
-  {h:9,m:25,msg:'💬 9:30 AM — Message Jalil: health, overnight issues, morning feed?'},
-  {h:11,m:55,msg:'🥚 12:00 PM — Confirm morning egg collection. Update count.'},
-  {h:15,m:0,msg:'📦 Afternoon — Has Damian dispatched eggs today (Friday)?'},
-  {h:17,m:55,msg:'🌇 6:00 PM — Confirm afternoon egg collection. Update total.'},
-  {h:20,m:30,msg:'📊 Post daily summary in Farm Management group chat.'},
-  {h:20,m:55,msg:'⚠️ 9:00 PM — Has Jalil signed off daily report? If not — CALL HIM.'},
-];
-const MONDAY_REMINDER={h:9,m:0,msg:'📈 Monday — Review last week\'s totals & send Monday summary to owners.'};
-const WEDNESDAY_REMINDER={h:10,m:0,msg:'📝 Wednesday — Mid-Week Report due to owners by 6pm today!'};
-const FRIDAY_REMINDER={h:9,m:0,msg:'🚚 Friday — Confirm Damian dispatch + End-of-Week Report due by 6pm!'};
-
-function requestNotifications(){
-  if(!('Notification' in window)){showToast('❌ Notifications not supported here');return;}
-  Notification.requestPermission().then(perm=>{
-    if(perm==='granted'){
-      document.getElementById('notifBanner').classList.add('granted');
-      document.getElementById('notifBannerText').textContent='✅ Notifications enabled — all daily reminders are set!';
-      showToast('🎉 Notifications enabled!');
-      scheduleAllNotifications();
-    } else {showToast('⚠ Allow notifications in browser settings');}
-  });
-}
-
-function scheduleAllNotifications(){
-  scheduledTimers.forEach(clearTimeout);scheduledTimers=[];
-  const now=new Date();
-  const all=[...REMINDER_SCHEDULE];
-  const day=now.getDay();
-  if(day===1)all.push(MONDAY_REMINDER);
-  if(day===3)all.push(WEDNESDAY_REMINDER);
-  if(day===5)all.push(FRIDAY_REMINDER);
-  let count=0;
-  all.forEach(r=>{
-    const t=new Date();t.setHours(r.h,r.m,0,0);
-    const ms=t-now;
-    if(ms>0){
-      count++;
-      scheduledTimers.push(setTimeout(()=>{
-        fireNotification('Nsawam Farms Reminder',r.msg);
-        addToNotifLog(r.msg);
-      },ms));
-    }
-  });
-  showToast(`✅ ${count} reminders scheduled for today`);
-}
-
-function triggerAlertNotif(title,body){
-  fireNotification(title,body);
-  addToNotifLog('🚨 '+title+': '+body);
-}
-
-function fireNotification(title,body){
-  if(Notification.permission!=='granted')return;
-  // Try via service worker for reliability
-  if(navigator.serviceWorker&&navigator.serviceWorker.controller){
-    navigator.serviceWorker.controller.postMessage({type:'SHOW_NOTIFICATION',title,body});
-  } else {
-    const n=new Notification(title,{body,requireInteraction:true,tag:'nsawam-'+Date.now(),
-      icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌿</text></svg>',
-      vibrate:[200,100,200]
-    });
-    n.onclick=()=>{window.focus();n.close();};
-  }
-}
-
-function testNotification(){
-  if(Notification.permission!=='granted'){requestNotifications();return;}
-  fireNotification('🧪 Test — Nsawam Farms','Notifications are working! All daily reminders are active.');
-  addToNotifLog('🧪 Test notification sent');
-  showToast('✅ Test notification sent!');
-}
-
-function addToNotifLog(msg){
-  const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
-  notifLog.unshift({time:now,msg});
-  if(notifLog.length>20)notifLog.splice(20);
-  setStore('notifLog',notifLog);
-  renderNotifLog();
-}
-
-function renderNotifLog(){
-  const log=document.getElementById('notifLog');
-  if(notifLog.length===0)return;
-  log.innerHTML=notifLog.slice(0,15).map(n=>`<div class="notif-log-item"><div class="nlog-time">${n.time}</div><div class="nlog-msg">${n.msg}</div></div>`).join('');
-}
-
-function checkNotifStatus(){
-  if(Notification.permission==='granted'){
-    document.getElementById('notifBanner').classList.add('granted');
-    document.getElementById('notifBannerText').textContent='✅ Notifications active — all daily reminders are running';
-    scheduleAllNotifications();
-  }
-}
-
-// ════════════════════════════════════════════════════════
-//  REPORT BUILDER
-// ════════════════════════════════════════════════════════
-function setReportType(type){
-  reportType=type;
-  document.getElementById('btnMid').style.opacity=type==='midweek'?'1':'0.5';
-  document.getElementById('btnEnd').style.opacity=type==='endweek'?'1':'0.5';
-}
-function autoFillAndGoReport(){switchToTab('report');}
+// ═══════════════════════════════════════════════
+//  REPORT
+// ═══════════════════════════════════════════════
+function setReportType(t){reportType=t;document.getElementById('btnMid').style.opacity=t==='midweek'?'1':'0.5';document.getElementById('btnEnd').style.opacity=t==='endweek'?'1':'0.5';}
 function generateReport(){
   const date=document.getElementById('rDate').value;
   const eggs=document.getElementById('rEggs').value;
@@ -1189,95 +1473,42 @@ function generateReport(){
   const health=document.getElementById('rHealth').value;
   const actions=document.getElementById('rActions').value;
   const label=reportType==='midweek'?'MID-WEEK REPORT':'END-OF-WEEK REPORT';
-  const feedDays=feed?Math.floor(feed/2):'?';
-  const report=`🌿 NSAWAM FARMS — ${label}
-📅 Date: ${date||'N/A'}
-━━━━━━━━━━━━━━━━━━━
-
-🥚 PRODUCTION
-• Eggs collected: ${eggs||'N/A'}
-• Lay rate: ${layRate?layRate+'%':'N/A'} (target: 90% by Wk 26)
-
-💰 SALES & REVENUE
-• Eggs sold: ${sold?sold+' trays':'N/A'}
-• Revenue: ${revenue?'GHS '+revenue:'N/A'}
-
-🌾 FEED & WATER
-• Feed bags remaining: ${feed||'N/A'} bags (~${feedDays} days of stock)
-• Water: [confirm with Jalil]
-
-🐔 FLOCK HEALTH
-• Deaths this period: ${deaths||'0'}
-• Health update: ${health||'No issues reported'}
-
-✅ ACTIONS & NEXT STEPS
-${actions||'No actions outstanding'}
-
-━━━━━━━━━━━━━━━━━━━
-Olamide — Nsawam Farms Operations`;
-  document.getElementById('reportText').textContent=report;
+  const fd=feed?Math.floor(feed/2):'?';
+  const txt=`🌿 NSAWAM FARMS — ${label}\n📅 Date: ${date||'N/A'}\n━━━━━━━━━━━━━━━━━━━\n\n🥚 PRODUCTION\n• Eggs collected: ${eggs||'N/A'}\n• Lay rate: ${layRate?layRate+'%':'N/A'} (target: 90% by Wk 26)\n\n💰 SALES & REVENUE\n• Eggs sold: ${sold?sold+' trays':'N/A'}\n• Revenue: ${revenue?'GHS '+revenue:'N/A'}\n\n🌾 FEED & WATER\n• Feed bags remaining: ${feed||'N/A'} bags (~${fd} days)\n• Water: [confirm with Jalil]\n\n🐔 FLOCK HEALTH\n• Deaths this period: ${deaths||'0'}\n• Health update: ${health||'No issues reported'}\n\n✅ ACTIONS & NEXT STEPS\n${actions||'No actions outstanding'}\n\n━━━━━━━━━━━━━━━━━━━\nOlamide — Nsawam Farms Operations`;
+  document.getElementById('reportText').textContent=txt;
   document.getElementById('reportOutput').style.display='block';
   document.getElementById('reportOutput').scrollIntoView({behavior:'smooth'});
 }
 function copyReport(){copyText(document.getElementById('reportText').textContent);showToast('📋 Copied! Paste into WhatsApp.');}
 
-// ════════════════════════════════════════════════════════
-//  UTILITY
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════
 function copyText(txt){
   if(navigator.clipboard){navigator.clipboard.writeText(txt);}
   else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
 }
-function copyMsg(msg){copyText(msg);showToast('📋 Copied! Paste into WhatsApp.');}
 
 let toastTimer;
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
-}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800);}
 
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 //  DAY RESET
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function checkDayReset(){
   const saved=localStorage.getItem('lastDay');
   const today=todayKey();
-  if(saved!==today){checkedItems={};setStore('checked_'+today,{});localStorage.setItem('lastDay',today);}
+  if(saved!==today){checkedItems={};ss('checked_'+today,{});localStorage.setItem('lastDay',today);}
 }
 
-// ════════════════════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════════════════════
-checkDayReset();
-renderChecklist();
-renderWeekly();
-renderTeam();
-renderEscalations();
-renderRules();
-renderCharts();
-renderNotifLog();
-checkNotifStatus();
-updateIntelBar();
-document.getElementById('rDate').value=new Date().toISOString().split('T')[0];
-
-// Midnight reset
-const _now=new Date();
-const _midnight=new Date(_now);_midnight.setHours(24,0,5,0);
-setTimeout(()=>{checkedItems={};renderChecklist();scheduleAllNotifications();updateIntelBar();},_midnight-_now);
-</script>
-
-<!-- SERVICE WORKER -->
-<script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(reg=>{
-    console.log('✅ SW registered:',reg.scope);
-    if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});
-    reg.addEventListener('updatefound',()=>{
-      const nw=reg.installing;
-      nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller)showToast('🔄 App updated! Refresh to apply.');});
-    });
-  }).catch(e=>console.warn('SW failed:',e));
+// ═══════════════════════════════════════════════
+//  START (if session already valid)
+// ═══════════════════════════════════════════════
+if(sessionStorage.getItem(SESSION_KEY)==='1'){
+  // Already handled above via DOMContentLoaded or direct call
+  // Ensure initApp runs after DOM is ready
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initApp);}
+  else{initApp();}
 }
 </script>
 </body>
