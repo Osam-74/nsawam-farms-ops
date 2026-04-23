@@ -701,7 +701,7 @@ const DAILY_TASKS = [
   {id:'d2',time:'By 9:00 AM',text:'Check Farm App — confirm numbers match email',sub:'Lay rate, feed levels, bird count'},
   {id:'d3',time:'By 9:30 AM',text:'Message Jalil: morning check-in',sub:'Bird health? Overnight issues? Morning feed given?',waMsg:null,waKey:'morning'},
   {id:'d4',time:'By 12:00 PM',text:'Confirm morning egg collection with Jalil',sub:'Update daily egg count',waMsg:null,waKey:'eggs'},
-  {id:'d5',time:'Afternoon (Fri)',text:'Confirm Damian dispatch — get price & volume',sub:'Log in Notion same day',waMsg:'Hi Damian, are you collecting and dispatching eggs today? Please confirm volume and price when done. Thank you.'},
+  {id:'d5',time:'Afternoon · Friday Only',text:'Confirm Damian dispatch — get price & volume',sub:'Log in Notion same day. Only required on Fridays.',waMsg:'Hi Damian, are you collecting and dispatching eggs today? Please confirm volume and price when done. Thank you.',fridayOnly:true},
   {id:'d6',time:'By 6:00 PM',text:'Confirm afternoon egg collection with Jalil',sub:'Update running total for the day',waMsg:null,waKey:'evening'},
   {id:'d7',time:'By 9:00 PM',text:'Confirm Jalil has signed off daily report',sub:'If not signed off by 9pm — call him immediately',waMsg:null,waKey:'signoff'},
   {id:'d8',time:'Daily',text:'Post summary in Farm Management group chat',sub:'Eggs today, issues, feed status — every single day'},
@@ -888,48 +888,89 @@ function speakText(text) {
 // Build full alarm list and send to SW for reliable background firing
 function buildAlarms() {
   const now = new Date();
-  const day = now.getDay(); // 0=Sun,1=Mon...5=Fri
+  const day = now.getDay(); // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+
   const base = [
-    {id:'a1',h:7,m:55,title:'🌅 Nsawam Farms',body:'8:00 AM — Read the daily email report from Jalil NOW!'},
-    {id:'a2',h:8,m:55,title:'📱 Nsawam Farms',body:'9:00 AM — Check Farm App. Confirm numbers match the email.'},
-    {id:'a3',h:9,m:25,title:'💬 Nsawam Farms',body:'9:30 AM — Message Jalil: health update, overnight issues, morning feed done?'},
-    {id:'a4',h:11,m:55,title:'🥚 Nsawam Farms',body:'12:00 PM — Confirm morning egg collection with Jalil. Update count.'},
-    {id:'a5',h:15,m:0,title:'📦 Nsawam Farms',body:'Afternoon — Has Damian collected and dispatched today? (Friday dispatch)'},
-    {id:'a6',h:17,m:55,title:'🌇 Nsawam Farms',body:'6:00 PM — Confirm afternoon egg collection with Jalil. Update total.'},
-    {id:'a7',h:20,m:28,title:'📊 Nsawam Farms',body:'Post your daily summary in the Farm Management group chat now.'},
-    {id:'a8',h:20,m:55,title:'⚠️ Nsawam Farms',body:'9:00 PM — Has Jalil signed off the daily report? If not — CALL HIM NOW!'},
+    {id:'a1', h:7,  m:55, title:'🌅 Nsawam Farms', body:'8:00 AM — Read the daily email report from Jalil NOW!'},
+    {id:'a2', h:8,  m:55, title:'📱 Nsawam Farms', body:'9:00 AM — Check Farm App. Confirm numbers match the email.'},
+    {id:'a3', h:9,  m:25, title:'💬 Nsawam Farms', body:'9:30 AM — Message Jalil: health update, overnight issues, morning feed done?'},
+    {id:'a4', h:11, m:55, title:'🥚 Nsawam Farms', body:'12:00 PM — Confirm morning egg collection with Jalil. Update count.'},
+    {id:'a5', h:17, m:55, title:'🌇 Nsawam Farms', body:'6:00 PM — Confirm afternoon egg collection with Jalil. Update total.'},
+    {id:'a6', h:20, m:28, title:'📊 Nsawam Farms', body:'Post your daily summary in the Farm Management group chat now.'},
+    {id:'a7', h:20, m:55, title:'⚠️ Nsawam Farms', body:'9:00 PM — Has Jalil signed off the daily report? If not — CALL HIM NOW!'},
+    // Friday-only — Damian dispatch
+    {id:'a-fri-dispatch', h:9, m:30, title:'🚚 Nsawam Farms — Friday', body:'Friday: Confirm Damian is collecting and dispatching eggs today. Get price & volume.', fridayOnly:true},
+    {id:'a-fri-report',   h:14, m:0, title:'📝 Nsawam Farms — Friday', body:'Friday: End-of-Week Report due to Stephen & Tobi by 6pm today!', fridayOnly:true},
+    // Day-specific
+    {id:'a-mon', h:9,  m:0,  title:'📈 Nsawam Farms — Monday',    body:'Monday: Review last week totals and send Monday summary to Stephen & Tobi.', dayOnly:1},
+    {id:'a-wed', h:10, m:0,  title:'📝 Nsawam Farms — Wednesday', body:'Wednesday: Mid-Week Report due to Stephen & Tobi by 6pm today!', dayOnly:3},
   ];
-  if (day===1) base.push({id:'amon',h:9,m:0,title:'📈 Nsawam Farms — Monday',body:'Monday: Review last week totals and send Monday summary to Stephen & Tobi.'});
-  if (day===3) base.push({id:'awed',h:10,m:0,title:'📝 Nsawam Farms — Wednesday',body:'Wednesday: Mid-Week Report due to Stephen & Tobi by 6pm today!'});
-  if (day===5) base.push({id:'afri',h:9,m:0,title:'🚚 Nsawam Farms — Friday',body:'Friday: Confirm Damian dispatch + End-of-Week Report due by 6pm!'});
-  // Add custom task reminders
+
+  // Custom task reminders — only add for today
   customTasks.forEach(t => {
-    if (t.reminderDate && t.reminderTime && !t.done) {
-      const rd = t.reminderDate;
-      const [rh, rm] = (t.reminderTime||'09:00').split(':').map(Number);
-      if (rd === todayKey()) {
-        base.push({id:'ct_'+t.id, h:rh, m:rm, title:'⏰ Task Reminder', body: t.title + (t.notes ? '\n'+t.notes.slice(0,80) : '')});
-      }
+    if (t.reminderDate && t.reminderTime && !t.done && t.reminderDate === todayKey()) {
+      const [rh, rm] = (t.reminderTime || '09:00').split(':').map(Number);
+      base.push({
+        id: 'ct_' + t.id,
+        h: rh, m: rm,
+        title: '⏰ Task Reminder — Nsawam Farms',
+        body: t.title + (t.notes ? '\n' + t.notes.slice(0, 100) : '')
+      });
     }
   });
+
   return base;
 }
 
-function sendAlarmsToSW() {
-  if (!navigator.serviceWorker || !navigator.serviceWorker.controller) {
-    // Retry once SW is ready
-    setTimeout(sendAlarmsToSW, 2000);
-    return;
+async function sendAlarmsToSW() {
+  // Wait for SW controller to be ready
+  if (!navigator.serviceWorker) return;
+
+  let controller = navigator.serviceWorker.controller;
+  if (!controller) {
+    // SW not yet controlling — wait for it
+    await new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+      setTimeout(resolve, 3000); // timeout fallback
+    });
+    controller = navigator.serviceWorker.controller;
+    if (!controller) return;
   }
+
   const alarms = buildAlarms();
-  navigator.serviceWorker.controller.postMessage({type:'SET_ALARMS', alarms});
-  // Also do a client-side setTimeout fallback for when app is open
+
+  // Send alarms to SW — it stores in IndexedDB, survives restarts
+  controller.postMessage({ type: 'SET_ALARMS', alarms });
+
+  // Register Periodic Background Sync (Chrome Android — best background method)
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if ('periodicSync' in reg) {
+      const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+      if (status.state === 'granted') {
+        await reg.periodicSync.register('nsawam-alarms', { minInterval: 60 * 1000 }); // every minute
+        console.log('[App] Periodic sync registered');
+      }
+    }
+  } catch(e) {
+    console.log('[App] Periodic sync not available:', e.message);
+  }
+
+  // CLIENT-SIDE fallback — setTimeout chain for when app tab is open or minimised
+  // This works when the tab is open; SW handles when fully closed
   scheduledTimers.forEach(clearTimeout);
   scheduledTimers = [];
   const now = new Date();
+  const day = now.getDay();
+
   alarms.forEach(a => {
-    const t = new Date(); t.setHours(a.h, a.m, 0, 0);
-    const ms = t - now;
+    // Skip day-specific alarms if not the right day
+    if (a.fridayOnly && day !== 5) return;
+    if (a.dayOnly !== undefined && a.dayOnly !== day) return;
+
+    const target = new Date();
+    target.setHours(a.h, a.m, 0, 0);
+    const ms = target - now;
     if (ms > 0 && ms < 86400000) {
       scheduledTimers.push(setTimeout(() => {
         fireNotification(a.title, a.body, a.id);
@@ -1060,25 +1101,33 @@ function renderChecklist() {
   const wrap = document.getElementById('checklistWrap');
   if (!wrap) return;
   wrap.innerHTML = '';
+  const isFriday = new Date().getDay() === 5;
+
   DAILY_TASKS.forEach(task => {
+    // Hide Friday-only tasks on non-Friday days
+    if (task.fridayOnly && !isFriday) return;
+
     const done = !!checkedItems[task.id];
     const missed = isTaskMissed(task);
     const d = document.createElement('div');
     d.className = 'check-item' + (done ? ' done' : missed ? ' missed' : '');
+
     const missedBadge = missed && !done ? '<span class="missed-badge">MISSED</span>' : '';
-    const waBtn = (task.waMsg || task.waKey) && !isReadOnly
-      ? `<button class="ci-wa-btn" onclick="event.stopPropagation();copyJalilMsg('${task.waKey||''}','${(task.waMsg||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')">💬 Copy WhatsApp Message</button>`
+    const fridayTag = task.fridayOnly
+      ? '<span style="font-size:0.55rem;background:#e67e22;color:#fff;padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:700;text-transform:uppercase;vertical-align:middle;">FRI</span>'
       : '';
-    d.innerHTML = `<div class="check-box"></div><div class="ci-body"><div class="ci-time">${task.time}${missedBadge}</div><div class="ci-text">${task.text}</div>${task.sub?`<div class="ci-sub">${task.sub}</div>`:''}<div>${waBtn}</div></div>`;
+    const waBtn = (task.waMsg || task.waKey) && !isReadOnly
+      ? `<button class="ci-wa-btn" onclick="event.stopPropagation();copyJalilMsg('${task.waKey||''}','${(task.waMsg||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')">&#x1F4CB; Copy WhatsApp Message</button>`
+      : '';
+
+    d.innerHTML = `<div class="check-box"></div><div class="ci-body"><div class="ci-time">${task.time}${fridayTag}${missedBadge}</div><div class="ci-text">${task.text}</div>${task.sub?`<div class="ci-sub">${task.sub}</div>`:''}<div>${waBtn}</div></div>`;
     if (!isReadOnly) d.addEventListener('click', () => toggleTask(task.id));
     wrap.appendChild(d);
   });
   updateProgress();
-  // Re-render every minute to update missed status in real time
   clearTimeout(renderChecklist._timer);
   renderChecklist._timer = setTimeout(renderChecklist, 60000);
 }
-
 function copyJalilMsg(key, directMsg) {
   let msg = directMsg;
   if (key) { const jm = JALIL_MESSAGES.find(m => m.key === key); if (jm) msg = jm.text; }
@@ -1095,9 +1144,11 @@ function toggleTask(id) {
 }
 
 function updateProgress() {
-  const total = DAILY_TASKS.length;
-  const done = Object.values(checkedItems).filter(Boolean).length;
-  const pct = Math.round((done/total)*100);
+  const isFriday = new Date().getDay() === 5;
+  const visibleTasks = DAILY_TASKS.filter(t => !t.fridayOnly || isFriday);
+  const total = visibleTasks.length;
+  const done = visibleTasks.filter(t => !!checkedItems[t.id]).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const pf = document.getElementById('progressFill');
   const pp = document.getElementById('progressPct');
   const sd = document.getElementById('statDone');
