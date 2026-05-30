@@ -306,13 +306,18 @@ input, select, textarea { font-family: 'DM Mono', monospace; outline: none; }
 }
 .tx-amount.pos { color: var(--green); }
 .tx-amount.neg { color: var(--red); }
-.tx-del {
+.tx-actions {
   position: absolute; top: 6px; right: 6px;
-  background: none; border: none; font-size: 0.8rem;
-  color: var(--line2); padding: 3px;
-  transition: color 0.15s;
+  display: flex; gap: 4px;
 }
-.tx-del:hover { color: var(--red); }
+.tx-btn {
+  background: none; border: none; font-size: 0.75rem;
+  color: var(--line2); padding: 2px 4px;
+  transition: color 0.15s; cursor: pointer;
+}
+.tx-btn:hover { color: var(--text2); }
+.tx-btn.del:hover { color: var(--red); }
+.tx-btn.edit:hover { color: var(--blue); }
 
 .tx-empty {
   text-align: center; padding: 40px 20px;
@@ -468,7 +473,7 @@ input, select, textarea { font-family: 'DM Mono', monospace; outline: none; }
 ══════════════════════════════════════════════ */
 @media print {
   #pinScreen, #app .topbar, .nav, #toast, .overlay,
-  .report-controls, .tb-btn, .tx-del, .pr-del,
+  .report-controls, .tb-btn, .tx-actions, .pr-del,
   .type-switcher, .submit-btn, .form-card,
   .tx-filters, #tab-dashboard, #tab-ledger, #tab-people,
   #tab-settings { display: none !important; }
@@ -758,7 +763,7 @@ input, select, textarea { font-family: 'DM Mono', monospace; outline: none; }
       <div id="dbStatus" style="font-size:0.78rem;color:var(--text2);margin-bottom:12px;line-height:1.6;" role="status"></div>
       <div class="f-field" style="margin-bottom:10px;">
         <label class="f-label" for="s-fbconfig">Firebase Config (JSON)</label>
-        <textarea class="f-input" id="s-fbconfig" rows="5" style="font-size:0.7rem;resize:vertical;min-height:100px;" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' aria-label="Firebase configuration JSON"></textarea>
+        <textarea class="f-input" id="s-fbconfig" rows="5" style="font-size:0.7rem;resize:vertical;min-height:100px;" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' aria-label="Firebase configuration"></textarea>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <button class="submit-btn" style="margin:0;" onclick="connectFirebase()" aria-label="Connect to Firebase">Connect</button>
@@ -794,6 +799,9 @@ input, select, textarea { font-family: 'DM Mono', monospace; outline: none; }
 </div>
 
 <div id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
 
 <script>
 // ═══════════════════════════════════════════
@@ -964,6 +972,7 @@ let ledgerFilter = 'all';
 let personFilter = 'all';
 let txType = 'income';
 let deletePendingId = null;
+let editPendingId = null;
 let db = null;
 let _fs = null;
 
@@ -996,124 +1005,390 @@ function fmtAmt(n, alwaysSign = false) {
 }
 
 // ═══════════════════════════════════════════
+//  FIREBASE SETUP
+// ═══════════════════════════════════════════
+function initFirebase(config) {
+  try {
+    const app = firebase.initializeApp(config, 'cashbook');
+    db = firebase.database(app);
+    _fs = app;
+    updateDBStatus('✓ Connected to Firebase');
+    syncFromFirebase();
+    return true;
+  } catch (e) {
+    updateDBStatus('✗ Firebase error: ' + e.message);
+    return false;
+  }
+}
+
+function updateDBStatus(msg) {
+  const el = document.getElementById('dbStatus');
+  if (el) el.innerHTML = msg;
+}
+
+function syncToFirebase() {
+  if (!db) return;
+  try {
+    const userRef = db.ref('users/cashbook');
+    userRef.set({ people, txs, currency, lastSync: new Date().toISOString() });
+    toast('☁️ Synced to Firebase');
+  } catch (e) {
+    toast('❌ Sync failed: ' + e.message);
+  }
+}
+
+function syncFromFirebase() {
+  if (!db) return;
+  try {
+    const userRef = db.ref('users/cashbook');
+    userRef.on('value', (snap) => {
+      if (snap.exists()) {
+        const data = snap.val();
+        if (data.people) people = data.people;
+        if (data.txs) txs = data.txs;
+        if (data.currency) currency = data.currency;
+        ss('cb_people', people);
+        ss('cb_txs', txs);
+        ss('cb_currency', currency);
+        render();
+      }
+    });
+  } catch (e) {
+    console.error('Sync error:', e);
+  }
+}
+
+function connectFirebase() {
+  if (!guardWrite()) return;
+  const configStr = document.getElementById('s-fbconfig').value.trim();
+  if (!configStr) {
+    updateDBStatus('✗ Please enter Firebase config');
+    return;
+  }
+  try {
+    const config = JSON.parse(configStr);
+    localStorage.setItem('cb_fbconfig', configStr);
+    if (initFirebase(config)) {
+      document.getElementById('s-fbconfig').value = '';
+      setTimeout(() => { document.getElementById('s-fbconfig').placeholder = '✓ Connected — show new config or leave blank'; }, 500);
+    }
+  } catch (e) {
+    updateDBStatus('✗ Invalid JSON: ' + e.message);
+  }
+}
+
+function manualSync() {
+  if (!guardWrite()) return;
+  if (!db) {
+    updateDBStatus('✗ Not connected to Firebase');
+    return;
+  }
+  syncToFirebase();
+}
+
+// Auto-init Firebase if config was saved
+(function() {
+  const savedConfig = localStorage.getItem('cb_fbconfig');
+  if (savedConfig) {
+    try {
+      const config = JSON.parse(savedConfig);
+      setTimeout(() => initFirebase(config), 500);
+    } catch (e) {
+      console.error('Firebase init error:', e);
+    }
+  }
+})();
+
+// ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
 function initApp() {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-date').value = today;
-
-  const monthStart = today.slice(0, 7) + '-01';
-  document.getElementById('r-from').value = monthStart;
-  document.getElementById('r-to').value = today;
-
   document.getElementById('s-currency').value = currency;
-  renderAll();
-  populatePersonSelects();
-  renderPeopleTab();
-  renderQuickBtns();
-  initFirebase();
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
+  renderPeople();
+  renderTxs();
+  render();
 }
 
-function renderAll() {
-  renderDashboard();
+function render() {
+  renderMaster();
+  renderPersonGrid();
   renderLedger();
-  renderPersonFilterRow();
 }
 
-// ═══════════════════════════════════════════
-//  TABS
-// ═══════════════════════════════════════════
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const tabEl = document.getElementById('tab-' + name);
-  if (tabEl) tabEl.classList.add('active');
-
-  // Find matching nav button
-  const navBtns = document.querySelectorAll('.nav-btn');
-  const tabMap = { dashboard: 0, ledger: 1, add: 2, people: 3, report: 4, settings: 5 };
-  if (tabMap[name] !== undefined && navBtns[tabMap[name]]) {
-    navBtns[tabMap[name]].classList.add('active');
-  }
-
-  if (name === 'report') populateReportPersonSelect();
-}
-
-// ═══════════════════════════════════════════
-//  DASHBOARD
-// ═══════════════════════════════════════════
-function renderDashboard() {
-  let totalIn = 0, totalOut = 0;
-  txs.forEach(t => {
-    if (t.type === 'income') totalIn += t.amount;
-    else if (t.type === 'expense' || t.type === 'salary') totalOut += t.amount;
-  });
-  const balance = totalIn - totalOut;
-
-  const ma = document.getElementById('masterAmt');
-  ma.textContent = fmtAmt(balance);
-  ma.className = 'mc-amount' + (balance < 0 ? ' neg' : '');
-  document.getElementById('masterIn').textContent = fmtAmt(totalIn);
-  document.getElementById('masterOut').textContent = fmtAmt(totalOut);
+function renderMaster() {
+  const totalIn = txs.filter(t => t.type === 'income' || t.type === 'salary').reduce((a, t) => a + (t.amount || 0), 0);
+  const totalOut = txs.filter(t => t.type === 'expense').reduce((a, t) => a + (t.amount || 0), 0);
+  const net = totalIn - totalOut;
+  document.getElementById('masterAmt').textContent = fmtAmt(net);
+  document.getElementById('masterAmt').className = 'mc-amount' + (net < 0 ? ' neg' : '');
+  document.getElementById('masterIn').textContent = totalIn.toFixed(2);
+  document.getElementById('masterOut').textContent = totalOut.toFixed(2);
   document.getElementById('masterCount').textContent = txs.length;
+}
 
-  // Per-person cards
+function renderPersonGrid() {
   const grid = document.getElementById('personGrid');
   grid.innerHTML = '';
   people.forEach(p => {
-    const { pIn, pOut, pBal } = personStats(p.id);
+    const balance = txs.reduce((a, t) => {
+      if (t.person !== p.id) return a;
+      return a + (t.type === 'expense' ? -t.amount : t.amount);
+    }, 0);
+    const inc = txs.filter(t => t.person === p.id && (t.type === 'income' || t.type === 'salary')).length;
+    const exp = txs.filter(t => t.person === p.id && t.type === 'expense').length;
     const c = personColor(p);
     const card = document.createElement('div');
     card.className = 'person-card fade-in';
-    card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-label', `${p.name} balance ${fmtAmt(pBal)}`);
+    card.style.background = c.bg;
+    card.style.borderColor = c.text;
+    card.onclick = () => filterByPerson(p.id);
     card.innerHTML = `
-      <div class="pc-avatar" style="background:${c.bg};color:${c.text}">${personInitials(p)}</div>
+      <div class="pc-avatar" style="background:${c.text};color:#000;font-weight:900;">${personInitials(p)}</div>
       <div class="pc-name">${sanitizeHTML(p.name)}</div>
-      <div class="pc-role">${sanitizeHTML(p.role || '')}</div>
-      <div class="pc-balance ${pBal >= 0 ? 'pos' : 'neg'}">${fmtAmt(pBal)}</div>
+      <div class="pc-role">${sanitizeHTML(p.role || '—')}</div>
+      <div class="pc-balance ${balance >= 0 ? 'pos' : 'neg'}">${fmtAmt(balance)}</div>
       <div class="pc-meta">
-        <span class="pc-chip in">In ${fmtAmt(pIn)}</span>
-        <span class="pc-chip out">Out ${fmtAmt(pOut)}</span>
-      </div>`;
-    card.addEventListener('click', () => {
-      personFilter = personFilter === p.id ? 'all' : p.id;
-      switchTab('ledger');
-      renderPersonFilterRow();
-      renderLedger();
-    });
+        <div class="pc-chip in">+${inc}</div>
+        <div class="pc-chip out">-${exp}</div>
+      </div>
+    `;
     grid.appendChild(card);
   });
-  if (!people.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;font-size:0.78rem;color:var(--text3);padding:10px 0;">No people added yet — go to the People tab.</div>';
+}
+
+function renderLedger() {
+  const list = document.getElementById('ledgerList');
+  const recentList = document.getElementById('recentList');
+  let filtered = txs;
+  if (ledgerFilter !== 'all') filtered = filtered.filter(t => t.type === ledgerFilter);
+  if (personFilter !== 'all') filtered = filtered.filter(t => t.person === personFilter);
+  filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+  const recent = filtered.slice(0, 5);
+  
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="tx-empty">No transactions yet</div>';
+    recentList.innerHTML = '<div class="tx-empty" style="padding:20px;">—</div>';
+    return;
   }
 
-  // Recent 5 transactions
-  const recent = [...txs].sort((a, b) => b.ts - a.ts).slice(0, 5);
-  const rl = document.getElementById('recentList');
-  rl.innerHTML = recent.length ? '' : '<div class="tx-empty">No transactions yet.<br>Tap <strong>+ Add</strong> to record one.</div>';
-  recent.forEach(t => rl.appendChild(makeTxEl(t, false)));
-}
-
-function personStats(pid) {
-  let pIn = 0, pOut = 0;
-  txs.forEach(t => {
-    if (t.person !== pid) return;
-    if (t.type === 'income') pIn += t.amount;
-    else if (t.type === 'expense' || t.type === 'salary') pOut += t.amount;
-    else if (t.type === 'transfer') { pOut += t.amount; }
+  // Render full ledger grouped by date
+  const grouped = {};
+  filtered.forEach(t => {
+    const key = fmtDate(t.date);
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(t);
   });
-  return { pIn, pOut, pBal: pIn - pOut };
+
+  let html = '';
+  Object.keys(grouped).forEach(dateKey => {
+    html += `<div class="tx-group-date">${dateKey}</div>`;
+    grouped[dateKey].forEach(t => {
+      const p = people.find(x => x.id === t.person);
+      const c = personColor(p);
+      const typeEmoji = { income: '💚', expense: '🔴', salary: '💙', transfer: '🟡' }[t.type] || '⚪';
+      html += `
+        <div class="tx-item fade-in">
+          <div class="tx-icon ${t.type}" style="background:${c.bg};">${typeEmoji}</div>
+          <div class="tx-body">
+            <div class="tx-desc">${sanitizeHTML(t.desc)}</div>
+            <div class="tx-meta">
+              <div class="tx-person" style="background:${c.bg};color:${c.text};">${sanitizeHTML(p.name)}</div>
+              ${t.cat ? `<div class="tx-cat">${sanitizeHTML(t.cat)}</div>` : ''}
+            </div>
+            ${t.note ? `<div class="tx-note">📌 ${sanitizeHTML(t.note)}</div>` : ''}
+          </div>
+          <div class="tx-amount ${t.type === 'expense' ? 'neg' : 'pos'}">${t.type === 'expense' ? '-' : '+'}${fmtAmt(t.amount, false).substring(currency.length + 1)}</div>
+          <div class="tx-actions">
+            <button class="tx-btn edit" onclick="editTx('${sanitizeHTMLAttr(t.id)}')" aria-label="Edit transaction" title="Edit">✏️</button>
+            <button class="tx-btn del" onclick="startDelete('${sanitizeHTMLAttr(t.id)}')" aria-label="Delete transaction" title="Delete">🗑️</button>
+          </div>
+        </div>
+      `;
+    });
+  });
+  list.innerHTML = html;
+
+  // Render recent transactions for dashboard
+  let recentHtml = '';
+  recent.forEach(t => {
+    const p = people.find(x => x.id === t.person);
+    const c = personColor(p);
+    const typeEmoji = { income: '💚', expense: '🔴', salary: '💙', transfer: '🟡' }[t.type] || '⚪';
+    recentHtml += `
+      <div class="tx-item fade-in" style="padding:10px;margin-bottom:4px;">
+        <div class="tx-icon ${t.type}" style="background:${c.bg};width:28px;height:28px;">${typeEmoji}</div>
+        <div class="tx-body" style="flex:1;">
+          <div class="tx-desc" style="font-size:0.7rem;">${sanitizeHTML(t.desc)}</div>
+          <div class="tx-meta" style="margin-top:1px;">
+            <div class="tx-person" style="background:${c.bg};color:${c.text};font-size:0.5rem;">${sanitizeHTML(p.name)}</div>
+          </div>
+        </div>
+        <div class="tx-amount ${t.type === 'expense' ? 'neg' : 'pos'}" style="font-size:0.75rem;">${t.type === 'expense' ? '-' : '+'}${fmtAmt(t.amount, false).substring(currency.length + 1)}</div>
+      </div>
+    `;
+  });
+  recentList.innerHTML = recentHtml || '<div class="tx-empty" style="padding:20px;">—</div>';
+}
+
+function renderTxs() {
+  const personSelect = document.getElementById('f-person');
+  personSelect.innerHTML = '<option value="">Select person...</option>';
+  people.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    personSelect.appendChild(opt);
+  });
+
+  const rPersonSelect = document.getElementById('r-person');
+  rPersonSelect.innerHTML = '<option value="all">All People</option>';
+  people.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    rPersonSelect.appendChild(opt);
+  });
+
+  const filterRow = document.getElementById('personFilterRow');
+  filterRow.innerHTML = '<button class="tx-filter on" onclick="setPersonFilter(\'all\',this)" aria-label="Show all people">All</button>';
+  people.forEach(p => {
+    filterRow.innerHTML += `<button class="tx-filter" onclick="setPersonFilter('${p.id}',this)" aria-label="Filter by ${p.name}">${sanitizeHTML(p.name)}</button>`;
+  });
+
+  // Quick buttons
+  const quickBtns = document.getElementById('quickBtns');
+  const templates = [
+    { label: 'Feed Purchase', type: 'expense', cat: 'Feed & Supplies', desc: 'Feed purchase' },
+    { label: 'Transport', type: 'expense', cat: 'Transport', desc: 'Transport cost' },
+    { label: 'Salary', type: 'salary', cat: 'Salary', desc: 'Staff salary' },
+    { label: 'Sales', type: 'income', cat: 'Sales Revenue', desc: 'Sales revenue' },
+  ];
+  quickBtns.innerHTML = templates.map(t => `
+    <button class="submit-btn" style="padding:8px;font-size:0.7rem;margin:0;" onclick="quickAdd('${sanitizeHTMLAttr(t.type)}', '${sanitizeHTMLAttr(t.cat)}', '${sanitizeHTMLAttr(t.desc)}')">${sanitizeHTML(t.label)}</button>
+  `).join('');
+
+  const peopleList = document.getElementById('peopleList');
+  peopleList.innerHTML = people.map(p => `
+    <div class="person-row fade-in">
+      <div class="pr-avatar" style="background:${personColor(p).text};color:#000;font-weight:900;">${personInitials(p)}</div>
+      <div class="pr-info">
+        <div class="pr-name">${sanitizeHTML(p.name)}</div>
+        <div class="pr-role">${sanitizeHTML(p.role || '—')}</div>
+      </div>
+      <button class="pr-del" onclick="deletePerson('${sanitizeHTMLAttr(p.id)}')" aria-label="Delete person">🗑️</button>
+    </div>
+  `).join('');
 }
 
 // ═══════════════════════════════════════════
-//  LEDGER
+//  TRANSACTIONS
 // ═══════════════════════════════════════════
+function setType(t, btn) {
+  if (!guardWrite()) return;
+  txType = t;
+  document.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
+  btn.className = 'type-btn active-' + t;
+}
+
+function submitTx() {
+  if (!guardWrite()) return;
+  const amt = parseFloat(document.getElementById('f-amount').value);
+  const person = document.getElementById('f-person').value;
+  const date = document.getElementById('f-date').value;
+  const desc = document.getElementById('f-desc').value;
+  const cat = document.getElementById('f-category').value;
+  const note = document.getElementById('f-note').value;
+
+  if (!amt || amt <= 0 || !person || !date || !desc) {
+    toast('❌ Fill in: amount, person, date, description');
+    return;
+  }
+
+  const tx = {
+    id: editPendingId || 'tx_' + Date.now(),
+    type: txType,
+    amount: amt,
+    person,
+    date,
+    desc,
+    cat,
+    note,
+  };
+
+  if (editPendingId) {
+    const idx = txs.findIndex(t => t.id === editPendingId);
+    if (idx !== -1) txs[idx] = tx;
+    editPendingId = null;
+    toast('✓ Transaction updated');
+  } else {
+    txs.push(tx);
+    toast('✓ Transaction added');
+  }
+
+  ss('cb_txs', txs);
+  syncToFirebase();
+  clearForm();
+  render();
+  switchTab('dashboard', document.querySelector('.nav-btn.active'));
+}
+
+function clearForm() {
+  document.getElementById('f-amount').value = '';
+  document.getElementById('f-person').value = '';
+  document.getElementById('f-date').value = '';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-category').value = '';
+  document.getElementById('f-note').value = '';
+  setType('income', document.getElementById('tb-income'));
+  editPendingId = null;
+}
+
+function editTx(id) {
+  if (!guardWrite()) return;
+  const tx = txs.find(t => t.id === id);
+  if (!tx) return;
+  editPendingId = id;
+  setType(tx.type, document.getElementById('tb-' + tx.type));
+  document.getElementById('f-amount').value = tx.amount;
+  document.getElementById('f-person').value = tx.person;
+  document.getElementById('f-date').value = tx.date;
+  document.getElementById('f-desc').value = tx.desc;
+  document.getElementById('f-category').value = tx.cat || '';
+  document.getElementById('f-note').value = tx.note || '';
+  switchTab('add', document.querySelectorAll('.nav-btn')[2]);
+  toast('✏️ Editing transaction');
+}
+
+function startDelete(id) {
+  if (!guardWrite()) return;
+  deletePendingId = id;
+  const tx = txs.find(t => t.id === id);
+  document.getElementById('delModalSub').textContent = `Delete: ${sanitizeHTML(tx.desc)}?`;
+  document.getElementById('delOverlay').classList.add('open');
+}
+
+function confirmDelete() {
+  txs = txs.filter(t => t.id !== deletePendingId);
+  ss('cb_txs', txs);
+  syncToFirebase();
+  closeModal();
+  render();
+  toast('✓ Deleted');
+}
+
+function closeModal() {
+  document.getElementById('delOverlay').classList.remove('open');
+  deletePendingId = null;
+}
+
+function quickAdd(type, cat, desc) {
+  if (!guardWrite()) return;
+  setType(type, document.getElementById('tb-' + type));
+  document.getElementById('f-desc').value = desc;
+  document.getElementById('f-category').value = cat;
+  switchTab('add', document.querySelectorAll('.nav-btn')[2]);
+}
+
 function setFilter(f, btn) {
   ledgerFilter = f;
   document.querySelectorAll('#ledgerFilters .tx-filter').forEach(b => b.classList.remove('on'));
@@ -1121,184 +1396,24 @@ function setFilter(f, btn) {
   renderLedger();
 }
 
-function renderPersonFilterRow() {
-  const row = document.getElementById('personFilterRow');
-  row.innerHTML = '';
-
-  const allBtn = document.createElement('button');
-  allBtn.className = 'tx-filter' + (personFilter === 'all' ? ' on' : '');
-  allBtn.textContent = 'All People';
-  allBtn.setAttribute('aria-label', 'Show all people');
-  allBtn.onclick = () => {
-    personFilter = 'all';
-    renderPersonFilterRow();
-    renderLedger();
-  };
-  row.appendChild(allBtn);
-
-  people.forEach(p => {
-    const b = document.createElement('button');
-    b.className = 'tx-filter' + (personFilter === p.id ? ' on' : '');
-    b.textContent = p.name;
-    b.setAttribute('aria-label', `Show ${p.name}'s transactions`);
-    if (personFilter === p.id) {
-      b.style.cssText = `background:${personColor(p).bg};color:${personColor(p).text};border-color:${personColor(p).text}`;
-    }
-    b.onclick = () => {
-      personFilter = p.id;
-      renderPersonFilterRow();
-      renderLedger();
-    };
-    row.appendChild(b);
-  });
+function setPersonFilter(p, btn) {
+  personFilter = p;
+  document.querySelectorAll('#personFilterRow .tx-filter').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderLedger();
 }
 
-function renderLedger() {
-  const list = document.getElementById('ledgerList');
-  let filtered = [...txs];
-
-  if (ledgerFilter !== 'all') filtered = filtered.filter(t => t.type === ledgerFilter);
-  if (personFilter !== 'all') filtered = filtered.filter(t => t.person === personFilter);
-  filtered.sort((a, b) => b.ts - a.ts);
-
-  if (!filtered.length) {
-    list.innerHTML = '<div class="tx-empty">No transactions match this filter.</div>';
-    return;
-  }
-
-  // Group by date
-  const groups = {};
-  filtered.forEach(t => {
-    const d = t.date || t.ts;
-    if (!groups[d]) groups[d] = [];
-    groups[d].push(t);
+function filterByPerson(p) {
+  ledgerFilter = 'all';
+  personFilter = p;
+  document.querySelectorAll('#ledgerFilters .tx-filter').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('#ledgerFilters .tx-filter')[0].classList.add('on');
+  document.querySelectorAll('#personFilterRow .tx-filter').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('#personFilterRow .tx-filter').forEach((b, i) => {
+    if (b.textContent.trim() === people.find(x => x.id === p)?.name) b.classList.add('on');
   });
-  const sortedDates = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a));
-
-  list.innerHTML = '';
-  sortedDates.forEach(date => {
-    const lbl = document.createElement('div');
-    lbl.className = 'tx-group-date';
-    lbl.textContent = fmtDate(date);
-    list.appendChild(lbl);
-    groups[date].forEach(t => list.appendChild(makeTxEl(t, true)));
-  });
-}
-
-function makeTxEl(t, showDel) {
-  const person = people.find(p => p.id === t.person);
-  const pc = person ? personColor(person) : COLORS.green;
-  const isIn = t.type === 'income';
-  const icon = t.type === 'income' ? '💚' : t.type === 'salary' ? '💙' : t.type === 'transfer' ? '🟡' : '🔴';
-  const iconClass = t.type === 'income' ? 'income' : t.type === 'salary' ? 'salary' : t.type === 'transfer' ? 'transfer' : 'expense';
-  const amtClass = isIn ? 'pos' : 'neg';
-  const sign = isIn ? '+' : '-';
-
-  const el = document.createElement('div');
-  el.className = 'tx-item fade-in';
-  el.dataset.id = t.id;
-  el.setAttribute('role', 'listitem');
-
-  const desc = sanitizeHTML(t.desc);
-  const note = t.note ? sanitizeHTML(t.note) : '';
-  const category = t.category ? sanitizeHTML(t.category) : '';
-
-  el.innerHTML = `
-    <div class="tx-icon ${iconClass}">${icon}</div>
-    <div class="tx-body">
-      <div class="tx-desc">${desc}</div>
-      <div class="tx-meta">
-        ${person ? `<span class="tx-person" style="background:${pc.bg};color:${pc.text}">${sanitizeHTML(person.name)}</span>` : ''}
-        ${category ? `<span class="tx-cat">${category}</span>` : ''}
-        <span class="tx-cat">${fmtDate(t.date)}</span>
-      </div>
-      ${note ? `<div class="tx-note">${note}</div>` : ''}
-    </div>
-    <div class="tx-amount ${amtClass}">${sign}${fmtAmt(t.amount)}</div>
-    ${showDel && !readOnly ? `<button class="tx-del" onclick="event.stopPropagation();askDelete('${t.id}','${sanitizeHTMLAttr(t.desc)}')" aria-label="Delete transaction">✕</button>` : ''}`;
-  return el;
-}
-
-// ═══════════════════════════════════════════
-//  ADD TRANSACTION
-// ═══════════════════════════════════════════
-function setType(type, btn) {
-  txType = type;
-  document.querySelectorAll('.type-btn').forEach(b => {
-    b.className = 'type-btn';
-  });
-  btn.className = 'type-btn active-' + type;
-
-  const cat = document.getElementById('f-category');
-  if (type === 'salary') { cat.value = 'Salary'; }
-  else if (type === 'income') { cat.value = 'Sales Revenue'; }
-  else { cat.value = ''; }
-}
-
-function submitTx() {
-  if (!guardWrite()) return;
-
-  const amount = parseFloat(document.getElementById('f-amount').value);
-  const person = document.getElementById('f-person').value;
-  const date = document.getElementById('f-date').value;
-  const desc = document.getElementById('f-desc').value.trim();
-  const cat = document.getElementById('f-category').value;
-  const note = document.getElementById('f-note').value.trim();
-
-  if (!amount || amount <= 0) { toast('⚠️ Enter a valid positive amount'); return; }
-  if (!person) { toast('⚠️ Select a person'); return; }
-  if (!desc) { toast('⚠️ Add a description'); return; }
-  if (!date) { toast('⚠️ Select a date'); return; }
-
-  const tx = {
-    id: 'tx_' + Date.now(),
-    type: txType,
-    amount,
-    person,
-    date,
-    desc,
-    category: cat,
-    note,
-    ts: Date.now(),
-  };
-  txs.push(tx);
-  ss('cb_txs', txs);
-  dbSync();
-  renderAll();
-
-  document.getElementById('f-amount').value = '';
-  document.getElementById('f-desc').value = '';
-  document.getElementById('f-note').value = '';
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-  toast('✅ Transaction saved!');
-  switchTab('ledger');
-}
-
-function renderQuickBtns() {
-  const c = document.getElementById('quickBtns');
-  if (!c) return;
-  c.innerHTML = '';
-  const shortcuts = [
-    { label: '💚 Money Received', type: 'income', desc: 'Cash received' },
-    { label: '🔴 Errand Expense', type: 'expense', desc: 'Errand expense' },
-    { label: '💙 Salary Payment', type: 'salary', desc: 'Salary payment', cat: 'Salary' },
-    { label: '🟡 Fund Transfer', type: 'transfer', desc: 'Transfer' },
-  ];
-  shortcuts.forEach(s => {
-    const b = document.createElement('button');
-    b.className = 'type-btn';
-    b.style.cssText = 'padding:14px 10px;font-size:0.7rem;border-radius:10px;';
-    b.textContent = s.label;
-    b.setAttribute('aria-label', s.label);
-    b.onclick = () => {
-      setType(s.type, document.getElementById('tb-' + s.type));
-      document.getElementById('f-desc').value = s.desc;
-      if (s.cat) document.getElementById('f-category').value = s.cat;
-      document.getElementById('f-amount').focus();
-      toast('Template loaded — enter amount');
-    };
-    c.appendChild(b);
-  });
+  switchTab('ledger', document.querySelectorAll('.nav-btn')[1]);
+  renderLedger();
 }
 
 // ═══════════════════════════════════════════
@@ -1309,103 +1424,27 @@ function addPerson() {
   const name = document.getElementById('p-name').value.trim();
   const role = document.getElementById('p-role').value.trim();
   const color = document.getElementById('p-color').value;
-
-  if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
-    toast('⚠️ Person with this name already exists');
-    return;
-  }
-
-  if (!name) { toast('⚠️ Enter a name'); return; }
-
+  if (!name) { toast('Enter name'); return; }
   people.push({ id: 'p_' + Date.now(), name, role, color });
   ss('cb_people', people);
-  dbSync();
+  syncToFirebase();
   document.getElementById('p-name').value = '';
   document.getElementById('p-role').value = '';
-  populatePersonSelects();
-  renderPeopleTab();
-  renderAll();
-  toast('✅ Person added');
+  renderTxs();
+  renderPersonGrid();
+  toast('✓ Person added');
 }
 
 function deletePerson(id) {
   if (!guardWrite()) return;
-  if (txs.some(t => t.person === id)) {
-    toast('⚠️ Cannot delete — person has transactions');
-    return;
+  if (confirm('Delete this person? Linked transactions will remain.')) {
+    people = people.filter(p => p.id !== id);
+    ss('cb_people', people);
+    syncToFirebase();
+    renderTxs();
+    renderPersonGrid();
+    toast('✓ Person deleted');
   }
-  people = people.filter(p => p.id !== id);
-  ss('cb_people', people);
-  dbSync();
-  populatePersonSelects();
-  renderPeopleTab();
-  renderAll();
-  toast('🗑️ Person removed');
-}
-
-function renderPeopleTab() {
-  const list = document.getElementById('peopleList');
-  if (!list) return;
-  list.innerHTML = '';
-
-  if (!people.length) {
-    list.innerHTML = '<div style="font-size:0.78rem;color:var(--text3);">No people yet — add one below.</div>';
-    return;
-  }
-
-  people.forEach(p => {
-    const c = personColor(p);
-    const { pIn, pOut, pBal } = personStats(p.id);
-    const row = document.createElement('div');
-    row.className = 'person-row';
-    row.setAttribute('role', 'listitem');
-    row.innerHTML = `
-      <div class="pr-avatar" style="background:${c.bg};color:${c.text}">${personInitials(p)}</div>
-      <div class="pr-info">
-        <div class="pr-name">${sanitizeHTML(p.name)}</div>
-        <div class="pr-role">${sanitizeHTML(p.role || 'No role set')} · <span class="mono" style="color:${pBal >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtAmt(pBal)}</span></div>
-      </div>
-      ${!readOnly ? `<button class="pr-del" onclick="deletePerson('${p.id}')" aria-label="Delete person">✕</button>` : ''}`;
-    list.appendChild(row);
-  });
-}
-
-function populatePersonSelects() {
-  const sel = document.getElementById('f-person');
-  if (!sel) return;
-  sel.innerHTML = people.map(p => `<option value="${p.id}">${sanitizeHTML(p.name)}</option>`).join('');
-}
-
-function populateReportPersonSelect() {
-  const sel = document.getElementById('r-person');
-  if (!sel) return;
-  sel.innerHTML = '<option value="all">All People</option>' +
-    people.map(p => `<option value="${p.id}">${sanitizeHTML(p.name)}</option>`).join('');
-}
-
-// ═══════════════════════════════════════════
-//  DELETE
-// ═══════════════════════════════════════════
-function askDelete(id, desc) {
-  if (!guardWrite()) return;
-  deletePendingId = id;
-  document.getElementById('delModalSub').textContent = `Delete "${desc}"? This cannot be undone.`;
-  document.getElementById('delOverlay').classList.add('open');
-  document.getElementById('delOverlay').setAttribute('aria-hidden', 'false');
-}
-function closeModal() {
-  document.getElementById('delOverlay').classList.remove('open');
-  document.getElementById('delOverlay').setAttribute('aria-hidden', 'true');
-  deletePendingId = null;
-}
-function confirmDelete() {
-  if (!deletePendingId) return;
-  txs = txs.filter(t => t.id !== deletePendingId);
-  ss('cb_txs', txs);
-  dbSync();
-  renderAll();
-  closeModal();
-  toast('🗑️ Transaction deleted');
 }
 
 // ═══════════════════════════════════════════
@@ -1414,208 +1453,101 @@ function confirmDelete() {
 function generateReport() {
   const from = document.getElementById('r-from').value;
   const to = document.getElementById('r-to').value;
-  const pId = document.getElementById('r-person').value;
-  const rType = document.getElementById('r-type').value;
+  const personFilter = document.getElementById('r-person').value;
+  const typeFilter = document.getElementById('r-type').value;
 
-  let filtered = [...txs];
+  let filtered = txs;
   if (from) filtered = filtered.filter(t => t.date >= from);
   if (to) filtered = filtered.filter(t => t.date <= to);
-  if (pId !== 'all') filtered = filtered.filter(t => t.person === pId);
-  if (rType !== 'all') filtered = filtered.filter(t => t.type === rType);
+  if (personFilter !== 'all') filtered = filtered.filter(t => t.person === personFilter);
+  if (typeFilter !== 'all') filtered = filtered.filter(t => t.type === typeFilter);
   filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  const totalIn = filtered.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-  const totalOut = filtered.filter(t => t.type !== 'income').reduce((s, t) => s + t.amount, 0);
-  const balance = totalIn - totalOut;
+  const totalIn = filtered.filter(t => t.type === 'income' || t.type === 'salary').reduce((a, t) => a + t.amount, 0);
+  const totalOut = filtered.filter(t => t.type === 'expense').reduce((a, t) => a + t.amount, 0);
+  const net = totalIn - totalOut;
 
-  const pName = pId === 'all' ? 'All People' : (people.find(p => p.id === pId)?.name || pId);
-  document.getElementById('rpTitle').textContent = 'Cashbook Report';
-  document.getElementById('rpSub').textContent = `${fmtDate(from)} – ${fmtDate(to)} · ${pName} · ${filtered.length} entries`;
-
+  document.getElementById('rpTitle').textContent = 'Expense Report';
+  document.getElementById('rpSub').textContent = (from ? `${from} ` : '') + (to ? `to ${to}` : 'All time');
   document.getElementById('rpSummary').innerHTML = `
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total In</div><div class="rp-sum-val" style="color:var(--green)">${fmtAmt(totalIn)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total Out</div><div class="rp-sum-val" style="color:var(--red)">${fmtAmt(totalOut)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Balance</div><div class="rp-sum-val" style="color:${balance >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtAmt(balance)}</div></div>`;
+    <div class="rp-sum-box"><div class="rp-sum-lbl">Total In</div><div class="rp-sum-val" style="color:var(--green);">+${totalIn.toFixed(2)}</div></div>
+    <div class="rp-sum-box"><div class="rp-sum-lbl">Total Out</div><div class="rp-sum-val" style="color:var(--red);">-${totalOut.toFixed(2)}</div></div>
+    <div class="rp-sum-box"><div class="rp-sum-lbl">Net</div><div class="rp-sum-val" style="color:${net >= 0 ? 'var(--green)' : 'var(--red)'};">${net >= 0 ? '+' : ''}${net.toFixed(2)}</div></div>
+  `;
 
   const tbody = document.getElementById('rpBody');
-  tbody.innerHTML = filtered.map(t => {
+  tbody.innerHTML = '';
+  filtered.forEach(t => {
     const p = people.find(x => x.id === t.person);
-    const isIn = t.type === 'income';
-    return `<tr>
+    const tr = tbody.insertRow();
+    tr.innerHTML = `
       <td>${fmtDate(t.date)}</td>
-      <td>${p ? sanitizeHTML(p.name) : '—'}</td>
-      <td>${sanitizeHTML(t.desc)}${t.note ? '<br><small style="color:var(--text3)">' + sanitizeHTML(t.note) + '</small>' : ''}</td>
-      <td>${t.category ? sanitizeHTML(t.category) : '—'}</td>
-      <td style="text-transform:capitalize">${t.type}</td>
-      <td style="text-align:right;font-family:'DM Mono',monospace;color:${isIn ? 'var(--green)' : 'var(--red)'}">${isIn ? '+' : '-'}${fmtAmt(t.amount)}</td>
-    </tr>`;
-  }).join('');
+      <td>${sanitizeHTML(p.name)}</td>
+      <td>${sanitizeHTML(t.desc)}</td>
+      <td>${sanitizeHTML(t.cat || '—')}</td>
+      <td style="text-transform:capitalize;">${sanitizeHTML(t.type)}</td>
+      <td style="text-align:right;color:${t.type === 'expense' ? 'var(--red)' : 'var(--green)'};">${t.type === 'expense' ? '-' : '+'}${t.amount.toFixed(2)}</td>
+    `;
+  });
 
-  // Per-person breakdown
-  if (pId === 'all' && people.length > 1) {
-    let breakdown = '<div style="margin-top:20px;margin-bottom:8px;font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Balance by Person</div>';
-    breakdown += '<table class="rp-table" aria-label="Balance by person"><thead><tr><th>Person</th><th>Role</th><th>Money In</th><th>Money Out</th><th>Balance</th></tr></thead><tbody>';
-    people.forEach(p => {
-      const pTxs = filtered.filter(t => t.person === p.id);
-      const pIn = pTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-      const pOut = pTxs.filter(t => t.type !== 'income').reduce((s, t) => s + t.amount, 0);
-      const pBal = pIn - pOut;
-      breakdown += `<tr><td><strong>${sanitizeHTML(p.name)}</strong></td><td>${sanitizeHTML(p.role || '—')}</td><td style="color:var(--green)">${fmtAmt(pIn)}</td><td style="color:var(--red)">${fmtAmt(pOut)}</td><td style="font-weight:700;color:${pBal >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
-    });
-    breakdown += '</tbody></table>';
-    document.getElementById('rpPersonBreakdown').innerHTML = breakdown;
-  } else {
-    document.getElementById('rpPersonBreakdown').innerHTML = '';
-  }
+  // Person breakdown
+  const breakdown = {};
+  filtered.forEach(t => {
+    if (!breakdown[t.person]) breakdown[t.person] = { in: 0, out: 0 };
+    if (t.type === 'expense') breakdown[t.person].out += t.amount;
+    else breakdown[t.person].in += t.amount;
+  });
+  
+  let breakdownHtml = '<div style="margin-top:20px;font-size:0.72rem;"><strong style="color:var(--text2);">By Person:</strong>';
+  Object.entries(breakdown).forEach(([pid, bal]) => {
+    const p = people.find(x => x.id === pid);
+    breakdownHtml += `<div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:8px;">
+      <strong>${sanitizeHTML(p.name)}</strong> | In: <span style="color:var(--green);">+${bal.in.toFixed(2)}</span> | Out: <span style="color:var(--red);">-${bal.out.toFixed(2)}</span>
+    </div>`;
+  });
+  breakdownHtml += '</div>';
+  document.getElementById('rpPersonBreakdown').innerHTML = breakdownHtml;
 
   document.getElementById('reportPreview').style.display = 'block';
-  document.getElementById('reportPreview').scrollIntoView({ behavior: 'smooth' });
-  toast(`📋 Report generated — ${filtered.length} transactions`);
 }
 
 // ═══════════════════════════════════════════
 //  SETTINGS
 // ═══════════════════════════════════════════
 function saveCurrency() {
-  currency = document.getElementById('s-currency').value.trim() || 'GHS';
+  if (!guardWrite()) return;
+  const cur = document.getElementById('s-currency').value.trim().toUpperCase().slice(0, 3);
+  if (!cur) { toast('Enter currency'); return; }
+  currency = cur;
   ss('cb_currency', currency);
-  renderAll();
-  toast('✅ Currency updated to ' + currency);
+  syncToFirebase();
+  render();
+  toast('✓ Currency saved');
 }
 
 function confirmClear() {
   if (!guardWrite()) return;
-  if (!confirm('Delete ALL transactions and people? This cannot be undone.')) return;
-  txs = [];
-  people = [];
-  ss('cb_txs', txs);
-  ss('cb_people', people);
-  dbSync();
-  renderAll();
-  renderPeopleTab();
-  populatePersonSelects();
-  toast('🗑️ All data cleared');
+  if (confirm('Clear ALL data? This cannot be undone!')) {
+    localStorage.clear();
+    location.reload();
+  }
 }
 
 // ═══════════════════════════════════════════
-//  FIREBASE
+//  UI
 // ═══════════════════════════════════════════
-async function initFirebase() {
-  const cfg = gs('cb_fbconfig', null);
-  if (!cfg) return;
-  await connectWithConfig(cfg);
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 }
 
-async function connectFirebase() {
-  if (!guardWrite()) return;
-  const raw = document.getElementById('s-fbconfig').value.trim();
-  if (!raw) { toast('⚠️ Paste your Firebase config first'); return; }
-  try {
-    const cfg = JSON.parse(raw);
-    ss('cb_fbconfig', cfg);
-    await connectWithConfig(cfg);
-  } catch (e) {
-    toast('⚠️ Invalid JSON config');
-  }
-}
-
-async function connectWithConfig(cfg) {
-  try {
-    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    _fs = fs;
-
-    const app = getApps().length === 0 ? initializeApp(cfg) : getApps()[0];
-    db = fs.getFirestore(app);
-    await dbPull();
-
-    const ref = fs.doc(db, 'cashbook', 'main');
-    fs.onSnapshot(ref, snap => {
-      if (!snap.exists()) return;
-      const r = snap.data();
-      const localTs = gs('cb_syncTs', 0);
-      if (r.ts && r.ts > localTs) applyRemote(r);
-    });
-
-    setDbStatus('✅ Connected — syncing automatically');
-    toast('☁️ Firebase connected!');
-  } catch (e) {
-    console.warn('Firebase error:', e);
-    setDbStatus('⚠️ Connection failed: ' + e.message);
-    toast('⚠️ Firebase connection failed');
-  }
-}
-
-function setDbStatus(msg) {
-  const el = document.getElementById('dbStatus');
-  if (el) el.textContent = msg;
-}
-
-async function dbSync() {
-  if (!db || !_fs) return;
-  try {
-    const payload = { txs, people, currency, ts: Date.now() };
-    await _fs.setDoc(_fs.doc(db, 'cashbook', 'main'), payload, { merge: true });
-    ss('cb_syncTs', Date.now());
-    setDbStatus('✅ Last sync: ' + new Date().toLocaleTimeString());
-  } catch (e) {
-    console.warn('Sync error:', e);
-  }
-}
-
-async function dbPull() {
-  if (!db || !_fs) return;
-  try {
-    const snap = await _fs.getDoc(_fs.doc(db, 'cashbook', 'main'));
-    if (snap.exists()) applyRemote(snap.data());
-  } catch (e) {
-    console.warn('Pull error:', e);
-  }
-}
-
-function applyRemote(r) {
-  if (r.txs) {
-    txs = r.txs;
-    ss('cb_txs', txs);
-  }
-  if (r.people) {
-    people = r.people;
-    ss('cb_people', people);
-  }
-  if (r.currency) {
-    currency = r.currency;
-    ss('cb_currency', currency);
-    document.getElementById('s-currency').value = currency;
-  }
-  ss('cb_syncTs', r.ts || Date.now());
-  renderAll();
-  renderPeopleTab();
-  populatePersonSelects();
-  setDbStatus('✅ Last sync: ' + new Date().toLocaleTimeString());
-  toast('☁️ Synced from cloud');
-}
-
-async function manualSync() {
-  if (!db) {
-    toast('⚠️ Firebase not connected');
-    return;
-  }
-  toast('🔄 Syncing...');
-  await dbPull();
-  await dbSync();
-  toast('✅ Sync complete');
-}
-
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
-let _tt;
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
-  clearTimeout(_tt);
-  _tt = setTimeout(() => el.classList.remove('show'), 2600);
+  setTimeout(() => el.classList.remove('show'), 2000);
 }
 </script>
 </body>
