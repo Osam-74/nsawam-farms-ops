@@ -15,28 +15,17 @@
    TOKENS
 ══════════════════════════════════════════════ */
 :root{
-  --bg:#0d0d0d;
-  --bg2:#141414;
-  --bg3:#1c1c1c;
-  --bg4:#242424;
-  --line:#2a2a2a;
-  --line2:#333;
-  --text:#f0ede8;
-  --text2:#9a9590;
-  --text3:#5a5550;
-  --green:#00c48c;
-  --green2:rgba(0,196,140,0.12);
-  --red:#ff4d6d;
-  --red2:rgba(255,77,109,0.12);
-  --gold:#f5c542;
-  --gold2:rgba(245,197,66,0.12);
-  --blue:#4d9fff;
-  --blue2:rgba(77,159,255,0.12);
-  --purple:#b57bee;
-  --sh:0 2px 20px rgba(0,0,0,0.5);
-  --sh2:0 8px 40px rgba(0,0,0,0.7);
-  --r:14px;
-  --r2:10px;
+  --bg:#0d0d0d; --bg2:#141414; --bg3:#1c1c1c; --bg4:#242424;
+  --line:#2a2a2a; --line2:#333;
+  --text:#f0ede8; --text2:#9a9590; --text3:#5a5550;
+  --green:#00c48c; --green2:rgba(0,196,140,0.12);
+  --red:#ff4d6d; --red2:rgba(255,77,109,0.12);
+  --gold:#f5c542; --gold2:rgba(245,197,66,0.12);
+  --blue:#4d9fff; --blue2:rgba(77,159,255,0.12);
+  --purple:#b57bee; --purple2:rgba(181,123,238,0.12);
+  --orange:#ff9f43; --orange2:rgba(255,159,67,0.12);
+  --sh:0 2px 20px rgba(0,0,0,0.5); --sh2:0 8px 40px rgba(0,0,0,0.7);
+  --r:14px; --r2:10px;
 }
 
 /* ══════════════════════════════════════════════
@@ -50,187 +39,123 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px;}
 
 /* ══════════════════════════════════════════════
-   PIN SCREEN
+   PIN SCREENS (SETUP & LOGIN)
 ══════════════════════════════════════════════ */
-#pinScreen{
+.fs-screen{
   position:fixed;inset:0;z-index:9999;
   background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
-  padding:24px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px; text-align:center;
 }
-.pin-brand{
-  font-size:2.4rem;font-weight:800;letter-spacing:-0.04em;
-  margin-bottom:6px;
-}
+.pin-brand{font-size:2.4rem;font-weight:800;letter-spacing:-0.04em;margin-bottom:6px;}
 .pin-brand span{color:var(--green);}
 .pin-tagline{font-size:0.7rem;color:var(--text3);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:44px;}
+
 .pin-dots{display:flex;gap:14px;margin-bottom:36px;}
-.pd{
-  width:14px;height:14px;border-radius:50%;
-  border:2px solid var(--line2);background:transparent;
-  transition:all 0.18s;
-}
+.pd{width:14px;height:14px;border-radius:50%;border:2px solid var(--line2);background:transparent;transition:all 0.18s;}
 .pd.on{background:var(--green);border-color:var(--green);}
 .pd.err{background:var(--red);border-color:var(--red);}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:240px;}
+
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:240px;margin:0 auto;}
 .pk{
   height:66px;border-radius:var(--r2);
   background:var(--bg3);border:1px solid var(--line);
   font-size:1.5rem;font-weight:700;color:var(--text);
-  transition:all 0.12s;display:flex;align-items:center;justify-content:center;
-  user-select:none;
-  /* Accessibility */
-  -webkit-tap-highlight-color:transparent;
-  tap-highlight-color:transparent;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none; transition:all 0.12s;
 }
 .pk:active{background:var(--bg4);transform:scale(0.94);}
 .pk.del{font-size:1rem;color:var(--text2);}
 .pk.empty{pointer-events:none;background:transparent;border:none;}
-.pin-err{font-size:0.75rem;color:var(--red);margin-top:14px;min-height:18px;font-weight:600;letter-spacing:0.05em;}
+.pin-err{font-size:0.75rem;color:var(--red);margin-top:14px;min-height:18px;font-weight:600;}
+
 @keyframes shake{0%,100%{transform:translateX(0);}25%,75%{transform:translateX(-5px);}50%{transform:translateX(5px);}}
 .shaking{animation:shake 0.35s ease;}
 
+/* Setup Specific */
+.setup-box { background:var(--bg2); border:1px solid var(--line); padding:24px; border-radius:var(--r); width:100%; max-width:360px; margin-bottom:20px;}
+.setup-title { font-size:1.1rem; font-weight:700; margin-bottom:16px;}
+.setup-desc { font-size:0.8rem; color:var(--text2); margin-bottom:20px; line-height:1.5;}
+
 /* ══════════════════════════════════════════════
-   APP SHELL
+   APP SHELL & TOP BAR
 ══════════════════════════════════════════════ */
 #app{display:none;height:100%;flex-direction:column;}
 #app.on{display:flex;}
 
-/* ══════════════════════════════════════════════
-   TOP BAR
-══════════════════════════════════════════════ */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:16px 18px 12px;flex-shrink:0;
-  border-bottom:1px solid var(--line);
-  background:var(--bg);
-  position:sticky;top:0;z-index:50;
+  padding:16px 18px 12px;flex-shrink:0; border-bottom:1px solid var(--line);
+  background:var(--bg); position:sticky;top:0;z-index:50;
 }
 .topbar-brand{font-size:1.15rem;font-weight:800;letter-spacing:-0.03em;}
 .topbar-brand span{color:var(--green);}
 .topbar-right{display:flex;gap:8px;align-items:center;}
 .tb-btn{
-  background:var(--bg3);border:1px solid var(--line);
-  color:var(--text2);border-radius:8px;
-  padding:6px 12px;font-size:0.7rem;font-weight:600;
-  letter-spacing:0.05em;text-transform:uppercase;
-  transition:all 0.15s;
-  /* Accessibility */
-  border-radius:8px;
-  padding:6px 12px;
-  font-size:0.7rem;
-  font-weight:600;
-  letter-spacing:0.05em;
-  text-transform:uppercase;
-  transition:all 0.15s;
+  background:var(--bg3);border:1px solid var(--line);color:var(--text2);
+  border-radius:8px;padding:6px 12px;font-size:0.7rem;font-weight:600;
+  letter-spacing:0.05em;text-transform:uppercase;transition:all 0.15s;
 }
 .tb-btn:hover{background:var(--bg4);color:var(--text);}
 .tb-btn.primary{background:var(--green);color:#000;border-color:var(--green);}
-.tb-btn.primary:hover{filter:brightness(1.1);}
 .readonly-bar{
-  background:var(--red);color:#fff;padding:6px 18px;
-  font-size:0.72rem;font-weight:700;text-align:center;
-  letter-spacing:0.08em;flex-shrink:0;
+  background:var(--red);color:#fff;padding:6px 18px;font-size:0.72rem;
+  font-weight:700;text-align:center;letter-spacing:0.08em;flex-shrink:0;
 }
 
 /* ══════════════════════════════════════════════
    NAV TABS
 ══════════════════════════════════════════════ */
-.nav{
-  display:flex;overflow-x:auto;scrollbar-width:none;
-  background:var(--bg2);border-bottom:1px solid var(--line);flex-shrink:0;
-}
+.nav{display:flex;overflow-x:auto;scrollbar-width:none;background:var(--bg2);border-bottom:1px solid var(--line);flex-shrink:0;}
 .nav::-webkit-scrollbar{display:none;}
 .nav-btn{
-  flex-shrink:0;padding:12px 16px;
-  font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
-  color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;
+  flex-shrink:0;padding:12px 16px;font-size:0.68rem;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);
+  background:none;border:none;border-bottom:2px solid transparent;
   transition:all 0.18s;white-space:nowrap;
-  /* Accessibility */
-  border:none;
-  background:none;
-  color:var(--text3);
-  border-bottom:2px solid transparent;
-  transition:all 0.18s;
-  white-space:nowrap;
 }
 .nav-btn.active{color:var(--green);border-bottom-color:var(--green);}
-.nav-btn:hover:not(.active){color:var(--text2);}
 
 /* ══════════════════════════════════════════════
-   SCROLL + MAIN
+   LAYOUT
 ══════════════════════════════════════════════ */
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .main{padding:18px;max-width:520px;margin:0 auto;padding-bottom:48px;}
 .tab{display:none;}
 .tab.active{display:block;}
-
-/* ══════════════════════════════════════════════
-   SECTION HEADERS
-══════════════════════════════════════════════ */
-.sh{
-  font-size:0.62rem;font-weight:700;letter-spacing:0.14em;
-  text-transform:uppercase;color:var(--text3);
-  margin:22px 0 10px;
-}
+.sh{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin:22px 0 10px;}
 
 /* ══════════════════════════════════════════════
    MASTER BALANCE CARD
 ══════════════════════════════════════════════ */
 .master-card{
   background:linear-gradient(135deg,#0d1f0d 0%,#0a1a14 60%,#0d1f1a 100%);
-  border:1px solid rgba(0,196,140,0.2);
-  border-radius:var(--r);padding:22px;margin-bottom:16px;
-  position:relative;overflow:hidden;
-}
-.master-card::before{
-  content:'';position:absolute;top:-40px;right:-40px;
-  width:160px;height:160px;border-radius:50%;
-  background:radial-gradient(circle,rgba(0,196,140,0.08) 0%,transparent 70%);
+  border:1px solid rgba(0,196,140,0.2); border-radius:var(--r);
+  padding:22px;margin-bottom:16px; position:relative;overflow:hidden;
 }
 .mc-label{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);margin-bottom:10px;}
-.mc-amount{
-  font-family:'DM Mono',monospace;
-  font-size:2.4rem;font-weight:500;color:var(--text);
-  letter-spacing:-0.02em;line-height:1;
-  margin-bottom:16px;
-}
+.mc-amount{font-family:'DM Mono',monospace;font-size:2.4rem;font-weight:500;color:var(--text);line-height:1;margin-bottom:16px;}
 .mc-amount.neg{color:var(--red);}
 .mc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 .mc-stat{background:rgba(255,255,255,0.04);border-radius:8px;padding:10px 12px;}
 .mc-stat-lbl{font-size:0.56rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
 .mc-stat-val{font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:500;}
-.mc-stat-val.g{color:var(--green);}
-.mc-stat-val.r{color:var(--red);}
-.mc-stat-val.b{color:var(--blue);}
+.mc-stat-val.g{color:var(--green);} .mc-stat-val.r{color:var(--red);}
 
 /* ══════════════════════════════════════════════
    PERSON BALANCE CARDS
 ══════════════════════════════════════════════ */
 .person-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.person-card{
-  background:var(--bg2);border:1px solid var(--line);
-  border-radius:var(--r2);padding:14px;
-  cursor:pointer;transition:all 0.18s;
-  position:relative;
-}
+.person-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r2);padding:14px;cursor:pointer;}
 .person-card:hover{border-color:var(--line2);background:var(--bg3);}
-.person-card.active-filter{border-color:var(--gold);background:var(--gold2);}
-.pc-avatar{
-  width:34px;height:34px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.85rem;font-weight:700;margin-bottom:10px;
-  text-transform:uppercase;
-}
-.pc-name{font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pc-role{font-size:0.6rem;color:var(--text3);letter-spacing:0.06em;margin-bottom:10px;text-transform:uppercase;}
+.pc-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;margin-bottom:10px;}
+.pc-name{font-size:0.78rem;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pc-role{font-size:0.6rem;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
 .pc-balance{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;}
-.pc-balance.pos{color:var(--green);}
-.pc-balance.neg{color:var(--red);}
+.pc-balance.pos{color:var(--green);} .pc-balance.neg{color:var(--red);}
 .pc-meta{display:flex;gap:8px;margin-top:6px;}
-.pc-chip{font-size:0.55rem;font-weight:700;padding:2px 6px;border-radius:6px;letter-spacing:0.04em;text-transform:uppercase;}
-.pc-chip.in{background:var(--green2);color:var(--green);}
-.pc-chip.out{background:var(--red2);color:var(--red);}
+.pc-chip{font-size:0.55rem;font-weight:700;padding:2px 6px;border-radius:6px;text-transform:uppercase;}
+.pc-chip.in{background:var(--green2);color:var(--green);} .pc-chip.out{background:var(--red2);color:var(--red);}
 
 /* ══════════════════════════════════════════════
    TRANSACTION LIST
@@ -238,222 +163,103 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .tx-filters{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
 .tx-filter{
   font-size:0.63rem;font-weight:700;padding:5px 11px;border-radius:20px;
-  letter-spacing:0.05em;text-transform:uppercase;
-  background:var(--bg3);border:1px solid var(--line);color:var(--text2);
-  transition:all 0.15s;
+  text-transform:uppercase;background:var(--bg3);border:1px solid var(--line);
+  color:var(--text2);transition:all 0.15s;
 }
 .tx-filter.on{background:var(--green);color:#000;border-color:var(--green);}
-.tx-filter:hover:not(.on){background:var(--bg4);color:var(--text);}
-
-.tx-group-date{
-  font-size:0.58rem;font-weight:700;letter-spacing:0.12em;
-  text-transform:uppercase;color:var(--text3);
-  padding:10px 0 6px;margin-top:6px;
-  border-top:1px solid var(--line);
-}
+.tx-group-date{font-size:0.58rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);padding:10px 0 6px;margin-top:6px;border-top:1px solid var(--line);}
 .tx-group-date:first-child{margin-top:0;border-top:none;}
 
-.tx-item{
-  display:flex;align-items:flex-start;gap:12px;
-  padding:12px 14px;border-radius:var(--r2);
-  background:var(--bg2);border:1px solid var(--line);
-  margin-bottom:6px;transition:all 0.15s;
-  position:relative;
-}
-.tx-item:hover{border-color:var(--line2);}
-.tx-icon{
-  width:36px;height:36px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1rem;flex-shrink:0;
-}
-.tx-icon.income{background:var(--green2);}
-.tx-icon.expense{background:var(--red2);}
-.tx-icon.salary{background:var(--blue2);}
-.tx-icon.transfer{background:var(--gold2);}
+.tx-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:var(--r2);background:var(--bg2);border:1px solid var(--line);margin-bottom:6px;position:relative;}
+.tx-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.tx-icon.income{background:var(--green2);} .tx-icon.expense{background:var(--red2);}
+.tx-icon.salary{background:var(--blue2);} .tx-icon.transfer{background:var(--gold2);}
+.tx-icon.eggsale{background:var(--orange2);} .tx-icon.capital{background:var(--purple2);}
 .tx-body{flex:1;min-width:0;}
 .tx-desc{font-size:0.82rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tx-meta{display:flex;gap:6px;margin-top:3px;align-items:center;flex-wrap:wrap;}
-.tx-person{font-size:0.62rem;font-weight:700;padding:1px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:0.05em;}
-.tx-cat{font-size:0.6rem;color:var(--text3);letter-spacing:0.05em;}
-.tx-note{font-size:0.68rem;color:var(--text3);margin-top:3px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.tx-amount{
-  font-family:'DM Mono',monospace;
-  font-size:0.92rem;font-weight:500;
-  text-align:right;flex-shrink:0;
-}
-.tx-amount.pos{color:var(--green);}
-.tx-amount.neg{color:var(--red);}
-.tx-del{
-  position:absolute;top:8px;right:8px;
-  background:none;border:none;font-size:0.85rem;
-  color:var(--line2);padding:3px;
-  transition:color 0.15s;
-}
-.tx-del:hover{color:var(--red);}
+.tx-person{font-size:0.62rem;font-weight:700;padding:1px 7px;border-radius:6px;text-transform:uppercase;}
+.tx-cat{font-size:0.6rem;color:var(--text3);}
+.tx-note{font-size:0.68rem;color:var(--text3);margin-top:3px;line-height:1.4;}
+.tx-amount{font-family:'DM Mono',monospace;font-size:0.92rem;font-weight:500;text-align:right;flex-shrink:0;}
+.tx-amount.pos{color:var(--green);} .tx-amount.neg{color:var(--red);}
 
-.tx-empty{
-  text-align:center;padding:40px 20px;
-  font-size:0.78rem;color:var(--text3);line-height:1.8;
-}
+.tx-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;}
+.tx-btn{background:var(--bg3);border:none;font-size:0.75rem;color:var(--text2);padding:4px;border-radius:4px;transition:all 0.15s;}
+.tx-btn:hover{background:var(--bg4);color:var(--text);}
+.tx-btn.del:hover{color:var(--red);}
+
+.tx-empty{text-align:center;padding:40px 20px;font-size:0.78rem;color:var(--text3);line-height:1.8;}
 
 /* ══════════════════════════════════════════════
    ADD TRANSACTION FORM
 ══════════════════════════════════════════════ */
-.form-card{
-  background:var(--bg2);border:1px solid var(--line);
-  border-radius:var(--r);padding:20px;margin-bottom:12px;
-}
-.type-switcher{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:6px;margin-bottom:18px;
-}
-.type-btn{
-  padding:10px 6px;border-radius:9px;font-size:0.62rem;
-  font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
-  background:var(--bg3);border:1px solid var(--line);color:var(--text3);
-  transition:all 0.15s;text-align:center;
-}
-.type-btn:hover{background:var(--bg4);}
+.form-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:12px;}
+.type-switcher{display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;margin-bottom:18px;}
+.type-btn{padding:10px 6px;border-radius:9px;font-size:0.62rem;font-weight:700;text-transform:uppercase;background:var(--bg3);border:1px solid var(--line);color:var(--text3);text-align:center;}
 .type-btn.active-income{background:var(--green2);border-color:var(--green);color:var(--green);}
 .type-btn.active-expense{background:var(--red2);border-color:var(--red);color:var(--red);}
 .type-btn.active-salary{background:var(--blue2);border-color:var(--blue);color:var(--blue);}
 .type-btn.active-transfer{background:var(--gold2);border-color:var(--gold);color:var(--gold);}
+.type-btn.active-eggsale{background:var(--orange2);border-color:var(--orange);color:var(--orange);}
+.type-btn.active-capital{background:var(--purple2);border-color:var(--purple);color:var(--purple);}
 
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .form-row.single{grid-template-columns:1fr;}
 .f-field{display:flex;flex-direction:column;gap:4px;}
 .f-label{font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);}
-.f-input,.f-select{
-  background:var(--bg3);border:1px solid var(--line);
-  border-radius:8px;padding:10px 12px;
-  font-size:0.88rem;color:var(--text);
-  transition:border 0.18s;width:100%;
-}
+.f-input,.f-select{background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:0.88rem;color:var(--text);width:100%;}
 .f-input:focus,.f-select:focus{border-color:var(--green);}
-.f-input::placeholder{color:var(--text3);}
-.f-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5550' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat=no-repeat;background-position:right 12px center;}
-.f-select option{background:var(--bg3);}
-.f-amount{font-size:1.4rem;letter-spacing=-0.02em;font-family:'DM Mono',monospace;padding:12px 14px;}
-.submit-btn{
-  width:100%;padding:14px;border-radius:var(--r2);
-  font-size:0.82rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
-  background:var(--green);color:#000;border:none;
-  margin-top:6px;transition:all 0.18s;
-}
-.submit-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
-.submit-btn:active{transform:translateY(0);}
-.submit-btn:disabled{opacity:0.4;pointer-events:none;}
+.f-amount{font-size:1.4rem;font-family:'DM Mono',monospace;padding:12px 14px;}
+.submit-btn{width:100%;padding:14px;border-radius:var(--r2);font-size:0.82rem;font-weight:700;text-transform:uppercase;background:var(--green);color:#000;border:none;margin-top:6px;}
+
+.egg-stats{background:var(--bg3);padding:12px;border-radius:8px;margin-top:8px;font-size:0.75rem;border:1px solid var(--line);}
+.egg-stats span{font-family:'DM Mono';color:var(--green);font-weight:bold;}
 
 /* ══════════════════════════════════════════════
-   PEOPLE MANAGER
+   PEOPLE, REPORTS, MODALS, ETC. (Reused Base Styles)
 ══════════════════════════════════════════════ */
 .people-list{display:grid;gap:8px;margin-bottom:14px;}
-.person-row{
-  display:flex;align-items:center;gap:12px;
-  background:var(--bg2);border:1px solid var(--line);
-  border-radius:var(--r2);padding:12px 14px;
-}
-.pr-avatar{
-  width:36px;height:36px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.82rem;font-weight:700;text-transform:uppercase;flex-shrink:0;
-}
-.pr-info{flex:1;}
-.pr-name{font-size:0.85rem;font-weight:700;color:var(--text);}
-.pr-role{font-size:0.65rem;color:var(--text3);margin-top:1px;}
-.pr-del{background:none;border:none;color:var(--text3);font-size:0.85rem;padding:4px;transition:color 0.15s;}
-.pr-del:hover{color:var(--red);}
-.add-person-form{
-  background:var(--bg2);border:1px solid var(--line);
-  border-radius:var(--r);padding:16px;
-}
+.person-row{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r2);padding:12px 14px;}
+.pr-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700;flex-shrink:0;}
+.pr-info{flex:1;} .pr-name{font-size:0.85rem;font-weight:700;} .pr-role{font-size:0.65rem;color:var(--text3);}
 
-/* ══════════════════════════════════════════════
-   REPORT / PRINT
-══════════════════════════════════════════════ */
-.report-controls{
-  background:var(--bg2);border:1px solid var(--line);
-  border-radius:var(--r);padding:18px;margin-bottom:14px;
-}
-.report-preview{
-  background:var(--bg2);border:1px solid var(--line);
-  border-radius:var(--r);padding:18px;
-  display:none;
-}
-.rp-header{margin-bottom:20px;}
-.rp-title{font-size:1.1rem;font-weight:800;letter-spacing=-0.02em;margin-bottom:4px;}
-.rp-sub{font-size:0.72rem;color:var(--text2);}
-.rp-summary{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
-  margin-bottom:20px;
-}
-.rp-sum-box{
-  background:var(--bg3);border-radius:8px;padding:10px;text-align:center;
-}
-.rp-sum-lbl{font-size:0.55rem;font-weight:700;letter-spacing=0.1em;text-transform:uppercase;color:var(--text3);margin-bottom=4px;}
-.rp-sum-val{font-family='DM Mono',monospace;font-size=0.85rem;font-weight=500;}
-.rp-table{width=100%;border-collapse:collapse;font-size=0.75rem;margin-bottom=16px;}
-.rp-table th{text-align:left;font-size=0.58rem;font-weight=700;letter-spacing=0.1em;text-transform=uppercase;color:var(--text3);padding=6px 8px;border-bottom=1px solid var(--line);}
-.rp-table td{padding=8px;border-bottom=1px solid var(--line);vertical-align=top;}
-.rp-table tr:last-child td{border-bottom=none;}
-
-/* ══════════════════════════════════════════════
-   MODAL (CONFIRM DELETE)
-══════════════════════════════════════════════ */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:flex-end;justify-content:center;}
 .overlay.open{display:flex;}
 .modal{background:var(--bg2);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;border-top:1px solid var(--line);}
-.modal-title{font-size:1rem;font-weight:700;margin-bottom=6px;}
-.modal-sub{font-size=0.8rem;color:var(--text2);margin-bottom=18px;line-height=1.5;}
-.modal-btns{display:grid;grid-template-columns=1fr 1fr;gap=10px;}
-.m-btn{padding=13px;border-radius=var(--r2);font-size=0.8rem;font-weight=700;letter-spacing=0.05em;text-transform=uppercase;}
-.m-btn-cancel{background=var(--bg3);color=var(--text2);}
-.m-btn-confirm{background=var(--red);color=#fff;}
+.modal-title{font-size:1rem;font-weight:700;margin-bottom:6px;}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.m-btn{padding:13px;border-radius:var(--r2);font-size:0.8rem;font-weight:700;text-transform:uppercase;}
+.m-btn-cancel{background:var(--bg3);color:var(--text2);} .m-btn-confirm{background:var(--red);color:#fff;}
 
-/* ══════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════ */
 #toast{
-  position:fixed;bottom=24px;left=50%;transform=translateX(-50%) translateY(16px);
-  background=var(--bg4);color=var(--text);border=1px solid var(--line2);
-  padding=10px 20px;border-radius=24px;font-size=0.78rem;font-weight=600;
-  box-shadow=var(--sh2);z-index=9000;opacity=0;transition=all 0.28s;
-  white-space=nowrap;max-width=90vw;text-align=center;pointer-events=none;
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--bg4);color:var(--text);border:1px solid var(--line2);
+  padding:10px 20px;border-radius:24px;font-size:0.78rem;font-weight:600;
+  z-index:9000;opacity:0;transition:all 0.28s;pointer-events:none;
 }
-#toast.show{opacity=1;transform=translateX(-50%) translateY(0);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.mono{font-family:'DM Mono',monospace;}
+.fade-in{animation:fadeIn 0.22s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
-/* ══════════════════════════════════════════════
-   PRINT STYLES
-══════════════════════════════════════════════ */
-@media print{
-  #pinScreen,#app .topbar,.nav,#toast,.overlay,
-  .report-controls,.tb-btn,.tx-del,.pr-del,
-  .type-switcher,.submit-btn,.form-card,
-  .tx-filters,#tab-dashboard,#tab-ledger,#tab-people,
-  #tab-settings{display:none!important;}
-  body{background=#fff!important;color=#000!important;}
-  #app{display=block!important;}
-  .scroll,.main{overflow=visible!important;}
-  #tab-report{display=block!important;}
-  .report-preview{display=block!important;background=#fff!important;border=none!important;color=#000!important;}
-  .rp-table{color=#000!important;}
-  .rp-table th,.rp-table td{color=#000!important;border-color=#ccc!important;}
-  .rp-sum-box{background=#f5f5f5!important;color=#000!important;}
-  .rp-sum-lbl,.rp-sum-val,.rp-title,.rp-sub{color=#000!important;}
-}
-
-/* ══════════════════════════════════════════════
-   UTILS
-══════════════════════════════════════════════ */
-@keyframes fadeIn{from{opacity=0;transform=translateY(6px);}to{opacity=1;transform=none;}}
-.fade-in{animation=fadeIn 0.22s ease;}
-.mono{font-family='DM Mono',monospace;}
 </style>
 </head>
 <body>
 
-<!-- ══ PIN ══ -->
-<div id="pinScreen">
+<div id="pinSetupScreen" class="fs-screen" style="display:none;">
+  <div class="pin-brand">Cash<span>book</span></div>
+  <div class="setup-box">
+    <div class="setup-title">First Time Setup</div>
+    <div class="setup-desc">Create your Master PIN for full access.</div>
+    <input type="password" id="setupMasterPin" class="f-input" placeholder="Enter 4-digit Master PIN" maxlength="4" style="text-align:center;font-size:1.2rem;letter-spacing:4px;margin-bottom:10px;">
+    <div class="setup-desc" style="margin-top:10px;">Create a View-Only PIN (Cannot edit data).</div>
+    <input type="password" id="setupViewPin" class="f-input" placeholder="Enter 4-digit View PIN" maxlength="4" style="text-align:center;font-size:1.2rem;letter-spacing:4px;margin-bottom:10px;">
+    <button class="submit-btn" onclick="saveNewPins()">Save PINs</button>
+  </div>
+</div>
+
+<div id="pinScreen" class="fs-screen">
   <div class="pin-brand">Cash<span>book</span></div>
   <div class="pin-tagline">Business Expense Tracker</div>
   <div class="pin-dots" id="pinDots">
@@ -461,498 +267,333 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
     <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div>
   </div>
   <div class="pin-pad">
-    <div class="pk" onclick="pk('1')" aria-label="1">1</div><div class="pk" onclick="pk('2')" aria-label="2">2</div><div class="pk" onclick="pk('3')" aria-label="3">3</div>
-    <div class="pk" onclick="pk('4')" aria-label="4">4</div><div class="pk" onclick="pk('5')" aria-label="5">5</div><div class="pk" onclick="pk('6')" aria-label="6">6</div>
-    <div class="pk" onclick="pk('7')" aria-label="7">7</div><div class="pk" onclick="pk('8')" aria-label="8">8</div><div class="pk" onclick="pk('9')" aria-label="9">9</div>
-    <div class="pk empty"></div><div class="pk" onclick="pk('0')" aria-label="0">0</div><div class="pk del" onclick="pdel()" aria-label="Delete">⌫</div>
+    <div class="pk" onclick="pk('1')">1</div><div class="pk" onclick="pk('2')">2</div><div class="pk" onclick="pk('3')">3</div>
+    <div class="pk" onclick="pk('4')">4</div><div class="pk" onclick="pk('5')">5</div><div class="pk" onclick="pk('6')">6</div>
+    <div class="pk" onclick="pk('7')">7</div><div class="pk" onclick="pk('8')">8</div><div class="pk" onclick="pk('9')">9</div>
+    <div class="pk empty"></div><div class="pk" onclick="pk('0')">0</div><div class="pk del" onclick="pdel()">⌫</div>
   </div>
-  <div class="pin-err" id="pinErr" role="alert"></div>
+  <div class="pin-err" id="pinErr"></div>
 </div>
 
-<!-- ══ APP ══ -->
 <div id="app">
-  <div id="roBar" class="readonly-bar" style="display:none" role="alert"></div>
+  <div id="roBar" class="readonly-bar" style="display:none"></div>
 
-  <div class="topbar" role="banner">
+  <div class="topbar">
     <div class="topbar-brand">Cash<span>book</span></div>
     <div class="topbar-right">
-      <button class="tb-btn" onclick="switchTab('report',this)" aria-label="Print report">🖨 Print</button>
-      <button class="tb-btn primary" onclick="switchTab('add',this)" id="addTabBtn" aria-label="Add new transaction">+ Add</button>
-      <button class="tb-btn" onclick="lockApp()" title="Lock" aria-label="Lock app">🔒</button>
+      <button class="tb-btn primary" onclick="switchTab('add',this)">+ Add</button>
+      <button class="tb-btn" onclick="lockApp()">🔒</button>
     </div>
   </div>
 
-  <div class="nav" id="mainNav" role="navigation" aria-label="Main navigation">
-    <button class="nav-btn active" onclick="switchTab('dashboard',this)" aria-label="Dashboard">Dashboard</button>
-    <button class="nav-btn" onclick="switchTab('ledger',this)" aria-label="Ledger">Ledger</button>
-    <button class="nav-btn" onclick="switchTab('add',this)" aria-label="Add entry">Add Entry</button>
-    <button class="nav-btn" onclick="switchTab('people',this)" aria-label="People manager">People</button>
-    <button class="nav-btn" onclick="switchTab('report',this)" aria-label="Generate report">Report</button>
-    <button class="nav-btn" onclick="switchTab('settings',this)" aria-label="Settings">Settings</button>
+  <div class="nav" id="mainNav">
+    <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard',this)">Dashboard</button>
+    <button class="nav-btn" data-tab="ledger" onclick="switchTab('ledger',this)">Ledger</button>
+    <button class="nav-btn" data-tab="add" onclick="switchTab('add',this)">Add Entry</button>
+    <button class="nav-btn" data-tab="people" onclick="switchTab('people',this)">People</button>
+    <button class="nav-btn" data-tab="settings" onclick="switchTab('settings',this)">Settings</button>
   </div>
 
-  <div class="scroll" role="main">
+  <div class="scroll">
   <div class="main">
 
-  <!-- ══ DASHBOARD ══ -->
-  <div class="tab active" id="tab-dashboard" role="tabpanel">
-    <h2 class="sh" aria-level="2">Master Balance</h2>
+  <div class="tab active" id="tab-dashboard">
+    <h2 class="sh">Master Balance</h2>
     <div class="master-card" id="masterCard">
       <div class="mc-label">Total Cash Available</div>
       <div class="mc-amount" id="masterAmt">GHS 0.00</div>
       <div class="mc-stats">
         <div class="mc-stat"><div class="mc-stat-lbl">Total In</div><div class="mc-stat-val g" id="masterIn">0.00</div></div>
         <div class="mc-stat"><div class="mc-stat-lbl">Total Out</div><div class="mc-stat-val r" id="masterOut">0.00</div></div>
-        <div class="mc-stat"><div class="mc-stat-lbl">Entries</div><div class="mc-stat-val b" id="masterCount">0</div></div>
+        <div class="mc-stat"><div class="mc-stat-lbl">Entries</div><div class="mc-stat-val" id="masterCount">0</div></div>
       </div>
     </div>
 
-    <h2 class="sh" aria-level="2">Balances by Person</h2>
-    <div class="person-grid" id="personGrid" aria-live="polite"></div>
+    <h2 class="sh">Balances by Person</h2>
+    <div class="person-grid" id="personGrid"></div>
 
-    <h2 class="sh" aria-level="2">Recent Transactions</h2>
-    <div id="recentList" aria-live="polite"></div>
+    <h2 class="sh">Recent Transactions</h2>
+    <div id="recentList"></div>
   </div>
 
-  <!-- ══ LEDGER ══ -->
-  <div class="tab" id="tab-ledger" role="tabpanel">
-    <h2 class="sh" aria-level="2">All Transactions</h2>
-    <div class="tx-filters" id="ledgerFilters" role="group" aria-label="Transaction filters">
-      <button class="tx-filter on" onclick="setFilter('all',this)" aria-label="Show all transactions">All</button>
-      <button class="tx-filter" onclick="setFilter('income',this)" aria-label="Show income only">💚 Income</button>
-      <button class="tx-filter" onclick="setFilter('expense',this)" aria-label="Show expenses only">🔴 Expense</button>
-      <button class="tx-filter" onclick="setFilter('salary',this)" aria-label="Show salary only">💙 Salary</button>
+  <div class="tab" id="tab-ledger">
+    <div class="tx-filters" id="ledgerFilters">
+      <button class="tx-filter on" onclick="setFilter('all',this)">All</button>
+      <button class="tx-filter" onclick="setFilter('income',this)">💚 In</button>
+      <button class="tx-filter" onclick="setFilter('expense',this)">🔴 Out</button>
+      <button class="tx-filter" onclick="setFilter('eggsale',this)">🥚 Eggs</button>
+      <button class="tx-filter" onclick="setFilter('transfer',this)">🟡 Transfer</button>
     </div>
-    <div id="personFilterRow" class="tx-filters" style="margin-top:-4px;margin-bottom:14px;" role="group" aria-label="Person filters"></div>
-    <div id="ledgerList" aria-live="polite"></div>
+    <div id="personFilterRow" class="tx-filters" style="margin-bottom:14px;"></div>
+    <div id="ledgerList"></div>
   </div>
 
-  <!-- ══ ADD ENTRY ══ -->
-  <div class="tab" id="tab-add" role="tabpanel">
-    <h2 class="sh" aria-level="2">New Transaction</h2>
+  <div class="tab" id="tab-add">
+    <h2 class="sh" id="addFormTitle">New Transaction</h2>
     <div class="form-card">
-      <!-- Type switcher -->
-      <div class="type-switcher" role="group" aria-label="Transaction type">
-        <button class="type-btn active-income" onclick="setType('income',this)" id="tb-income" aria-label="Income">💚<br>Income</button>
-        <button class="type-btn" onclick="setType('expense',this)" id="tb-expense" aria-label="Expense">🔴<br>Expense</button>
-        <button class="type-btn" onclick="setType('salary',this)" id="tb-salary" aria-label="Salary">💙<br>Salary</button>
-        <button class="type-btn" onclick="setType('transfer',this)" id="tb-transfer" aria-label="Transfer">🟡<br>Transfer</button>
+      
+      <div class="type-switcher">
+        <button class="type-btn active-income" onclick="setType('income',this)" id="tb-income">💚 Income</button>
+        <button class="type-btn" onclick="setType('expense',this)" id="tb-expense">🔴 Expense</button>
+        <button class="type-btn" onclick="setType('salary',this)" id="tb-salary">💙 Salary</button>
+        <button class="type-btn" onclick="setType('transfer',this)" id="tb-transfer">🟡 Transfer</button>
+        <button class="type-btn" onclick="setType('eggsale',this)" id="tb-eggsale">🥚 Egg Sale</button>
+        <button class="type-btn" onclick="setType('capital',this)" id="tb-capital">💼 Capital</button>
       </div>
 
-      <!-- Amount -->
-      <div class="form-row single" style="margin-bottom:14px;">
-        <div class="f-field">
-          <label class="f-label" for="f-amount">Amount (GHS) *</label>
-          <input class="f-input f-amount" type="number" id="f-amount" placeholder="0.00" min="0" step="0.01" aria-describedby="amountHelp"/>
+      <div id="row-egg" style="display:none;">
+        <div class="form-row single"><div class="f-field"><label class="f-label">Buyer Name</label><input class="f-input" id="e-buyer" placeholder="Who bought the eggs?"></div></div>
+        <div class="form-row">
+          <div class="f-field"><label class="f-label">Crates Sold</label><input class="f-input" type="number" id="e-crates" placeholder="0" oninput="calcEgg()"></div>
+          <div class="f-field"><label class="f-label">Price per Crate</label><input class="f-input" type="number" id="e-price" placeholder="0.00" oninput="calcEgg()"></div>
         </div>
+        <div class="egg-stats" id="eggStats">Expected Total: <span>0.00</span></div>
       </div>
-      <div id="amountHelp" class="f-label" style="font-size:0.5rem;color:var(--text3);margin-top:4px;">Enter positive numbers only</div>
 
-      <!-- Person + Date -->
-      <div class="form-row">
+      <div class="form-row single" style="margin-bottom:14px; margin-top:10px;">
         <div class="f-field">
-          <label class="f-label" for="f-person">Person *</label>
-          <select class="f-select" id="f-person" aria-label="Select person"></select>
-        </div>
-        <div class="f-field">
-          <label class="f-label" for="f-date">Date *</label>
-          <input class="f-input" type="date" id="f-date" aria-label="Transaction date"/>
+          <label class="f-label" id="amountLabel">Amount Paid / Transferred (GHS) *</label>
+          <input class="f-input f-amount" type="number" id="f-amount" placeholder="0.00" min="0" step="0.01"/>
         </div>
       </div>
 
-      <!-- Description -->
-      <div class="form-row single">
+      <div class="form-row" id="row-person">
         <div class="f-field">
-          <label class="f-label" for="f-desc">Description *</label>
-          <input class="f-input" type="text" id="f-desc" placeholder="What was this for?" aria-label="Transaction description"/>
+          <label class="f-label" id="personLabel">Person *</label>
+          <select class="f-select" id="f-person"></select>
+        </div>
+        <div class="f-field">
+          <label class="f-label">Date *</label>
+          <input class="f-input" type="date" id="f-date"/>
         </div>
       </div>
 
-      <!-- Category + Reference -->
-      <div class="form-row">
+      <div class="form-row single" id="row-transfer" style="display:none; margin-bottom:10px;">
         <div class="f-field">
-          <label class="f-label" for="f-category">Category</label>
-          <select class="f-select" id="f-category" aria-label="Transaction category">
+          <label class="f-label">To Person (Receiver) *</label>
+          <select class="f-select" id="f-to-person"></select>
+        </div>
+      </div>
+
+      <div class="form-row single" id="row-desc">
+        <div class="f-field">
+          <label class="f-label">Description / Note *</label>
+          <input class="f-input" type="text" id="f-desc" placeholder="What was this for?"/>
+        </div>
+      </div>
+
+      <div class="form-row" id="row-cat">
+        <div class="f-field">
+          <label class="f-label">Category</label>
+          <select class="f-select" id="f-category">
             <option value="">— Select —</option>
             <option>Feed & Supplies</option>
             <option>Transport</option>
-            <option>Utilities</option>
-            <option>Equipment</option>
             <option>Medical / Vet</option>
             <option>Labour</option>
             <option>Sales Revenue</option>
-            <option>Loan / Advance</option>
-            <option>Salary</option>
+            <option>Owner Funds</option>
             <option>Other</option>
           </select>
         </div>
         <div class="f-field">
-          <label class="f-label" for="f-note">Reference / Note</label>
-          <input class="f-input" type="text" id="f-note" placeholder="e.g. Receipt #007" aria-label="Transaction note"/>
-        </div>
+           </div>
       </div>
 
-      <button class="submit-btn" onclick="submitTx()" id="submitBtn" aria-label="Save transaction">Save Transaction</button>
-    </div>
-
-    <!-- Quick shortcuts -->
-    <h2 class="sh" aria-level="2">Quick Entry</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="quickBtns" role="group" aria-label="Quick transaction templates"></div>
-  </div>
-
-  <!-- ══ PEOPLE ══ -->
-  <div class="tab" id="tab-people" role="tabpanel">
-    <h2 class="sh" aria-level="2">Team Members</h2>
-    <div class="people-list" id="peopleList" aria-live="polite"></div>
-
-    <h2 class="sh" aria-level="2">Add Person</h2>
-    <div class="add-person-form">
-      <div class="form-row">
-        <div class="f-field">
-          <label class="f-label" for="p-name">Full Name *</label>
-          <input class="f-input" id="p-name" placeholder="e.g. Abdul Jalil" aria-label="Person name"/>
-        </div>
-        <div class="f-field">
-          <label class="f-label" for="p-role">Role / Title</label>
-          <input class="f-input" id="p-role" placeholder="e.g. Caretaker" aria-label="Person role"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="f-field">
-          <label class="f-label" for="p-color">Colour</label>
-          <select class="f-select" id="p-color" aria-label="Person color">
-            <option value="green">Green</option>
-            <option value="blue">Blue</option>
-            <option value="gold">Gold</option>
-            <option value="red">Red</option>
-            <option value="purple">Purple</option>
-          </select>
-        </div>
-        <div class="f-field" style="justify-content:flex-end;">
-          <label class="f-label">&nbsp;</label>
-          <button class="submit-btn" style="margin-top:0;" onclick="addPerson()" aria-label="Add person">Add Person</button>
-        </div>
-      </div>
+      <input type="hidden" id="editTxId" value=""/>
+      <button class="submit-btn" onclick="submitTx()" id="submitBtn">Save Transaction</button>
+      <button class="submit-btn" onclick="cancelEdit()" id="cancelEditBtn" style="display:none; background:var(--bg3); color:var(--text); margin-top:8px;">Cancel Edit</button>
     </div>
   </div>
 
-  <!-- ══ REPORT ══ -->
-  <div class="tab" id="tab-report" role="tabpanel">
-    <h2 class="sh" aria-level="2">Generate Report</h2>
-    <div class="report-controls">
-      <div class="form-row">
-        <div class="f-field">
-          <label class="f-label" for="r-from">From Date</label>
-          <input class="f-input" type="date" id="r-from" aria-label="Report start date"/>
-        </div>
-        <div class="f-field">
-          <label class="f-label" for="r-to">To Date</label>
-          <input class="f-input" type="date" id="r-to" aria-label="Report end date"/>
-        </div>
-      </div>
-      <div class="form-row" style="margin-top:8px;">
-        <div class="f-field">
-          <label class="f-label" for="r-person">Filter by Person</label>
-          <select class="f-select" id="r-person" aria-label="Report person filter">
-            <option value="all">All People</option>
-          </select>
-        </div>
-        <div class="f-field">
-          <label class="f-label" for="r-type">Filter by Type</label>
-          <select class="f-select" id="r-type" aria-label="Report type filter">
-            <option value="all">All Types</option>
-            <option value="income">Income Only</option>
-            <option value="expense">Expenses Only</option>
-            <option value="salary">Salary Only</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
-        <button class="submit-btn" style="margin:0;" onclick="generateReport()" aria-label="Generate report">Generate</button>
-        <button class="submit-btn" style="margin:0;background:var(--blue);color:#fff;" onclick="window.print()" aria-label="Print report">🖨 Print</button>
-      </div>
-    </div>
+  <div class="tab" id="tab-people">
+    <h2 class="sh">Team Members</h2>
+    <div class="people-list" id="peopleList"></div>
 
-    <div class="report-preview" id="reportPreview" aria-live="polite">
-      <div class="rp-header">
-        <h3 class="rp-title" id="rpTitle" aria-level="3">Expense Report</h3>
-        <p class="rp-sub" id="rpSub"></p>
-      </div>
-      <div class="rp-summary" id="rpSummary" role="group" aria-label="Report summary"></div>
-      <div style="margin-bottom:10px;font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Transactions</div>
-      <table class="rp-table" id="rpTable" aria-label="Transaction report">
-        <thead><tr><th>Date</th><th>Person</th><th>Description</th><th>Category</th><th>Type</th><th style="text-align:right">Amount</th></tr></thead>
-        <tbody id="rpBody"></tbody>
-      </table>
-      <div id="rpPersonBreakdown"></div>
-    </div>
-  </div>
-
-  <!-- ══ SETTINGS ══ -->
-  <div class="tab" id="tab-settings" role="tabpanel">
-    <h2 class="sh" aria-level="2">Currency</h2>
+    <h2 class="sh">Add Person</h2>
     <div class="form-card">
-      <div class="f-field">
-        <label class="f-label" for="s-currency">Currency Symbol</label>
-        <input class="f-input" id="s-currency" placeholder="e.g. GHS, NGN, USD, £" aria-label="Currency symbol"/>
+      <div class="form-row">
+        <div class="f-field"><label class="f-label">Full Name *</label><input class="f-input" id="p-name"/></div>
+        <div class="f-field"><label class="f-label">Role</label><input class="f-input" id="p-role"/></div>
       </div>
-      <button class="submit-btn" style="margin-top:10px;" onclick="saveCurrency()" aria-label="Save currency settings">Save Currency</button>
-    </div>
-
-    <h2 class="sh" aria-level="2">Cloud Sync (Firebase)</h2>
-    <div class="form-card">
-      <div id="dbStatus" style="font-size:0.78rem;color:var(--text2);margin-bottom:12px;line-height:1.6;" role="status"></div>
-      <div class="f-field" style="margin-bottom:10px;">
-        <label class="f-label" for="s-fbconfig">Firebase Config (JSON)</label>
-        <textarea class="f-input" id="s-fbconfig" rows="6" style="font-size:0.72rem;resize:vertical;min-height:120px;" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' aria-label="Firebase configuration JSON"></textarea>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <button class="submit-btn" style="margin:0;" onclick="connectFirebase()" aria-label="Connect to Firebase">Connect</button>
-        <button class="submit-btn" style="margin:0;background:var(--bg4);color:var(--text2);" onclick="manualSync()" aria-label="Manually sync data">Sync Now</button>
-      </div>
-    </div>
-
-    <h2 class="sh" aria-level="2">Data</h2>
-    <div class="form-card">
-      <button class="submit-btn" style="background:var(--red);margin-bottom:10px;" onclick="confirmClear()" aria-label="Clear all data">Clear All Data</button>
-      <div style="font-size:0.7rem;color:var(--text3);line-height=1.6;">
-        <strong style="color:var(--text2);">Install as app:</strong><br>
-        iOS: Safari → Share → Add to Home Screen<br>
-        Android: Chrome → Menu → Add to Home Screen
-      </div>
+      <button class="submit-btn" onclick="addPerson()">Add Person</button>
     </div>
   </div>
 
-  </div><!-- /main -->
-  </div><!-- /scroll -->
-</div><!-- /app -->
-
-<!-- DELETE MODAL -->
-<div class="overlay" id="delOverlay" onclick="closeModal()" aria-hidden="true">
-  <div class="modal" onclick="event.stopPropagation()" role="dialog" aria-modal="true">
-    <div class="modal-title">Delete Transaction?</div>
-    <div class="modal-sub" id="delModalSub">This action cannot be undone.</div>
-    <div class="modal-btns">
-      <button class="m-btn m-btn-cancel" onclick="closeModal()" aria-label="Cancel deletion">Cancel</button>
-      <button class="m-btn m-btn-confirm" onclick="confirmDelete()" aria-label="Confirm deletion">Delete</button>
+  <div class="tab" id="tab-settings">
+    <div class="form-card">
+      <button class="submit-btn" style="background:var(--red);" onclick="confirmClear()">Clear All Data / Reset PINs</button>
     </div>
+  </div>
+
+  </div>
   </div>
 </div>
 
-<div id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+<div id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════
-//  SANITIZATION
+//  STORAGE & INIT
 // ═══════════════════════════════════════════
-function sanitizeHTML(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+const gs = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+const ss = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+let people    = gs('cb_people', []);
+let txs       = gs('cb_txs', []);
+let currency  = gs('cb_currency', 'GHS');
+let ledgerFilter = 'all', personFilter = 'all';
+let txType    = 'income';
+let readOnly  = false, pinEntry = '';
+let editModeId = null;
+
+// Ensure basic demo people if empty
+if(people.length === 0) {
+  people = [
+    { id:'p1', name:'Jalil', role:'Manager', color:'green' },
+    { id:'p2', name:'Francis', role:'Sales', color:'blue' }
+  ];
+  ss('cb_people', people);
 }
 
-function sanitizeHTMLAttr(str) {
-  return str.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+// ═══════════════════════════════════════════
+//  PIN SYSTEM
+// ═══════════════════════════════════════════
+function checkFirstTimeSetup() {
+  const mPin = localStorage.getItem('cb_pin_master');
+  if(!mPin) {
+    document.getElementById('pinSetupScreen').style.display = 'flex';
+    document.getElementById('pinScreen').style.display = 'none';
+  } else {
+    document.getElementById('pinSetupScreen').style.display = 'none';
+    document.getElementById('pinScreen').style.display = 'flex';
+  }
 }
 
-// ═══════════════════════════════════════════
-//  PIN
-// ═══════════════════════════════════════════
-const PIN_MASTER_KEY = 'cb_pin_master';
-const PIN_VIEW_KEY = 'cb_pin_view';
-let pinEntry = '';
-let readOnly = false;
+function saveNewPins() {
+  const m = document.getElementById('setupMasterPin').value;
+  const v = document.getElementById('setupViewPin').value;
+  if(m.length !== 4 || v.length !== 4) { toast("⚠ Both PINs must be 4 digits"); return; }
+  localStorage.setItem('cb_pin_master', m);
+  localStorage.setItem('cb_pin_view', v);
+  toast("✅ Setup complete!");
+  checkFirstTimeSetup();
+}
 
 function pk(d) {
   if (pinEntry.length >= 4) return;
-  pinEntry += d;
-  updateDots();
+  pinEntry += d; updateDots();
   if (pinEntry.length === 4) setTimeout(checkPin, 120);
 }
-function pdel() { 
-  pinEntry = pinEntry.slice(0,-1); 
-  updateDots(); 
-}
+function pdel() { pinEntry = pinEntry.slice(0,-1); updateDots(); }
 function updateDots() {
   for (let i=0;i<4;i++) {
     const dot = document.getElementById('pd'+i);
     dot.className = 'pd' + (i<pinEntry.length ? ' on' : '');
   }
 }
-async function checkPin() {
-  const storedMaster = localStorage.getItem(PIN_MASTER_KEY);
-  const storedView = localStorage.getItem(PIN_VIEW_KEY);
+
+function checkPin() {
+  const mPin = localStorage.getItem('cb_pin_master');
+  const vPin = localStorage.getItem('cb_pin_view');
   
-  if (pinEntry === storedMaster) { 
-    sessionStorage.setItem('cb_session','master'); 
-    unlockApp(false); 
-  }
-  else if (pinEntry === storedView) { 
-    sessionStorage.setItem('cb_session','view'); 
-    unlockApp(true); 
-  }
+  if (pinEntry === mPin) { sessionStorage.setItem('cb_session','master'); unlockApp(false); }
+  else if (pinEntry === vPin) { sessionStorage.setItem('cb_session','view'); unlockApp(true); }
   else {
-    updateDots('err');
-    document.getElementById('pinDots').classList.add('shaking');
+    updateDots('err'); document.getElementById('pinDots').classList.add('shaking');
     document.getElementById('pinErr').textContent = 'Incorrect PIN';
     setTimeout(() => {
       document.getElementById('pinDots').classList.remove('shaking');
-      pinEntry = ''; 
-      updateDots();
-      document.getElementById('pinErr').textContent = '';
+      pinEntry = ''; updateDots(); document.getElementById('pinErr').textContent = '';
     }, 800);
   }
 }
+
 function unlockApp(ro) {
   readOnly = ro;
   document.getElementById('pinScreen').style.display = 'none';
+  document.getElementById('pinSetupScreen').style.display = 'none';
   document.getElementById('app').classList.add('on');
   document.getElementById('roBar').style.display = ro ? 'block' : 'none';
-  document.getElementById('roBar').textContent = '👁 VIEW-ONLY — Enter PIN to make changes';
+  document.getElementById('roBar').textContent = '👁 VIEW-ONLY MODE';
   initApp();
 }
 function lockApp() {
   sessionStorage.removeItem('cb_session');
   document.getElementById('app').classList.remove('on');
-  document.getElementById('pinScreen').style.display = 'flex';
-  readOnly = false; 
-  pinEntry = ''; 
-  updateDots();
+  checkFirstTimeSetup();
+  readOnly = false; pinEntry = ''; updateDots();
 }
 function guardWrite() {
-  if (readOnly) { 
-    toast('🔒 View-only — use PIN to make changes'); 
-    return false; 
-  }
+  if (readOnly) { toast('🔒 View-only mode'); return false; }
   return true;
 }
-// Auto-restore session
-(function(){
-  const s = sessionStorage.getItem('cb_session');
-  if (s === 'master' || s === 'view') {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => unlockApp(s === 'view'));
-    else unlockApp(s === 'view');
-  }
-})();
 
 // ═══════════════════════════════════════════
-//  STORAGE
-// ═══════════════════════════════════════════
-const gs = (k, d) => { 
-  try { 
-    const v = localStorage.getItem(k);
-    return v ? JSON.parse(v) : d; 
-  } catch { 
-    return d; 
-  } 
-};
-const ss = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-// ═══════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════
-let people    = gs('cb_people', [
-  { id:'p1', name:'Jalil',  role:'Caretaker', color:'green'  },
-  { id:'p2', name:'Damian', role:'Consultant', color:'blue'  },
-  { id:'p3', name:'Francis',role:'Assistant', color:'gold'   },
-]);
-let txs       = gs('cb_txs', []);
-let currency  = gs('cb_currency', 'GHS');
-let ledgerFilter = 'all';
-let personFilter = 'all';
-let txType    = 'income';
-let deletePendingId = null;
-let db        = null;
-let _fs       = null;
-
-// ═══════════════════════════════════════════
-//  COLOUR PALETTE
-// ═══════════════════════════════════════════
-const COLORS = {
-  green:  { bg:'rgba(0,196,140,0.15)', text:'#00c48c' },
-  blue:   { bg:'rgba(77,159,255,0.15)', text:'#4d9fff' },
-  gold:   { bg:'rgba(245,197,66,0.15)', text:'#f5c542' },
-  red:    { bg:'rgba(255,77,109,0.15)', text:'#ff4d6d' },
-  purple: { bg:'rgba(181,123,238,0.15)', text:'#b57bee' },
-};
-function personColor(p) { return COLORS[p.color] || COLORS.green; }
-function personInitials(p) { return p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
-
-// ═══════════════════════════════════════════
-//  DATE HANDLING
+//  UTILS
 // ═══════════════════════════════════════════
 function fmtDate(d) {
   if (!d) return '';
-  const dt = new Date(d);
-  return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+function fmtAmt(n) {
+  const s = Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  return (n < 0 ? '-' : '') + currency + ' ' + s;
 }
 
-function fmtAmt(n, alwaysSign=false) {
-  const s = Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  if (alwaysSign) return (n >= 0 ? '+' : '-') + currency + ' ' + s;
-  return currency + ' ' + s;
-}
+const COLORS = {
+  green: { bg:'rgba(0,196,140,0.15)', text:'#00c48c' },
+  blue:  { bg:'rgba(77,159,255,0.15)', text:'#4d9fff' },
+  gold:  { bg:'rgba(245,197,66,0.15)', text:'#f5c542' },
+  red:   { bg:'rgba(255,77,109,0.15)', text:'#ff4d6d' }
+};
+function personColor(p) { return COLORS[p.color] || COLORS.green; }
+function personInitials(p) { return p.name.slice(0,2).toUpperCase(); }
 
 // ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
 function initApp() {
-  // Set today's date
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-date').value = today;
-  
-  // Set report date defaults
-  const monthStart = today.slice(0,7) + '-01';
-  document.getElementById('r-from').value = monthStart;
-  document.getElementById('r-to').value = today;
-  
-  document.getElementById('s-currency').value = currency;
-  renderAll();
-  populatePersonSelects();
-  renderPeopleTab();
-  renderQuickBtns();
-  initFirebase();
-  
-  // Register service worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  populatePersonSelects(); renderAll(); renderPeopleTab();
 }
+function renderAll() { renderDashboard(); renderLedger(); renderPersonFilterRow(); }
 
-function renderAll() {
-  renderDashboard();
-  renderLedger();
-  renderPersonFilterRow();
-}
-
-// ═══════════════════════════════════════════
-//  TABS
-// ═══════════════════════════════════════════
 function switchTab(name, btn) {
-  // Update tab visibility
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  
-  // Update nav button
-  const navBtn = [...document.querySelectorAll('.nav-btn')].find(b => 
-    b.getAttribute('aria-label').toLowerCase().includes(name.slice(0,4))
-  );
-  if (navBtn) navBtn.classList.add('active');
-  
-  // Special handling for report tab
-  if (name === 'report') populateReportPersonSelect();
+  if(btn) btn.classList.add('active');
+  else document.querySelector(`[data-tab="${name}"]`).classList.add('active');
 }
 
 // ═══════════════════════════════════════════
-//  DASHBOARD
+//  LOGIC & STATS
 // ═══════════════════════════════════════════
+function personStats(pid) {
+  let pIn = 0, pOut = 0;
+  txs.forEach(t => {
+    // Egg Sale logic
+    if (t.type === 'eggsale' && t.person === pid) pIn += (t.amount || 0);
+    // Standard logic
+    if (t.type === 'income' && t.person === pid) pIn += t.amount;
+    if (t.type === 'capital' && t.person === pid) pIn += t.amount;
+    if ((t.type === 'expense' || t.type === 'salary') && t.person === pid) pOut += t.amount;
+    // Transfer logic
+    if (t.type === 'transfer') {
+      if (t.person === pid) pOut += t.amount; // Sender
+      if (t.to_person === pid) pIn += t.amount; // Receiver
+    }
+  });
+  return { pIn, pOut, pBal: pIn - pOut };
+}
+
 function renderDashboard() {
-  // Master totals
   let totalIn = 0, totalOut = 0;
   txs.forEach(t => {
-    if (t.type === 'income') totalIn += t.amount;
-    else if (t.type === 'expense' || t.type === 'salary') totalOut += t.amount;
+    if (t.type === 'income' || t.type === 'capital' || t.type === 'eggsale') totalIn += t.amount;
+    if (t.type === 'expense' || t.type === 'salary') totalOut += t.amount;
+    // Transfers are neutral to master balance
   });
   const balance = totalIn - totalOut;
   
@@ -963,7 +604,6 @@ function renderDashboard() {
   document.getElementById('masterOut').textContent = fmtAmt(totalOut);
   document.getElementById('masterCount').textContent = txs.length;
 
-  // Per-person cards
   const grid = document.getElementById('personGrid');
   grid.innerHTML = '';
   people.forEach(p => {
@@ -971,87 +611,52 @@ function renderDashboard() {
     const c = personColor(p);
     const card = document.createElement('div');
     card.className = 'person-card fade-in';
-    card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-label', `${p.name} balance ${fmtAmt(pBal)}`);
+    card.onclick = () => { personFilter = p.id; switchTab('ledger'); renderPersonFilterRow(); renderLedger(); };
+    
+    // Safely append HTML
     card.innerHTML = `
-      <div class="pc-avatar" style="background:${c.bg};color:${c.text}" role="img" aria-label="${personInitials(p)}">${personInitials(p)}</div>
-      <div class="pc-name">${p.name}</div>
-      <div class="pc-role">${p.role || ''}</div>
+      <div class="pc-avatar" style="background:${c.bg};color:${c.text}">${personInitials(p)}</div>
+      <div class="pc-name"></div>
       <div class="pc-balance ${pBal >= 0 ? 'pos' : 'neg'}">${fmtAmt(pBal)}</div>
       <div class="pc-meta">
         <span class="pc-chip in">In ${fmtAmt(pIn)}</span>
         <span class="pc-chip out">Out ${fmtAmt(pOut)}</span>
       </div>`;
-    card.addEventListener('click', () => {
-      personFilter = personFilter === p.id ? 'all' : p.id;
-      switchTab('ledger');
-      renderPersonFilterRow();
-      renderLedger();
-    });
+    // Text content for XSS protection
+    card.querySelector('.pc-name').textContent = p.name;
     grid.appendChild(card);
   });
-  if (!people.length) { 
-    grid.innerHTML = '<div style="grid-column:1/-1;font-size:0.78rem;color:var(--text3);padding:10px 0;">No people added yet — go to the People tab.</div>';
-  }
 
-  // Recent 5 transactions
   const recent = [...txs].sort((a,b) => b.ts - a.ts).slice(0,5);
   const rl = document.getElementById('recentList');
-  rl.innerHTML = recent.length ? '' : '<div class="tx-empty">No transactions yet.<br>Tap <strong>+ Add</strong> to record one.</div>';
-  recent.forEach(t => rl.appendChild(makeTxEl(t, false)));
-}
-
-function personStats(pid) {
-  let pIn = 0, pOut = 0;
-  txs.forEach(t => {
-    if (t.person !== pid) return;
-    if (t.type === 'income') pIn += t.amount;
-    else if (t.type === 'expense' || t.type === 'salary') pOut += t.amount;
-    else if (t.type === 'transfer') { pOut += t.amount; }
-  });
-  return { pIn, pOut, pBal: pIn - pOut };
+  rl.innerHTML = '';
+  if(!recent.length) rl.innerHTML = '<div class="tx-empty">No transactions yet.</div>';
+  recent.forEach(t => rl.appendChild(makeTxEl(t)));
 }
 
 // ═══════════════════════════════════════════
-//  LEDGER
+//  LEDGER & RENDERING
 // ═══════════════════════════════════════════
 function setFilter(f, btn) {
   ledgerFilter = f;
   document.querySelectorAll('#ledgerFilters .tx-filter').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  renderLedger();
+  btn.classList.add('on'); renderLedger();
 }
 
 function renderPersonFilterRow() {
   const row = document.getElementById('personFilterRow');
   row.innerHTML = '';
-  
-  // All people button
   const allBtn = document.createElement('button');
   allBtn.className = 'tx-filter' + (personFilter === 'all' ? ' on' : '');
   allBtn.textContent = 'All People';
-  allBtn.setAttribute('aria-label', 'Show all people');
-  allBtn.onclick = () => { 
-    personFilter = 'all'; 
-    renderPersonFilterRow(); 
-    renderLedger(); 
-  };
+  allBtn.onclick = () => { personFilter = 'all'; renderPersonFilterRow(); renderLedger(); };
   row.appendChild(allBtn);
   
-  // Person buttons
   people.forEach(p => {
     const b = document.createElement('button');
     b.className = 'tx-filter' + (personFilter === p.id ? ' on' : '');
     b.textContent = p.name;
-    b.setAttribute('aria-label', `Show ${p.name}'s transactions`);
-    b.style.cssText = personFilter === p.id ? 
-      `background:${personColor(p).bg};color:${personColor(p).text};border-color:${personColor(p).text}` : '';
-    b.onclick = () => { 
-      personFilter = p.id; 
-      renderPersonFilterRow(); 
-      renderLedger(); 
-    };
+    b.onclick = () => { personFilter = p.id; renderPersonFilterRow(); renderLedger(); };
     row.appendChild(b);
   });
 }
@@ -1060,475 +665,236 @@ function renderLedger() {
   const list = document.getElementById('ledgerList');
   let filtered = [...txs];
   
-  // Apply filters
   if (ledgerFilter !== 'all') filtered = filtered.filter(t => t.type === ledgerFilter);
-  if (personFilter !== 'all') filtered = filtered.filter(t => t.person === personFilter);
+  if (personFilter !== 'all') {
+    filtered = filtered.filter(t => t.person === personFilter || (t.type === 'transfer' && t.to_person === personFilter));
+  }
   filtered.sort((a,b) => b.ts - a.ts);
 
-  if (!filtered.length) {
-    list.innerHTML = '<div class="tx-empty">No transactions match this filter.</div>';
-    return;
-  }
-
-  // Group by date
-  const groups = {};
-  filtered.forEach(t => { 
-    const d = t.date || t.ts; 
-    if (!groups[d]) groups[d] = []; 
-    groups[d].push(t); 
-  });
-  const sortedDates = Object.keys(groups).sort((a,b) => new Date(b) - new Date(a));
-
   list.innerHTML = '';
-  sortedDates.forEach(date => {
-    const lbl = document.createElement('div');
-    lbl.className = 'tx-group-date';
-    lbl.textContent = fmtDate(date);
-    list.appendChild(lbl);
-    groups[date].forEach(t => list.appendChild(makeTxEl(t, true)));
-  });
+  if (!filtered.length) { list.innerHTML = '<div class="tx-empty">No transactions match.</div>'; return; }
+
+  filtered.forEach(t => list.appendChild(makeTxEl(t)));
 }
 
-function makeTxEl(t, showDel) {
-  const person = people.find(p => p.id === t.person);
-  const pc = person ? personColor(person) : COLORS.green;
-  const isIn = t.type === 'income';
-  const icon = t.type === 'income' ? '💚' : t.type === 'salary' ? '💙' : t.type === 'transfer' ? '🟡' : '🔴';
-  const iconClass = t.type === 'income' ? 'income' : t.type === 'salary' ? 'salary' : t.type === 'transfer' ? 'transfer' : 'expense';
-  const amtClass = isIn ? 'pos' : 'neg';
-  const sign = isIn ? '+' : '-';
-
+function makeTxEl(t) {
   const el = document.createElement('div');
   el.className = 'tx-item fade-in';
-  el.dataset.id = t.id;
-  el.setAttribute('role', 'listitem');
   
-  // Sanitize all user inputs
-  const desc = sanitizeHTML(t.desc);
-  const note = t.note ? sanitizeHTML(t.note) : '';
-  const category = t.category ? sanitizeHTML(t.category) : '';
+  const p1 = people.find(p => p.id === t.person) || {name: 'Unknown'};
+  const p2 = t.to_person ? (people.find(p => p.id === t.to_person) || {name: 'Unknown'}) : null;
   
+  let icon = '🔴', iconClass = 'expense', sign = '-', amtClass = 'neg', descText = t.desc;
+  let metaHtml = `<span class="tx-person">${p1.name}</span> <span class="tx-cat">${fmtDate(t.date)}</span>`;
+
+  if (t.type === 'income' || t.type === 'capital') { icon = t.type==='capital'?'💼':'💚'; iconClass = t.type; sign = '+'; amtClass = 'pos'; }
+  else if (t.type === 'salary') { icon = '💙'; iconClass = 'salary'; }
+  else if (t.type === 'transfer') { 
+    icon = '🟡'; iconClass = 'transfer'; sign = ''; amtClass = ''; 
+    descText = `Transfer to ${p2 ? p2.name : 'Unknown'}`;
+    metaHtml = `<span class="tx-person">${p1.name} ➞ ${p2 ? p2.name : ''}</span> <span class="tx-cat">${fmtDate(t.date)}</span>`;
+  }
+  else if (t.type === 'eggsale') {
+    icon = '🥚'; iconClass = 'eggsale'; sign = '+'; amtClass = 'pos';
+    descText = `Egg Sale: ${t.crates} crates to ${t.buyer}`;
+    const expected = (t.crates * t.price) || 0;
+    const outst = expected - t.amount;
+    metaHtml = `<span class="tx-person">Recv: ${p1.name}</span> <span class="tx-cat">${fmtDate(t.date)}</span>
+                <br><span style="font-size:0.6rem;color:var(--text3)">Outst: ${fmtAmt(outst)}</span>`;
+  }
+
   el.innerHTML = `
-    <div class="tx-icon ${iconClass}" role="img" aria-label="${t.type}">${icon}</div>
+    <div class="tx-icon ${iconClass}">${icon}</div>
     <div class="tx-body">
-      <div class="tx-desc">${desc}</div>
-      <div class="tx-meta">
-        ${person ? `<span class="tx-person" style="background:${pc.bg};color:${pc.text}" role="img" aria-label="${person.name}">${person.name}</span>` : ''}
-        ${category ? `<span class="tx-cat">${category}</span>` : ''}
-        <span class="tx-cat">${fmtDate(t.date)}</span>
-      </div>
-      ${note ? `<div class="tx-note">${note}</div>` : ''}
+      <div class="tx-desc"></div>
+      <div class="tx-meta">${metaHtml}</div>
+      ${t.type !== 'eggsale' && t.desc ? `<div class="tx-note"></div>` : ''}
     </div>
-    <div class="tx-amount ${amtClass}">${sign}${fmtAmt(t.amount)}</div>
-    ${showDel && !readOnly ? `<button class="tx-del" onclick="event.stopPropagation();askDelete('${t.id}','${sanitizeHTMLAttr(t.desc)}')" aria-label="Delete transaction">✕</button>` : ''}`;
+    <div class="tx-amount ${amtClass}">${sign}${fmtAmt(t.amount).replace('GHS ','')}</div>
+    ${!readOnly ? `<div class="tx-actions">
+      <button class="tx-btn" onclick="editTx('${t.id}')">✎</button>
+      <button class="tx-btn del" onclick="deleteTx('${t.id}')">✕</button>
+    </div>` : ''}`;
+    
+  el.querySelector('.tx-desc').textContent = descText;
+  if(el.querySelector('.tx-note')) el.querySelector('.tx-note').textContent = t.desc;
+
   return el;
 }
 
 // ═══════════════════════════════════════════
-//  ADD TRANSACTION
+//  ADD / EDIT LOGIC
 // ═══════════════════════════════════════════
 function setType(type, btn) {
   txType = type;
-  document.querySelectorAll('.type-btn').forEach(b => {
-    b.className = 'type-btn';
-  });
-  btn.className = 'type-btn active-' + type;
-  
-  // Update category default
-  const cat = document.getElementById('f-category');
-  if (type === 'salary') { cat.value = 'Salary'; }
-  else if (type === 'income') { cat.value = 'Sales Revenue'; }
-  else { cat.value = ''; }
+  document.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
+  if(btn) btn.className = `type-btn active-${type}`;
+  else document.getElementById(`tb-${type}`).className = `type-btn active-${type}`;
+
+  // Toggles
+  document.getElementById('row-transfer').style.display = type === 'transfer' ? 'grid' : 'none';
+  document.getElementById('row-egg').style.display = type === 'eggsale' ? 'block' : 'none';
+  document.getElementById('row-desc').style.display = type === 'eggsale' ? 'none' : 'grid';
+  document.getElementById('row-cat').style.display = (type === 'transfer' || type === 'eggsale') ? 'none' : 'grid';
+
+  // Labels
+  document.getElementById('personLabel').textContent = (type==='eggsale') ? 'Payment Received By *' : (type==='transfer' ? 'From Person *' : 'Person *');
+  document.getElementById('amountLabel').textContent = (type==='eggsale') ? 'Amount Paid (GHS) *' : 'Amount (GHS) *';
+}
+
+function calcEgg() {
+  const c = parseFloat(document.getElementById('e-crates').value) || 0;
+  const p = parseFloat(document.getElementById('e-price').value) || 0;
+  document.querySelector('#eggStats span').textContent = fmtAmt(c * p);
 }
 
 function submitTx() {
   if (!guardWrite()) return;
-  
-  const amount = parseFloat(document.getElementById('f-amount').value);
-  const person = document.getElementById('f-person').value;
+  const amt = parseFloat(document.getElementById('f-amount').value) || 0;
+  const pid = document.getElementById('f-person').value;
   const date = document.getElementById('f-date').value;
-  const desc = document.getElementById('f-desc').value.trim();
-  const cat = document.getElementById('f-category').value;
-  const note = document.getElementById('f-note').value.trim();
-
-  // Validation
-  if (!amount || amount <= 0) { toast('⚠ Enter a valid positive amount'); return; }
-  if (!person) { toast('⚠ Select a person'); return; }
-  if (!desc) { toast('⚠ Add a description'); return; }
-  if (!date) { toast('⚠ Select a date'); return; }
-
-  const tx = {
-    id: 'tx_' + Date.now(),
-    type: txType,
-    amount,
-    person,
-    date,
-    desc,
-    category: cat,
-    note,
-    ts: Date.now(),
-  };
-  txs.push(tx);
-  ss('cb_txs', txs);
-  dbSync();
-  renderAll();
   
-  // Reset form
+  if (amt <= 0 && txType !== 'eggsale') { toast('⚠ Enter a valid amount'); return; }
+  if (!pid) { toast('⚠ Select a person'); return; }
+
+  let txObj = {
+    id: editModeId || 'tx_' + Date.now(),
+    type: txType, amount: amt, person: pid, date, ts: Date.now()
+  };
+
+  if (txType === 'transfer') {
+    const toP = document.getElementById('f-to-person').value;
+    if(pid === toP) { toast('⚠ Cannot transfer to same person'); return; }
+    txObj.to_person = toP;
+    txObj.desc = 'Transfer';
+  } else if (txType === 'eggsale') {
+    txObj.buyer = document.getElementById('e-buyer').value || 'Unknown Buyer';
+    txObj.crates = parseFloat(document.getElementById('e-crates').value) || 0;
+    txObj.price = parseFloat(document.getElementById('e-price').value) || 0;
+    txObj.desc = `Egg Sale`;
+  } else {
+    txObj.desc = document.getElementById('f-desc').value || 'Entry';
+    txObj.category = document.getElementById('f-category').value;
+  }
+
+  if (editModeId) {
+    const idx = txs.findIndex(x => x.id === editModeId);
+    if(idx > -1) { txObj.ts = txs[idx].ts; txs[idx] = txObj; }
+    toast('✅ Transaction Updated');
+  } else {
+    txs.push(txObj);
+    toast('✅ Transaction Saved');
+  }
+
+  ss('cb_txs', txs);
+  cancelEdit();
+  renderAll(); switchTab('ledger');
+}
+
+function editTx(id) {
+  if (!guardWrite()) return;
+  const t = txs.find(x => x.id === id);
+  if(!t) return;
+  
+  editModeId = id;
+  switchTab('add');
+  document.getElementById('addFormTitle').textContent = "Edit Transaction";
+  document.getElementById('submitBtn').textContent = "Update Transaction";
+  document.getElementById('cancelEditBtn').style.display = "block";
+  
+  setType(t.type);
+  document.getElementById('f-amount').value = t.amount;
+  document.getElementById('f-person').value = t.person;
+  document.getElementById('f-date').value = t.date;
+  
+  if(t.type === 'transfer') document.getElementById('f-to-person').value = t.to_person;
+  else if (t.type === 'eggsale') {
+    document.getElementById('e-buyer').value = t.buyer || '';
+    document.getElementById('e-crates').value = t.crates || '';
+    document.getElementById('e-price').value = t.price || '';
+    calcEgg();
+  } else {
+    document.getElementById('f-desc').value = t.desc || '';
+    document.getElementById('f-category').value = t.category || '';
+  }
+}
+
+function cancelEdit() {
+  editModeId = null;
+  document.getElementById('addFormTitle').textContent = "New Transaction";
+  document.getElementById('submitBtn').textContent = "Save Transaction";
+  document.getElementById('cancelEditBtn').style.display = "none";
   document.getElementById('f-amount').value = '';
   document.getElementById('f-desc').value = '';
-  document.getElementById('f-note').value = '';
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-  toast('✅ Transaction saved!');
-  switchTab('ledger');
+  document.getElementById('e-buyer').value = '';
+  document.getElementById('e-crates').value = '';
+  setType('income');
 }
 
-function renderQuickBtns() {
-  const c = document.getElementById('quickBtns');
-  if (!c) return;
-  c.innerHTML = '';
-  const shortcuts = [
-    { label:'💚 Money Received', type:'income', desc:'Cash received' },
-    { label:'🔴 Errand Expense', type:'expense', desc:'Errand expense' },
-    { label:'💙 Salary Payment', type:'salary', desc:'Salary payment', cat:'Salary' },
-    { label:'🟡 Fund Transfer', type:'transfer', desc:'Transfer' },
-  ];
-  shortcuts.forEach(s => {
-    const b = document.createElement('button');
-    b.className = 'type-btn';
-    b.style.cssText = 'padding:14px 10px;font-size:0.72rem;border-radius=10px;';
-    b.textContent = s.label;
-    b.setAttribute('aria-label', s.label);
-    b.onclick = () => {
-      setType(s.type, document.getElementById('tb-'+s.type));
-      document.getElementById('f-desc').value = s.desc;
-      if (s.cat) document.getElementById('f-category').value = s.cat;
-      document.getElementById('f-amount').focus();
-      toast('Template loaded — enter amount');
-    };
-    c.appendChild(b);
-  });
+function deleteTx(id) {
+  if (!guardWrite()) return;
+  if(confirm("Delete this transaction?")) {
+    txs = txs.filter(t => t.id !== id);
+    ss('cb_txs', txs); renderAll(); toast('🗑 Deleted');
+  }
 }
 
 // ═══════════════════════════════════════════
-//  PEOPLE
+//  PEOPLE & SETTINGS
 // ═══════════════════════════════════════════
+function populatePersonSelects() {
+  const opts = people.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('f-person').innerHTML = opts;
+  document.getElementById('f-to-person').innerHTML = opts;
+}
+
 function addPerson() {
   if (!guardWrite()) return;
   const name = document.getElementById('p-name').value.trim();
-  const role = document.getElementById('p-role').value.trim();
-  const color = document.getElementById('p-color').value;
-  
-  // Prevent duplicate names
-  if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
-    toast('⚠ Person with this name already exists');
-    return;
-  }
-  
-  if (!name) { toast('⚠ Enter a name'); return; }
-  
-  people.push({ id: 'p_' + Date.now(), name, role, color });
-  ss('cb_people', people);
-  dbSync();
-  document.getElementById('p-name').value = '';
-  document.getElementById('p-role').value = '';
-  populatePersonSelects();
-  renderPeopleTab();
-  renderAll();
-  toast('✅ Person added');
-}
-
-function deletePerson(id) {
-  if (!guardWrite()) return;
-  if (txs.some(t => t.person === id)) {
-    toast('⚠ Cannot delete — person has transactions');
-    return;
-  }
-  people = people.filter(p => p.id !== id);
-  ss('cb_people', people);
-  dbSync();
-  populatePersonSelects();
-  renderPeopleTab();
-  renderAll();
-  toast('🗑 Person removed');
+  if(!name) return;
+  people.push({ id: 'p_' + Date.now(), name, role: document.getElementById('p-role').value });
+  ss('cb_people', people); populatePersonSelects(); renderPeopleTab(); renderAll();
+  document.getElementById('p-name').value = ''; document.getElementById('p-role').value='';
+  toast('✅ Added');
 }
 
 function renderPeopleTab() {
   const list = document.getElementById('peopleList');
-  if (!list) return;
   list.innerHTML = '';
-  
-  if (!people.length) { 
-    list.innerHTML = '<div style="font-size:0.78rem;color:var(--text3);">No people yet — add one below.</div>';
-    return; 
-  }
-  
   people.forEach(p => {
-    const c = personColor(p);
-    const { pIn, pOut, pBal } = personStats(p.id);
-    const row = document.createElement('div');
-    row.className = 'person-row';
-    row.setAttribute('role', 'listitem');
-    row.innerHTML = `
-      <div class="pr-avatar" style="background:${c.bg};color:${c.text}" role="img" aria-label="${personInitials(p)}">${personInitials(p)}</div>
-      <div class="pr-info">
-        <div class="pr-name">${p.name}</div>
-        <div class="pr-role">${p.role || 'No role set'} &nbsp;·&nbsp; <span class="${pBal>=0?'':''}mono" style="color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</span></div>
-      </div>
-      ${!readOnly ? `<button class="pr-del" onclick="deletePerson('${p.id}')" aria-label="Delete person">✕</button>` : ''}`;
-    list.appendChild(row);
+    const div = document.createElement('div'); div.className = 'person-row';
+    div.innerHTML = `<div class="pr-avatar" style="background:${personColor(p).bg};color:${personColor(p).text}">${personInitials(p)}</div>
+                     <div class="pr-info"><div class="pr-name"></div><div class="pr-role"></div></div>`;
+    div.querySelector('.pr-name').textContent = p.name;
+    div.querySelector('.pr-role').textContent = p.role;
+    list.appendChild(div);
   });
-}
-
-function populatePersonSelects() {
-  const sel = document.getElementById('f-person');
-  if (!sel) return;
-  sel.innerHTML = people.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-}
-
-function populateReportPersonSelect() {
-  const sel = document.getElementById('r-person');
-  if (!sel) return;
-  sel.innerHTML = '<option value="all">All People</option>' +
-    people.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-}
-
-// ═══════════════════════════════════════════
-//  DELETE
-// ═══════════════════════════════════════════
-function askDelete(id, desc) {
-  if (!guardWrite()) return;
-  deletePendingId = id;
-  document.getElementById('delModalSub').textContent = `Delete "${desc}"? This cannot be undone.`;
-  document.getElementById('delOverlay').classList.add('open');
-  document.getElementById('delOverlay').setAttribute('aria-hidden', 'false');
-}
-function closeModal() { 
-  document.getElementById('delOverlay').classList.remove('open'); 
-  document.getElementById('delOverlay').setAttribute('aria-hidden', 'true');
-  deletePendingId = null; 
-}
-function confirmDelete() {
-  if (!deletePendingId) return;
-  txs = txs.filter(t => t.id !== deletePendingId);
-  ss('cb_txs', txs);
-  dbSync();
-  renderAll();
-  closeModal();
-  toast('🗑 Transaction deleted');
-}
-
-// ═══════════════════════════════════════════
-//  REPORT
-// ═══════════════════════════════════════════
-function generateReport() {
-  const from = document.getElementById('r-from').value;
-  const to = document.getElementById('r-to').value;
-  const pId = document.getElementById('r-person').value;
-  const rType = document.getElementById('r-type').value;
-
-  let filtered = [...txs];
-  if (from) filtered = filtered.filter(t => t.date >= from);
-  if (to) filtered = filtered.filter(t => t.date <= to);
-  if (pId !== 'all') filtered = filtered.filter(t => t.person === pId);
-  if (rType !== 'all') filtered = filtered.filter(t => t.type === rType);
-  filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
-
-  const totalIn = filtered.filter(t => t.type === 'income').reduce((s,t) => s+t.amount, 0);
-  const totalOut = filtered.filter(t => t.type !== 'income').reduce((s,t) => s+t.amount, 0);
-  const balance = totalIn - totalOut;
-
-  // Header
-  const pName = pId === 'all' ? 'All People' : (people.find(p=>p.id===pId)?.name || pId);
-  document.getElementById('rpTitle').textContent = 'Cashbook Report';
-  document.getElementById('rpSub').textContent = `${fmtDate(from)} – ${fmtDate(to)} · ${pName} · ${filtered.length} entries`;
-
-  // Summary boxes
-  document.getElementById('rpSummary').innerHTML = `
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total In</div><div class="rp-sum-val" style="color:var(--green)">${fmtAmt(totalIn)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total Out</div><div class="rp-sum-val" style="color:var(--red)">${fmtAmt(totalOut)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Balance</div><div class="rp-sum-val" style="color:${balance>=0?'var(--green)':'var(--red)'}">${fmtAmt(balance)}</div></div>`;
-
-  // Table rows
-  const tbody = document.getElementById('rpBody');
-  tbody.innerHTML = filtered.map(t => {
-    const p = people.find(x => x.id === t.person);
-    const isIn = t.type === 'income';
-    return `<tr>
-      <td>${fmtDate(t.date)}</td>
-      <td>${p ? p.name : '—'}</td>
-      <td>${t.desc}${t.note?'<br><small style="color:var(--text3)">'+ t.note+'</small>':''}</td>
-      <td>${t.category || '—'}</td>
-      <td style="text-transform:capitalize">${t.type}</td>
-      <td style="text-align:right;font-family:'DM Mono',monospace;color=${isIn?'var(--green)':'var(--red)'}">${isIn?'+':'-'}${fmtAmt(t.amount)}</td>
-    </tr>`;
-  }).join('');
-
-  // Per-person breakdown
-  if (pId === 'all' && people.length > 1) {
-    let breakdown = '<div style="margin-top:20px;margin-bottom:8px;font-size:0.62rem;font-weight=700;letter-spacing=0.12em;text-transform=uppercase;color=var(--text3);">Balance by Person</div>';
-    breakdown += '<table class="rp-table" aria-label="Balance by person"><thead><tr><th>Person</th><th>Role</th><th>Money In</th><th>Money Out</th><th>Balance</th></tr></thead><tbody>';
-    people.forEach(p => {
-      const pTxs = filtered.filter(t => t.person === p.id);
-      const pIn = pTxs.filter(t => t.type==='income').reduce((s,t)=>s+t.amount,0);
-      const pOut = pTxs.filter(t => t.type!=='income').reduce((s,t)=>s+t.amount,0);
-      const pBal = pIn - pOut;
-      breakdown += `<tr><td><strong>${p.name}</strong></td><td>${p.role||'—'}</td><td style="color=var(--green)">${fmtAmt(pIn)}</td><td style="color=var(--red)">${fmtAmt(pOut)}</td><td style="font-weight=700;color=${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
-    });
-    breakdown += '</tbody></table>';
-    document.getElementById('rpPersonBreakdown').innerHTML = breakdown;
-  } else {
-    document.getElementById('rpPersonBreakdown').innerHTML = '';
-  }
-
-  document.getElementById('reportPreview').style.display = 'block';
-  document.getElementById('reportPreview').scrollIntoView({ behavior:'smooth' });
-  toast(`📋 Report generated — ${filtered.length} transactions`);
-}
-
-// ═══════════════════════════════════════════
-//  SETTINGS
-// ═══════════════════════════════════════════
-function saveCurrency() {
-  currency = document.getElementById('s-currency').value.trim() || 'GHS';
-  ss('cb_currency', currency);
-  renderAll();
-  toast('✅ Currency updated to ' + currency);
 }
 
 function confirmClear() {
   if (!guardWrite()) return;
-  if (!confirm('Delete ALL transactions and people? This cannot be undone.')) return;
-  txs = []; people = [];
-  ss('cb_txs', txs); ss('cb_people', people);
-  dbSync();
-  renderAll();
-  renderPeopleTab();
-  populatePersonSelects();
-  toast('🗑 All data cleared');
-}
-
-// ═══════════════════════════════════════════
-//  FIREBASE
-// ═══════════════════════════════════════════
-async function initFirebase() {
-  const cfg = gs('cb_fbconfig', null);
-  if (!cfg) return;
-  await connectWithConfig(cfg);
-}
-
-async function connectFirebase() {
-  if (!guardWrite()) return;
-  const raw = document.getElementById('s-fbconfig').value.trim();
-  if (!raw) { toast('⚠ Paste your Firebase config first'); return; }
-  try {
-    const cfg = JSON.parse(raw);
-    ss('cb_fbconfig', cfg);
-    await connectWithConfig(cfg);
-  } catch(e) { 
-    toast('⚠ Invalid JSON config'); 
+  if (confirm('Delete ALL data and Reset PINs? This cannot be undone.')) {
+    txs = []; people = []; ss('cb_txs', txs); ss('cb_people', people);
+    localStorage.removeItem('cb_pin_master'); localStorage.removeItem('cb_pin_view');
+    window.location.reload();
   }
 }
 
-async function connectWithConfig(cfg) {
-  try {
-    // Import Firebase from CDN
-    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    _fs = fs;
-    
-    const app = getApps().length === 0 ? initializeApp(cfg) : getApps()[0];
-    db = fs.getFirestore(app);
-    await dbPull();
-    
-    // Live listener
-    const ref = fs.doc(db, 'cashbook', 'main');
-    fs.onSnapshot(ref, snap => {
-      if (!snap.exists()) return;
-      const r = snap.data();
-      const localTs = gs('cb_syncTs', 0);
-      if (r.ts && r.ts > localTs) applyRemote(r);
-    });
-    
-    setDbStatus('✅ Connected — syncing automatically');
-    toast('☁️ Firebase connected!');
-  } catch(e) {
-    console.warn('Firebase error:', e);
-    setDbStatus('⚠️ Connection failed: ' + e.message);
-    toast('⚠ Firebase connection failed');
-  }
-}
-
-function setDbStatus(msg) {
-  const el = document.getElementById('dbStatus');
-  if (el) el.textContent = msg;
-}
-
-async function dbSync() {
-  if (!db || !_fs) return;
-  try {
-    const payload = { txs, people, currency, ts: Date.now() };
-    await _fs.setDoc(_fs.doc(db, 'cashbook', 'main'), payload, { merge:true });
-    ss('cb_syncTs', Date.now());
-    setDbStatus('✅ Last sync: ' + new Date().toLocaleTimeString());
-  } catch(e) { 
-    console.warn('Sync error:', e); 
-  }
-}
-
-async function dbPull() {
-  if (!db || !_fs) return;
-  try {
-    const snap = await _fs.getDoc(_fs.doc(db, 'cashbook', 'main'));
-    if (snap.exists()) applyRemote(snap.data());
-  } catch(e) { 
-    console.warn('Pull error:', e); 
-  }
-}
-
-function applyRemote(r) {
-  if (r.txs) { 
-    txs = r.txs; 
-    ss('cb_txs', txs); 
-  }
-  if (r.people) { 
-    people = r.people; 
-    ss('cb_people', people); 
-  }
-  if (r.currency) { 
-    currency = r.currency; 
-    ss('cb_currency', currency); 
-    document.getElementById('s-currency').value = currency; 
-  }
-  ss('cb_syncTs', r.ts || Date.now());
-  renderAll();
-  renderPeopleTab();
-  populatePersonSelects();
-  setDbStatus('✅ Last sync: ' + new Date().toLocaleTimeString());
-  toast('☁️ Synced from cloud');
-}
-
-async function manualSync() {
-  if (!db) { 
-    toast('⚠ Firebase not connected'); 
-    return; 
-  }
-  toast('🔄 Syncing...');
-  await dbPull();
-  await dbSync();
-  toast('✅ Sync complete');
-}
-
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
-let _tt;
 function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; 
-  el.classList.add('show');
-  clearTimeout(_tt); 
-  _tt = setTimeout(() => el.classList.remove('show'), 2600);
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
 }
+
+// Check auth on load
+(function(){
+  const s = sessionStorage.getItem('cb_session');
+  if (s === 'master' || s === 'view') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => unlockApp(s === 'view'));
+    else unlockApp(s === 'view');
+  } else {
+    document.addEventListener('DOMContentLoaded', checkFirstTimeSetup);
+  }
+})();
 </script>
 </body>
 </html>
