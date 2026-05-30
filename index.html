@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="theme-color" content="#0d0d0d"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
@@ -79,6 +79,9 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   font-size:1.5rem;font-weight:700;color:var(--text);
   transition:all 0.12s;display:flex;align-items:center;justify-content:center;
   user-select:none;
+  /* Accessibility */
+  -webkit-tap-highlight-color:transparent;
+  tap-highlight-color:transparent;
 }
 .pk:active{background:var(--bg4);transform:scale(0.94);}
 .pk.del{font-size:1rem;color:var(--text2);}
@@ -112,6 +115,14 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   padding:6px 12px;font-size:0.7rem;font-weight:600;
   letter-spacing:0.05em;text-transform:uppercase;
   transition:all 0.15s;
+  /* Accessibility */
+  border-radius:8px;
+  padding:6px 12px;
+  font-size:0.7rem;
+  font-weight:600;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  transition:all 0.15s;
 }
 .tb-btn:hover{background:var(--bg4);color:var(--text);}
 .tb-btn.primary{background:var(--green);color:#000;border-color:var(--green);}
@@ -135,6 +146,13 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
   color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;
   transition:all 0.18s;white-space:nowrap;
+  /* Accessibility */
+  border:none;
+  background:none;
+  color:var(--text3);
+  border-bottom:2px solid transparent;
+  transition:all 0.18s;
+  white-space:nowrap;
 }
 .nav-btn.active{color:var(--green);border-bottom-color:var(--green);}
 .nav-btn:hover:not(.active){color:var(--text2);}
@@ -313,9 +331,9 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 }
 .f-input:focus,.f-select:focus{border-color:var(--green);}
 .f-input::placeholder{color:var(--text3);}
-.f-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5550' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.f-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5550' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat=no-repeat;background-position:right 12px center;}
 .f-select option{background:var(--bg3);}
-.f-amount{font-size:1.4rem;letter-spacing:-0.02em;font-family:'DM Mono',monospace;padding:12px 14px;}
+.f-amount{font-size:1.4rem;letter-spacing=-0.02em;font-family:'DM Mono',monospace;padding:12px 14px;}
 .submit-btn{
   width:100%;padding:14px;border-radius:var(--r2);
   font-size:0.82rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
@@ -351,7 +369,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 }
 
 /* ══════════════════════════════════════════════
-   PRINT / REPORT
+   REPORT / PRINT
 ══════════════════════════════════════════════ */
 .report-controls{
   background:var(--bg2);border:1px solid var(--line);
@@ -363,7 +381,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   display:none;
 }
 .rp-header{margin-bottom:20px;}
-.rp-title{font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;}
+.rp-title{font-size:1.1rem;font-weight:800;letter-spacing=-0.02em;margin-bottom:4px;}
 .rp-sub{font-size:0.72rem;color:var(--text2);}
 .rp-summary{
   display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
@@ -372,12 +390,12 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .rp-sum-box{
   background:var(--bg3);border-radius:8px;padding:10px;text-align:center;
 }
-.rp-sum-lbl{font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
-.rp-sum-val{font-family:'DM Mono',monospace;font-size:0.85rem;font-weight:500;}
-.rp-table{width:100%;border-collapse:collapse;font-size:0.75rem;margin-bottom:16px;}
-.rp-table th{text-align:left;font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:6px 8px;border-bottom:1px solid var(--line);}
-.rp-table td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;}
-.rp-table tr:last-child td{border-bottom:none;}
+.rp-sum-lbl{font-size:0.55rem;font-weight:700;letter-spacing=0.1em;text-transform:uppercase;color:var(--text3);margin-bottom=4px;}
+.rp-sum-val{font-family='DM Mono',monospace;font-size=0.85rem;font-weight=500;}
+.rp-table{width=100%;border-collapse:collapse;font-size=0.75rem;margin-bottom=16px;}
+.rp-table th{text-align:left;font-size=0.58rem;font-weight=700;letter-spacing=0.1em;text-transform=uppercase;color:var(--text3);padding=6px 8px;border-bottom=1px solid var(--line);}
+.rp-table td{padding=8px;border-bottom=1px solid var(--line);vertical-align=top;}
+.rp-table tr:last-child td{border-bottom=none;}
 
 /* ══════════════════════════════════════════════
    MODAL (CONFIRM DELETE)
@@ -385,24 +403,24 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:flex-end;justify-content:center;}
 .overlay.open{display:flex;}
 .modal{background:var(--bg2);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;border-top:1px solid var(--line);}
-.modal-title{font-size:1rem;font-weight:700;margin-bottom:6px;}
-.modal-sub{font-size:0.8rem;color:var(--text2);margin-bottom:18px;line-height:1.5;}
-.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.m-btn{padding:13px;border-radius:var(--r2);font-size:0.8rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
-.m-btn-cancel{background:var(--bg3);color:var(--text2);}
-.m-btn-confirm{background:var(--red);color:#fff;}
+.modal-title{font-size:1rem;font-weight:700;margin-bottom=6px;}
+.modal-sub{font-size=0.8rem;color:var(--text2);margin-bottom=18px;line-height=1.5;}
+.modal-btns{display:grid;grid-template-columns=1fr 1fr;gap=10px;}
+.m-btn{padding=13px;border-radius=var(--r2);font-size=0.8rem;font-weight=700;letter-spacing=0.05em;text-transform=uppercase;}
+.m-btn-cancel{background=var(--bg3);color=var(--text2);}
+.m-btn-confirm{background=var(--red);color=#fff;}
 
 /* ══════════════════════════════════════════════
    TOAST
 ══════════════════════════════════════════════ */
 #toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
-  background:var(--bg4);color:var(--text);border:1px solid var(--line2);
-  padding:10px 20px;border-radius:24px;font-size:0.78rem;font-weight:600;
-  box-shadow:var(--sh2);z-index:9000;opacity:0;transition:all 0.28s;
-  white-space:nowrap;max-width:90vw;text-align:center;pointer-events:none;
+  position:fixed;bottom=24px;left=50%;transform=translateX(-50%) translateY(16px);
+  background=var(--bg4);color=var(--text);border=1px solid var(--line2);
+  padding=10px 20px;border-radius=24px;font-size=0.78rem;font-weight=600;
+  box-shadow=var(--sh2);z-index=9000;opacity=0;transition=all 0.28s;
+  white-space=nowrap;max-width=90vw;text-align=center;pointer-events=none;
 }
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.show{opacity=1;transform=translateX(-50%) translateY(0);}
 
 /* ══════════════════════════════════════════════
    PRINT STYLES
@@ -413,23 +431,23 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   .type-switcher,.submit-btn,.form-card,
   .tx-filters,#tab-dashboard,#tab-ledger,#tab-people,
   #tab-settings{display:none!important;}
-  body{background:#fff!important;color:#000!important;}
-  #app{display:block!important;}
-  .scroll,.main{overflow:visible!important;}
-  #tab-report{display:block!important;}
-  .report-preview{display:block!important;background:#fff!important;border:none!important;color:#000!important;}
-  .rp-table{color:#000!important;}
-  .rp-table th,.rp-table td{color:#000!important;border-color:#ccc!important;}
-  .rp-sum-box{background:#f5f5f5!important;color:#000!important;}
-  .rp-sum-lbl,.rp-sum-val,.rp-title,.rp-sub{color:#000!important;}
+  body{background=#fff!important;color=#000!important;}
+  #app{display=block!important;}
+  .scroll,.main{overflow=visible!important;}
+  #tab-report{display=block!important;}
+  .report-preview{display=block!important;background=#fff!important;border=none!important;color=#000!important;}
+  .rp-table{color=#000!important;}
+  .rp-table th,.rp-table td{color=#000!important;border-color=#ccc!important;}
+  .rp-sum-box{background=#f5f5f5!important;color=#000!important;}
+  .rp-sum-lbl,.rp-sum-val,.rp-title,.rp-sub{color=#000!important;}
 }
 
 /* ══════════════════════════════════════════════
    UTILS
 ══════════════════════════════════════════════ */
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-.fade-in{animation:fadeIn 0.22s ease;}
-.mono{font-family:'DM Mono',monospace;}
+@keyframes fadeIn{from{opacity=0;transform=translateY(6px);}to{opacity=1;transform=none;}}
+.fade-in{animation=fadeIn 0.22s ease;}
+.mono{font-family='DM Mono',monospace;}
 </style>
 </head>
 <body>
@@ -443,42 +461,42 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
     <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div>
   </div>
   <div class="pin-pad">
-    <div class="pk" onclick="pk('1')">1</div><div class="pk" onclick="pk('2')">2</div><div class="pk" onclick="pk('3')">3</div>
-    <div class="pk" onclick="pk('4')">4</div><div class="pk" onclick="pk('5')">5</div><div class="pk" onclick="pk('6')">6</div>
-    <div class="pk" onclick="pk('7')">7</div><div class="pk" onclick="pk('8')">8</div><div class="pk" onclick="pk('9')">9</div>
-    <div class="pk empty"></div><div class="pk" onclick="pk('0')">0</div><div class="pk del" onclick="pdel()">⌫</div>
+    <div class="pk" onclick="pk('1')" aria-label="1">1</div><div class="pk" onclick="pk('2')" aria-label="2">2</div><div class="pk" onclick="pk('3')" aria-label="3">3</div>
+    <div class="pk" onclick="pk('4')" aria-label="4">4</div><div class="pk" onclick="pk('5')" aria-label="5">5</div><div class="pk" onclick="pk('6')" aria-label="6">6</div>
+    <div class="pk" onclick="pk('7')" aria-label="7">7</div><div class="pk" onclick="pk('8')" aria-label="8">8</div><div class="pk" onclick="pk('9')" aria-label="9">9</div>
+    <div class="pk empty"></div><div class="pk" onclick="pk('0')" aria-label="0">0</div><div class="pk del" onclick="pdel()" aria-label="Delete">⌫</div>
   </div>
-  <div class="pin-err" id="pinErr"></div>
+  <div class="pin-err" id="pinErr" role="alert"></div>
 </div>
 
 <!-- ══ APP ══ -->
 <div id="app">
-  <div id="roBar" class="readonly-bar" style="display:none">👁 VIEW-ONLY — Enter PIN 0812 to make changes &nbsp;<span style="cursor:pointer;text-decoration:underline" onclick="lockApp()">Switch</span></div>
+  <div id="roBar" class="readonly-bar" style="display:none" role="alert"></div>
 
-  <div class="topbar">
+  <div class="topbar" role="banner">
     <div class="topbar-brand">Cash<span>book</span></div>
     <div class="topbar-right">
-      <button class="tb-btn" onclick="switchTab('report',this)">🖨 Print</button>
-      <button class="tb-btn primary" onclick="switchTab('add',this)" id="addTabBtn">+ Add</button>
-      <button class="tb-btn" onclick="lockApp()" title="Lock">🔒</button>
+      <button class="tb-btn" onclick="switchTab('report',this)" aria-label="Print report">🖨 Print</button>
+      <button class="tb-btn primary" onclick="switchTab('add',this)" id="addTabBtn" aria-label="Add new transaction">+ Add</button>
+      <button class="tb-btn" onclick="lockApp()" title="Lock" aria-label="Lock app">🔒</button>
     </div>
   </div>
 
-  <div class="nav" id="mainNav">
-    <button class="nav-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
-    <button class="nav-btn" onclick="switchTab('ledger',this)">Ledger</button>
-    <button class="nav-btn" onclick="switchTab('add',this)">Add Entry</button>
-    <button class="nav-btn" onclick="switchTab('people',this)">People</button>
-    <button class="nav-btn" onclick="switchTab('report',this)">Report</button>
-    <button class="nav-btn" onclick="switchTab('settings',this)">Settings</button>
+  <div class="nav" id="mainNav" role="navigation" aria-label="Main navigation">
+    <button class="nav-btn active" onclick="switchTab('dashboard',this)" aria-label="Dashboard">Dashboard</button>
+    <button class="nav-btn" onclick="switchTab('ledger',this)" aria-label="Ledger">Ledger</button>
+    <button class="nav-btn" onclick="switchTab('add',this)" aria-label="Add entry">Add Entry</button>
+    <button class="nav-btn" onclick="switchTab('people',this)" aria-label="People manager">People</button>
+    <button class="nav-btn" onclick="switchTab('report',this)" aria-label="Generate report">Report</button>
+    <button class="nav-btn" onclick="switchTab('settings',this)" aria-label="Settings">Settings</button>
   </div>
 
-  <div class="scroll">
+  <div class="scroll" role="main">
   <div class="main">
 
   <!-- ══ DASHBOARD ══ -->
-  <div class="tab active" id="tab-dashboard">
-    <div class="sh">Master Balance</div>
+  <div class="tab active" id="tab-dashboard" role="tabpanel">
+    <h2 class="sh" aria-level="2">Master Balance</h2>
     <div class="master-card" id="masterCard">
       <div class="mc-label">Total Cash Available</div>
       <div class="mc-amount" id="masterAmt">GHS 0.00</div>
@@ -489,71 +507,72 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
       </div>
     </div>
 
-    <div class="sh">Balances by Person</div>
-    <div class="person-grid" id="personGrid"></div>
+    <h2 class="sh" aria-level="2">Balances by Person</h2>
+    <div class="person-grid" id="personGrid" aria-live="polite"></div>
 
-    <div class="sh">Recent Transactions</div>
-    <div id="recentList"></div>
+    <h2 class="sh" aria-level="2">Recent Transactions</h2>
+    <div id="recentList" aria-live="polite"></div>
   </div>
 
   <!-- ══ LEDGER ══ -->
-  <div class="tab" id="tab-ledger">
-    <div class="sh">All Transactions</div>
-    <div class="tx-filters" id="ledgerFilters">
-      <button class="tx-filter on" onclick="setFilter('all',this)">All</button>
-      <button class="tx-filter" onclick="setFilter('income',this)">💚 Income</button>
-      <button class="tx-filter" onclick="setFilter('expense',this)">🔴 Expense</button>
-      <button class="tx-filter" onclick="setFilter('salary',this)">💙 Salary</button>
+  <div class="tab" id="tab-ledger" role="tabpanel">
+    <h2 class="sh" aria-level="2">All Transactions</h2>
+    <div class="tx-filters" id="ledgerFilters" role="group" aria-label="Transaction filters">
+      <button class="tx-filter on" onclick="setFilter('all',this)" aria-label="Show all transactions">All</button>
+      <button class="tx-filter" onclick="setFilter('income',this)" aria-label="Show income only">💚 Income</button>
+      <button class="tx-filter" onclick="setFilter('expense',this)" aria-label="Show expenses only">🔴 Expense</button>
+      <button class="tx-filter" onclick="setFilter('salary',this)" aria-label="Show salary only">💙 Salary</button>
     </div>
-    <div id="personFilterRow" class="tx-filters" style="margin-top:-4px;margin-bottom:14px;"></div>
-    <div id="ledgerList"></div>
+    <div id="personFilterRow" class="tx-filters" style="margin-top:-4px;margin-bottom:14px;" role="group" aria-label="Person filters"></div>
+    <div id="ledgerList" aria-live="polite"></div>
   </div>
 
   <!-- ══ ADD ENTRY ══ -->
-  <div class="tab" id="tab-add">
-    <div class="sh">New Transaction</div>
+  <div class="tab" id="tab-add" role="tabpanel">
+    <h2 class="sh" aria-level="2">New Transaction</h2>
     <div class="form-card">
       <!-- Type switcher -->
-      <div class="type-switcher">
-        <button class="type-btn active-income" onclick="setType('income',this)" id="tb-income">💚<br>Income</button>
-        <button class="type-btn" onclick="setType('expense',this)" id="tb-expense">🔴<br>Expense</button>
-        <button class="type-btn" onclick="setType('salary',this)" id="tb-salary">💙<br>Salary</button>
-        <button class="type-btn" onclick="setType('transfer',this)" id="tb-transfer">🟡<br>Transfer</button>
+      <div class="type-switcher" role="group" aria-label="Transaction type">
+        <button class="type-btn active-income" onclick="setType('income',this)" id="tb-income" aria-label="Income">💚<br>Income</button>
+        <button class="type-btn" onclick="setType('expense',this)" id="tb-expense" aria-label="Expense">🔴<br>Expense</button>
+        <button class="type-btn" onclick="setType('salary',this)" id="tb-salary" aria-label="Salary">💙<br>Salary</button>
+        <button class="type-btn" onclick="setType('transfer',this)" id="tb-transfer" aria-label="Transfer">🟡<br>Transfer</button>
       </div>
 
       <!-- Amount -->
       <div class="form-row single" style="margin-bottom:14px;">
         <div class="f-field">
-          <label class="f-label">Amount (GHS) *</label>
-          <input class="f-input f-amount" type="number" id="f-amount" placeholder="0.00" min="0" step="0.01"/>
+          <label class="f-label" for="f-amount">Amount (GHS) *</label>
+          <input class="f-input f-amount" type="number" id="f-amount" placeholder="0.00" min="0" step="0.01" aria-describedby="amountHelp"/>
         </div>
       </div>
+      <div id="amountHelp" class="f-label" style="font-size:0.5rem;color:var(--text3);margin-top:4px;">Enter positive numbers only</div>
 
       <!-- Person + Date -->
       <div class="form-row">
         <div class="f-field">
-          <label class="f-label">Person *</label>
-          <select class="f-select" id="f-person"></select>
+          <label class="f-label" for="f-person">Person *</label>
+          <select class="f-select" id="f-person" aria-label="Select person"></select>
         </div>
         <div class="f-field">
-          <label class="f-label">Date *</label>
-          <input class="f-input" type="date" id="f-date"/>
+          <label class="f-label" for="f-date">Date *</label>
+          <input class="f-input" type="date" id="f-date" aria-label="Transaction date"/>
         </div>
       </div>
 
       <!-- Description -->
       <div class="form-row single">
         <div class="f-field">
-          <label class="f-label">Description *</label>
-          <input class="f-input" type="text" id="f-desc" placeholder="What was this for?"/>
+          <label class="f-label" for="f-desc">Description *</label>
+          <input class="f-input" type="text" id="f-desc" placeholder="What was this for?" aria-label="Transaction description"/>
         </div>
       </div>
 
       <!-- Category + Reference -->
       <div class="form-row">
         <div class="f-field">
-          <label class="f-label">Category</label>
-          <select class="f-select" id="f-category">
+          <label class="f-label" for="f-category">Category</label>
+          <select class="f-select" id="f-category" aria-label="Transaction category">
             <option value="">— Select —</option>
             <option>Feed & Supplies</option>
             <option>Transport</option>
@@ -568,40 +587,40 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
           </select>
         </div>
         <div class="f-field">
-          <label class="f-label">Reference / Note</label>
-          <input class="f-input" type="text" id="f-note" placeholder="e.g. Receipt #007"/>
+          <label class="f-label" for="f-note">Reference / Note</label>
+          <input class="f-input" type="text" id="f-note" placeholder="e.g. Receipt #007" aria-label="Transaction note"/>
         </div>
       </div>
 
-      <button class="submit-btn" onclick="submitTx()" id="submitBtn">Save Transaction</button>
+      <button class="submit-btn" onclick="submitTx()" id="submitBtn" aria-label="Save transaction">Save Transaction</button>
     </div>
 
     <!-- Quick shortcuts -->
-    <div class="sh">Quick Entry</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="quickBtns"></div>
+    <h2 class="sh" aria-level="2">Quick Entry</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="quickBtns" role="group" aria-label="Quick transaction templates"></div>
   </div>
 
   <!-- ══ PEOPLE ══ -->
-  <div class="tab" id="tab-people">
-    <div class="sh">Team Members</div>
-    <div class="people-list" id="peopleList"></div>
+  <div class="tab" id="tab-people" role="tabpanel">
+    <h2 class="sh" aria-level="2">Team Members</h2>
+    <div class="people-list" id="peopleList" aria-live="polite"></div>
 
-    <div class="sh">Add Person</div>
+    <h2 class="sh" aria-level="2">Add Person</h2>
     <div class="add-person-form">
       <div class="form-row">
         <div class="f-field">
-          <label class="f-label">Full Name *</label>
-          <input class="f-input" id="p-name" placeholder="e.g. Abdul Jalil"/>
+          <label class="f-label" for="p-name">Full Name *</label>
+          <input class="f-input" id="p-name" placeholder="e.g. Abdul Jalil" aria-label="Person name"/>
         </div>
         <div class="f-field">
-          <label class="f-label">Role / Title</label>
-          <input class="f-input" id="p-role" placeholder="e.g. Caretaker"/>
+          <label class="f-label" for="p-role">Role / Title</label>
+          <input class="f-input" id="p-role" placeholder="e.g. Caretaker" aria-label="Person role"/>
         </div>
       </div>
       <div class="form-row">
         <div class="f-field">
-          <label class="f-label">Colour</label>
-          <select class="f-select" id="p-color">
+          <label class="f-label" for="p-color">Colour</label>
+          <select class="f-select" id="p-color" aria-label="Person color">
             <option value="green">Green</option>
             <option value="blue">Blue</option>
             <option value="gold">Gold</option>
@@ -611,36 +630,36 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
         </div>
         <div class="f-field" style="justify-content:flex-end;">
           <label class="f-label">&nbsp;</label>
-          <button class="submit-btn" style="margin-top:0;" onclick="addPerson()">Add Person</button>
+          <button class="submit-btn" style="margin-top:0;" onclick="addPerson()" aria-label="Add person">Add Person</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ══ REPORT ══ -->
-  <div class="tab" id="tab-report">
-    <div class="sh">Generate Report</div>
+  <div class="tab" id="tab-report" role="tabpanel">
+    <h2 class="sh" aria-level="2">Generate Report</h2>
     <div class="report-controls">
       <div class="form-row">
         <div class="f-field">
-          <label class="f-label">From Date</label>
-          <input class="f-input" type="date" id="r-from"/>
+          <label class="f-label" for="r-from">From Date</label>
+          <input class="f-input" type="date" id="r-from" aria-label="Report start date"/>
         </div>
         <div class="f-field">
-          <label class="f-label">To Date</label>
-          <input class="f-input" type="date" id="r-to"/>
+          <label class="f-label" for="r-to">To Date</label>
+          <input class="f-input" type="date" id="r-to" aria-label="Report end date"/>
         </div>
       </div>
       <div class="form-row" style="margin-top:8px;">
         <div class="f-field">
-          <label class="f-label">Filter by Person</label>
-          <select class="f-select" id="r-person">
+          <label class="f-label" for="r-person">Filter by Person</label>
+          <select class="f-select" id="r-person" aria-label="Report person filter">
             <option value="all">All People</option>
           </select>
         </div>
         <div class="f-field">
-          <label class="f-label">Filter by Type</label>
-          <select class="f-select" id="r-type">
+          <label class="f-label" for="r-type">Filter by Type</label>
+          <select class="f-select" id="r-type" aria-label="Report type filter">
             <option value="all">All Types</option>
             <option value="income">Income Only</option>
             <option value="expense">Expenses Only</option>
@@ -649,19 +668,19 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
-        <button class="submit-btn" style="margin:0;" onclick="generateReport()">Generate</button>
-        <button class="submit-btn" style="margin:0;background:var(--blue);color:#fff;" onclick="window.print()">🖨 Print</button>
+        <button class="submit-btn" style="margin:0;" onclick="generateReport()" aria-label="Generate report">Generate</button>
+        <button class="submit-btn" style="margin:0;background:var(--blue);color:#fff;" onclick="window.print()" aria-label="Print report">🖨 Print</button>
       </div>
     </div>
 
-    <div class="report-preview" id="reportPreview">
+    <div class="report-preview" id="reportPreview" aria-live="polite">
       <div class="rp-header">
-        <div class="rp-title" id="rpTitle">Expense Report</div>
-        <div class="rp-sub" id="rpSub"></div>
+        <h3 class="rp-title" id="rpTitle" aria-level="3">Expense Report</h3>
+        <p class="rp-sub" id="rpSub"></p>
       </div>
-      <div class="rp-summary" id="rpSummary"></div>
+      <div class="rp-summary" id="rpSummary" role="group" aria-label="Report summary"></div>
       <div style="margin-bottom:10px;font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Transactions</div>
-      <table class="rp-table" id="rpTable">
+      <table class="rp-table" id="rpTable" aria-label="Transaction report">
         <thead><tr><th>Date</th><th>Person</th><th>Description</th><th>Category</th><th>Type</th><th style="text-align:right">Amount</th></tr></thead>
         <tbody id="rpBody"></tbody>
       </table>
@@ -670,35 +689,33 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   </div>
 
   <!-- ══ SETTINGS ══ -->
-  <div class="tab" id="tab-settings">
-    <div class="sh">Currency</div>
+  <div class="tab" id="tab-settings" role="tabpanel">
+    <h2 class="sh" aria-level="2">Currency</h2>
     <div class="form-card">
       <div class="f-field">
-        <label class="f-label">Currency Symbol</label>
-        <input class="f-input" id="s-currency" placeholder="e.g. GHS, NGN, USD, £"/>
+        <label class="f-label" for="s-currency">Currency Symbol</label>
+        <input class="f-input" id="s-currency" placeholder="e.g. GHS, NGN, USD, £" aria-label="Currency symbol"/>
       </div>
-      <button class="submit-btn" style="margin-top:10px;" onclick="saveCurrency()">Save Currency</button>
+      <button class="submit-btn" style="margin-top:10px;" onclick="saveCurrency()" aria-label="Save currency settings">Save Currency</button>
     </div>
 
-    <div class="sh">Cloud Sync (Firebase)</div>
+    <h2 class="sh" aria-level="2">Cloud Sync (Firebase)</h2>
     <div class="form-card">
-      <div id="dbStatus" style="font-size:0.78rem;color:var(--text2);margin-bottom:12px;line-height:1.6;">
-        Not configured. Paste your Firebase config below to enable cross-device sync.
-      </div>
+      <div id="dbStatus" style="font-size:0.78rem;color:var(--text2);margin-bottom:12px;line-height:1.6;" role="status"></div>
       <div class="f-field" style="margin-bottom:10px;">
-        <label class="f-label">Firebase Config (JSON)</label>
-        <textarea class="f-input" id="s-fbconfig" rows="6" style="font-size:0.72rem;resize:vertical;min-height:120px;" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'></textarea>
+        <label class="f-label" for="s-fbconfig">Firebase Config (JSON)</label>
+        <textarea class="f-input" id="s-fbconfig" rows="6" style="font-size:0.72rem;resize:vertical;min-height:120px;" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' aria-label="Firebase configuration JSON"></textarea>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <button class="submit-btn" style="margin:0;" onclick="connectFirebase()">Connect</button>
-        <button class="submit-btn" style="margin:0;background:var(--bg4);color:var(--text2);" onclick="manualSync()">Sync Now</button>
+        <button class="submit-btn" style="margin:0;" onclick="connectFirebase()" aria-label="Connect to Firebase">Connect</button>
+        <button class="submit-btn" style="margin:0;background:var(--bg4);color:var(--text2);" onclick="manualSync()" aria-label="Manually sync data">Sync Now</button>
       </div>
     </div>
 
-    <div class="sh">Data</div>
+    <h2 class="sh" aria-level="2">Data</h2>
     <div class="form-card">
-      <button class="submit-btn" style="background:var(--red);margin-bottom:10px;" onclick="confirmClear()">Clear All Data</button>
-      <div style="font-size:0.7rem;color:var(--text3);line-height:1.6;">
+      <button class="submit-btn" style="background:var(--red);margin-bottom:10px;" onclick="confirmClear()" aria-label="Clear all data">Clear All Data</button>
+      <div style="font-size:0.7rem;color:var(--text3);line-height=1.6;">
         <strong style="color:var(--text2);">Install as app:</strong><br>
         iOS: Safari → Share → Add to Home Screen<br>
         Android: Chrome → Menu → Add to Home Screen
@@ -711,26 +728,38 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 </div><!-- /app -->
 
 <!-- DELETE MODAL -->
-<div class="overlay" id="delOverlay" onclick="closeModal()">
-  <div class="modal" onclick="event.stopPropagation()">
+<div class="overlay" id="delOverlay" onclick="closeModal()" aria-hidden="true">
+  <div class="modal" onclick="event.stopPropagation()" role="dialog" aria-modal="true">
     <div class="modal-title">Delete Transaction?</div>
     <div class="modal-sub" id="delModalSub">This action cannot be undone.</div>
     <div class="modal-btns">
-      <button class="m-btn m-btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="m-btn m-btn-confirm" onclick="confirmDelete()">Delete</button>
+      <button class="m-btn m-btn-cancel" onclick="closeModal()" aria-label="Cancel deletion">Cancel</button>
+      <button class="m-btn m-btn-confirm" onclick="confirmDelete()" aria-label="Confirm deletion">Delete</button>
     </div>
   </div>
 </div>
 
-<div id="toast"></div>
+<div id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
 <script>
 // ═══════════════════════════════════════════
+//  SANITIZATION
+// ═══════════════════════════════════════════
+function sanitizeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function sanitizeHTMLAttr(str) {
+  return str.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
+
+// ═══════════════════════════════════════════
 //  PIN
 // ═══════════════════════════════════════════
-const PIN_MASTER = '0812';
-const PIN_VIEW   = '8888';
-const SK = 'cb_session';
+const PIN_MASTER_KEY = 'cb_pin_master';
+const PIN_VIEW_KEY = 'cb_pin_view';
 let pinEntry = '';
 let readOnly = false;
 
@@ -740,20 +769,36 @@ function pk(d) {
   updateDots();
   if (pinEntry.length === 4) setTimeout(checkPin, 120);
 }
-function pdel() { pinEntry = pinEntry.slice(0,-1); updateDots(); }
-function updateDots(cls) {
-  for (let i=0;i<4;i++) document.getElementById('pd'+i).className = 'pd'+(i<pinEntry.length?' '+(cls||'on'):'');
+function pdel() { 
+  pinEntry = pinEntry.slice(0,-1); 
+  updateDots(); 
 }
-function checkPin() {
-  if (pinEntry === PIN_MASTER) { sessionStorage.setItem(SK,'master'); unlockApp(false); }
-  else if (pinEntry === PIN_VIEW) { sessionStorage.setItem(SK,'view'); unlockApp(true); }
+function updateDots() {
+  for (let i=0;i<4;i++) {
+    const dot = document.getElementById('pd'+i);
+    dot.className = 'pd' + (i<pinEntry.length ? ' on' : '');
+  }
+}
+async function checkPin() {
+  const storedMaster = localStorage.getItem(PIN_MASTER_KEY);
+  const storedView = localStorage.getItem(PIN_VIEW_KEY);
+  
+  if (pinEntry === storedMaster) { 
+    sessionStorage.setItem('cb_session','master'); 
+    unlockApp(false); 
+  }
+  else if (pinEntry === storedView) { 
+    sessionStorage.setItem('cb_session','view'); 
+    unlockApp(true); 
+  }
   else {
     updateDots('err');
     document.getElementById('pinDots').classList.add('shaking');
     document.getElementById('pinErr').textContent = 'Incorrect PIN';
     setTimeout(() => {
       document.getElementById('pinDots').classList.remove('shaking');
-      pinEntry = ''; updateDots();
+      pinEntry = ''; 
+      updateDots();
       document.getElementById('pinErr').textContent = '';
     }, 800);
   }
@@ -763,21 +808,27 @@ function unlockApp(ro) {
   document.getElementById('pinScreen').style.display = 'none';
   document.getElementById('app').classList.add('on');
   document.getElementById('roBar').style.display = ro ? 'block' : 'none';
+  document.getElementById('roBar').textContent = '👁 VIEW-ONLY — Enter PIN to make changes';
   initApp();
 }
 function lockApp() {
-  sessionStorage.removeItem(SK);
+  sessionStorage.removeItem('cb_session');
   document.getElementById('app').classList.remove('on');
   document.getElementById('pinScreen').style.display = 'flex';
-  readOnly = false; pinEntry = ''; updateDots();
+  readOnly = false; 
+  pinEntry = ''; 
+  updateDots();
 }
 function guardWrite() {
-  if (readOnly) { toast('🔒 View-only — use PIN 0812 for full access'); return false; }
+  if (readOnly) { 
+    toast('🔒 View-only — use PIN to make changes'); 
+    return false; 
+  }
   return true;
 }
 // Auto-restore session
 (function(){
-  const s = sessionStorage.getItem(SK);
+  const s = sessionStorage.getItem('cb_session');
   if (s === 'master' || s === 'view') {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => unlockApp(s === 'view'));
     else unlockApp(s === 'view');
@@ -787,7 +838,14 @@ function guardWrite() {
 // ═══════════════════════════════════════════
 //  STORAGE
 // ═══════════════════════════════════════════
-const gs = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const gs = (k, d) => { 
+  try { 
+    const v = localStorage.getItem(k);
+    return v ? JSON.parse(v) : d; 
+  } catch { 
+    return d; 
+  } 
+};
 const ss = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
 // ═══════════════════════════════════════════
@@ -819,33 +877,46 @@ const COLORS = {
 };
 function personColor(p) { return COLORS[p.color] || COLORS.green; }
 function personInitials(p) { return p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+// ═══════════════════════════════════════════
+//  DATE HANDLING
+// ═══════════════════════════════════════════
+function fmtDate(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
 function fmtAmt(n, alwaysSign=false) {
   const s = Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
   if (alwaysSign) return (n >= 0 ? '+' : '-') + currency + ' ' + s;
   return currency + ' ' + s;
-}
-function fmtDate(d) {
-  if (!d) return '';
-  const dt = new Date(d + 'T00:00:00');
-  return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
 }
 
 // ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
 function initApp() {
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  // Set today's date
   const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f-date').value = today;
+  
+  // Set report date defaults
   const monthStart = today.slice(0,7) + '-01';
   document.getElementById('r-from').value = monthStart;
   document.getElementById('r-to').value = today;
+  
   document.getElementById('s-currency').value = currency;
   renderAll();
   populatePersonSelects();
   renderPeopleTab();
   renderQuickBtns();
   initFirebase();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
 }
 
 function renderAll() {
@@ -858,12 +929,18 @@ function renderAll() {
 //  TABS
 // ═══════════════════════════════════════════
 function switchTab(name, btn) {
+  // Update tab visibility
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  // Sync nav button
-  const navBtn = [...document.querySelectorAll('.nav-btn')].find(b => b.textContent.toLowerCase().includes(name.slice(0,4)));
+  
+  // Update nav button
+  const navBtn = [...document.querySelectorAll('.nav-btn')].find(b => 
+    b.getAttribute('aria-label').toLowerCase().includes(name.slice(0,4))
+  );
   if (navBtn) navBtn.classList.add('active');
+  
+  // Special handling for report tab
   if (name === 'report') populateReportPersonSelect();
 }
 
@@ -876,9 +953,9 @@ function renderDashboard() {
   txs.forEach(t => {
     if (t.type === 'income') totalIn += t.amount;
     else if (t.type === 'expense' || t.type === 'salary') totalOut += t.amount;
-    // transfer: neutral to master balance (in from one, out from another)
   });
   const balance = totalIn - totalOut;
+  
   const ma = document.getElementById('masterAmt');
   ma.textContent = fmtAmt(balance);
   ma.className = 'mc-amount' + (balance < 0 ? ' neg' : '');
@@ -894,8 +971,11 @@ function renderDashboard() {
     const c = personColor(p);
     const card = document.createElement('div');
     card.className = 'person-card fade-in';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `${p.name} balance ${fmtAmt(pBal)}`);
     card.innerHTML = `
-      <div class="pc-avatar" style="background:${c.bg};color:${c.text}">${personInitials(p)}</div>
+      <div class="pc-avatar" style="background:${c.bg};color:${c.text}" role="img" aria-label="${personInitials(p)}">${personInitials(p)}</div>
       <div class="pc-name">${p.name}</div>
       <div class="pc-role">${p.role || ''}</div>
       <div class="pc-balance ${pBal >= 0 ? 'pos' : 'neg'}">${fmtAmt(pBal)}</div>
@@ -911,7 +991,9 @@ function renderDashboard() {
     });
     grid.appendChild(card);
   });
-  if (!people.length) grid.innerHTML = '<div style="grid-column:1/-1;font-size:0.78rem;color:var(--text3);padding:10px 0;">No people added yet — go to the People tab.</div>';
+  if (!people.length) { 
+    grid.innerHTML = '<div style="grid-column:1/-1;font-size:0.78rem;color:var(--text3);padding:10px 0;">No people added yet — go to the People tab.</div>';
+  }
 
   // Recent 5 transactions
   const recent = [...txs].sort((a,b) => b.ts - a.ts).slice(0,5);
@@ -926,7 +1008,7 @@ function personStats(pid) {
     if (t.person !== pid) return;
     if (t.type === 'income') pIn += t.amount;
     else if (t.type === 'expense' || t.type === 'salary') pOut += t.amount;
-    else if (t.type === 'transfer') { pOut += t.amount; } // transfer = money given out by this person
+    else if (t.type === 'transfer') { pOut += t.amount; }
   });
   return { pIn, pOut, pBal: pIn - pOut };
 }
@@ -944,17 +1026,32 @@ function setFilter(f, btn) {
 function renderPersonFilterRow() {
   const row = document.getElementById('personFilterRow');
   row.innerHTML = '';
+  
+  // All people button
   const allBtn = document.createElement('button');
   allBtn.className = 'tx-filter' + (personFilter === 'all' ? ' on' : '');
   allBtn.textContent = 'All People';
-  allBtn.onclick = () => { personFilter = 'all'; renderPersonFilterRow(); renderLedger(); };
+  allBtn.setAttribute('aria-label', 'Show all people');
+  allBtn.onclick = () => { 
+    personFilter = 'all'; 
+    renderPersonFilterRow(); 
+    renderLedger(); 
+  };
   row.appendChild(allBtn);
+  
+  // Person buttons
   people.forEach(p => {
     const b = document.createElement('button');
     b.className = 'tx-filter' + (personFilter === p.id ? ' on' : '');
     b.textContent = p.name;
-    b.style.cssText = personFilter === p.id ? `background:${personColor(p).bg};color:${personColor(p).text};border-color:${personColor(p).text}` : '';
-    b.onclick = () => { personFilter = p.id; renderPersonFilterRow(); renderLedger(); };
+    b.setAttribute('aria-label', `Show ${p.name}'s transactions`);
+    b.style.cssText = personFilter === p.id ? 
+      `background:${personColor(p).bg};color:${personColor(p).text};border-color:${personColor(p).text}` : '';
+    b.onclick = () => { 
+      personFilter = p.id; 
+      renderPersonFilterRow(); 
+      renderLedger(); 
+    };
     row.appendChild(b);
   });
 }
@@ -962,6 +1059,8 @@ function renderPersonFilterRow() {
 function renderLedger() {
   const list = document.getElementById('ledgerList');
   let filtered = [...txs];
+  
+  // Apply filters
   if (ledgerFilter !== 'all') filtered = filtered.filter(t => t.type === ledgerFilter);
   if (personFilter !== 'all') filtered = filtered.filter(t => t.person === personFilter);
   filtered.sort((a,b) => b.ts - a.ts);
@@ -973,7 +1072,11 @@ function renderLedger() {
 
   // Group by date
   const groups = {};
-  filtered.forEach(t => { const d = t.date || t.ts; if (!groups[d]) groups[d] = []; groups[d].push(t); });
+  filtered.forEach(t => { 
+    const d = t.date || t.ts; 
+    if (!groups[d]) groups[d] = []; 
+    groups[d].push(t); 
+  });
   const sortedDates = Object.keys(groups).sort((a,b) => new Date(b) - new Date(a));
 
   list.innerHTML = '';
@@ -998,19 +1101,26 @@ function makeTxEl(t, showDel) {
   const el = document.createElement('div');
   el.className = 'tx-item fade-in';
   el.dataset.id = t.id;
+  el.setAttribute('role', 'listitem');
+  
+  // Sanitize all user inputs
+  const desc = sanitizeHTML(t.desc);
+  const note = t.note ? sanitizeHTML(t.note) : '';
+  const category = t.category ? sanitizeHTML(t.category) : '';
+  
   el.innerHTML = `
-    <div class="tx-icon ${iconClass}">${icon}</div>
+    <div class="tx-icon ${iconClass}" role="img" aria-label="${t.type}">${icon}</div>
     <div class="tx-body">
-      <div class="tx-desc">${t.desc}</div>
+      <div class="tx-desc">${desc}</div>
       <div class="tx-meta">
-        ${person ? `<span class="tx-person" style="background:${pc.bg};color:${pc.text}">${person.name}</span>` : ''}
-        ${t.category ? `<span class="tx-cat">${t.category}</span>` : ''}
+        ${person ? `<span class="tx-person" style="background:${pc.bg};color:${pc.text}" role="img" aria-label="${person.name}">${person.name}</span>` : ''}
+        ${category ? `<span class="tx-cat">${category}</span>` : ''}
         <span class="tx-cat">${fmtDate(t.date)}</span>
       </div>
-      ${t.note ? `<div class="tx-note">${t.note}</div>` : ''}
+      ${note ? `<div class="tx-note">${note}</div>` : ''}
     </div>
     <div class="tx-amount ${amtClass}">${sign}${fmtAmt(t.amount)}</div>
-    ${showDel && !readOnly ? `<button class="tx-del" onclick="event.stopPropagation();askDelete('${t.id}','${t.desc.replace(/'/g,"\\'")}')">✕</button>` : ''}`;
+    ${showDel && !readOnly ? `<button class="tx-del" onclick="event.stopPropagation();askDelete('${t.id}','${sanitizeHTMLAttr(t.desc)}')" aria-label="Delete transaction">✕</button>` : ''}`;
   return el;
 }
 
@@ -1023,6 +1133,7 @@ function setType(type, btn) {
     b.className = 'type-btn';
   });
   btn.className = 'type-btn active-' + type;
+  
   // Update category default
   const cat = document.getElementById('f-category');
   if (type === 'salary') { cat.value = 'Salary'; }
@@ -1032,17 +1143,19 @@ function setType(type, btn) {
 
 function submitTx() {
   if (!guardWrite()) return;
+  
   const amount = parseFloat(document.getElementById('f-amount').value);
   const person = document.getElementById('f-person').value;
-  const date   = document.getElementById('f-date').value;
-  const desc   = document.getElementById('f-desc').value.trim();
-  const cat    = document.getElementById('f-category').value;
-  const note   = document.getElementById('f-note').value.trim();
+  const date = document.getElementById('f-date').value;
+  const desc = document.getElementById('f-desc').value.trim();
+  const cat = document.getElementById('f-category').value;
+  const note = document.getElementById('f-note').value.trim();
 
-  if (!amount || amount <= 0) { toast('⚠ Enter a valid amount'); return; }
+  // Validation
+  if (!amount || amount <= 0) { toast('⚠ Enter a valid positive amount'); return; }
   if (!person) { toast('⚠ Select a person'); return; }
-  if (!desc)   { toast('⚠ Add a description'); return; }
-  if (!date)   { toast('⚠ Select a date'); return; }
+  if (!desc) { toast('⚠ Add a description'); return; }
+  if (!date) { toast('⚠ Select a date'); return; }
 
   const tx = {
     id: 'tx_' + Date.now(),
@@ -1059,6 +1172,7 @@ function submitTx() {
   ss('cb_txs', txs);
   dbSync();
   renderAll();
+  
   // Reset form
   document.getElementById('f-amount').value = '';
   document.getElementById('f-desc').value = '';
@@ -1081,8 +1195,9 @@ function renderQuickBtns() {
   shortcuts.forEach(s => {
     const b = document.createElement('button');
     b.className = 'type-btn';
-    b.style.cssText = 'padding:14px 10px;font-size:0.72rem;border-radius:10px;';
+    b.style.cssText = 'padding:14px 10px;font-size:0.72rem;border-radius=10px;';
     b.textContent = s.label;
+    b.setAttribute('aria-label', s.label);
     b.onclick = () => {
       setType(s.type, document.getElementById('tb-'+s.type));
       document.getElementById('f-desc').value = s.desc;
@@ -1102,7 +1217,15 @@ function addPerson() {
   const name = document.getElementById('p-name').value.trim();
   const role = document.getElementById('p-role').value.trim();
   const color = document.getElementById('p-color').value;
+  
+  // Prevent duplicate names
+  if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+    toast('⚠ Person with this name already exists');
+    return;
+  }
+  
   if (!name) { toast('⚠ Enter a name'); return; }
+  
   people.push({ id: 'p_' + Date.now(), name, role, color });
   ss('cb_people', people);
   dbSync();
@@ -1117,7 +1240,8 @@ function addPerson() {
 function deletePerson(id) {
   if (!guardWrite()) return;
   if (txs.some(t => t.person === id)) {
-    toast('⚠ Cannot delete — person has transactions'); return;
+    toast('⚠ Cannot delete — person has transactions');
+    return;
   }
   people = people.filter(p => p.id !== id);
   ss('cb_people', people);
@@ -1132,19 +1256,25 @@ function renderPeopleTab() {
   const list = document.getElementById('peopleList');
   if (!list) return;
   list.innerHTML = '';
-  if (!people.length) { list.innerHTML = '<div style="font-size:0.78rem;color:var(--text3);">No people yet — add one below.</div>'; return; }
+  
+  if (!people.length) { 
+    list.innerHTML = '<div style="font-size:0.78rem;color:var(--text3);">No people yet — add one below.</div>';
+    return; 
+  }
+  
   people.forEach(p => {
     const c = personColor(p);
     const { pIn, pOut, pBal } = personStats(p.id);
     const row = document.createElement('div');
     row.className = 'person-row';
+    row.setAttribute('role', 'listitem');
     row.innerHTML = `
-      <div class="pr-avatar" style="background:${c.bg};color:${c.text}">${personInitials(p)}</div>
+      <div class="pr-avatar" style="background:${c.bg};color:${c.text}" role="img" aria-label="${personInitials(p)}">${personInitials(p)}</div>
       <div class="pr-info">
         <div class="pr-name">${p.name}</div>
         <div class="pr-role">${p.role || 'No role set'} &nbsp;·&nbsp; <span class="${pBal>=0?'':''}mono" style="color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</span></div>
       </div>
-      ${!readOnly ? `<button class="pr-del" onclick="deletePerson('${p.id}')">✕</button>` : ''}`;
+      ${!readOnly ? `<button class="pr-del" onclick="deletePerson('${p.id}')" aria-label="Delete person">✕</button>` : ''}`;
     list.appendChild(row);
   });
 }
@@ -1170,8 +1300,13 @@ function askDelete(id, desc) {
   deletePendingId = id;
   document.getElementById('delModalSub').textContent = `Delete "${desc}"? This cannot be undone.`;
   document.getElementById('delOverlay').classList.add('open');
+  document.getElementById('delOverlay').setAttribute('aria-hidden', 'false');
 }
-function closeModal() { document.getElementById('delOverlay').classList.remove('open'); deletePendingId = null; }
+function closeModal() { 
+  document.getElementById('delOverlay').classList.remove('open'); 
+  document.getElementById('delOverlay').setAttribute('aria-hidden', 'true');
+  deletePendingId = null; 
+}
 function confirmDelete() {
   if (!deletePendingId) return;
   txs = txs.filter(t => t.id !== deletePendingId);
@@ -1186,21 +1321,21 @@ function confirmDelete() {
 //  REPORT
 // ═══════════════════════════════════════════
 function generateReport() {
-  const from   = document.getElementById('r-from').value;
-  const to     = document.getElementById('r-to').value;
-  const pId    = document.getElementById('r-person').value;
-  const rType  = document.getElementById('r-type').value;
+  const from = document.getElementById('r-from').value;
+  const to = document.getElementById('r-to').value;
+  const pId = document.getElementById('r-person').value;
+  const rType = document.getElementById('r-type').value;
 
   let filtered = [...txs];
   if (from) filtered = filtered.filter(t => t.date >= from);
-  if (to)   filtered = filtered.filter(t => t.date <= to);
+  if (to) filtered = filtered.filter(t => t.date <= to);
   if (pId !== 'all') filtered = filtered.filter(t => t.person === pId);
   if (rType !== 'all') filtered = filtered.filter(t => t.type === rType);
   filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
 
-  const totalIn  = filtered.filter(t => t.type === 'income').reduce((s,t) => s+t.amount, 0);
+  const totalIn = filtered.filter(t => t.type === 'income').reduce((s,t) => s+t.amount, 0);
   const totalOut = filtered.filter(t => t.type !== 'income').reduce((s,t) => s+t.amount, 0);
-  const balance  = totalIn - totalOut;
+  const balance = totalIn - totalOut;
 
   // Header
   const pName = pId === 'all' ? 'All People' : (people.find(p=>p.id===pId)?.name || pId);
@@ -1224,20 +1359,20 @@ function generateReport() {
       <td>${t.desc}${t.note?'<br><small style="color:var(--text3)">'+ t.note+'</small>':''}</td>
       <td>${t.category || '—'}</td>
       <td style="text-transform:capitalize">${t.type}</td>
-      <td style="text-align:right;font-family:'DM Mono',monospace;color:${isIn?'var(--green)':'var(--red)'}">${isIn?'+':'-'}${fmtAmt(t.amount)}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;color=${isIn?'var(--green)':'var(--red)'}">${isIn?'+':'-'}${fmtAmt(t.amount)}</td>
     </tr>`;
   }).join('');
 
   // Per-person breakdown
   if (pId === 'all' && people.length > 1) {
-    let breakdown = '<div style="margin-top:20px;margin-bottom:8px;font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Balance by Person</div>';
-    breakdown += '<table class="rp-table"><thead><tr><th>Person</th><th>Role</th><th>Money In</th><th>Money Out</th><th>Balance</th></tr></thead><tbody>';
+    let breakdown = '<div style="margin-top:20px;margin-bottom:8px;font-size:0.62rem;font-weight=700;letter-spacing=0.12em;text-transform=uppercase;color=var(--text3);">Balance by Person</div>';
+    breakdown += '<table class="rp-table" aria-label="Balance by person"><thead><tr><th>Person</th><th>Role</th><th>Money In</th><th>Money Out</th><th>Balance</th></tr></thead><tbody>';
     people.forEach(p => {
       const pTxs = filtered.filter(t => t.person === p.id);
-      const pIn  = pTxs.filter(t => t.type==='income').reduce((s,t)=>s+t.amount,0);
+      const pIn = pTxs.filter(t => t.type==='income').reduce((s,t)=>s+t.amount,0);
       const pOut = pTxs.filter(t => t.type!=='income').reduce((s,t)=>s+t.amount,0);
       const pBal = pIn - pOut;
-      breakdown += `<tr><td><strong>${p.name}</strong></td><td>${p.role||'—'}</td><td style="color:var(--green)">${fmtAmt(pIn)}</td><td style="color:var(--red)">${fmtAmt(pOut)}</td><td style="font-weight:700;color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
+      breakdown += `<tr><td><strong>${p.name}</strong></td><td>${p.role||'—'}</td><td style="color=var(--green)">${fmtAmt(pIn)}</td><td style="color=var(--red)">${fmtAmt(pOut)}</td><td style="font-weight=700;color=${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
     });
     breakdown += '</tbody></table>';
     document.getElementById('rpPersonBreakdown').innerHTML = breakdown;
@@ -1289,17 +1424,22 @@ async function connectFirebase() {
     const cfg = JSON.parse(raw);
     ss('cb_fbconfig', cfg);
     await connectWithConfig(cfg);
-  } catch(e) { toast('⚠ Invalid JSON config'); }
+  } catch(e) { 
+    toast('⚠ Invalid JSON config'); 
+  }
 }
 
 async function connectWithConfig(cfg) {
   try {
+    // Import Firebase from CDN
     const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
     const fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     _fs = fs;
+    
     const app = getApps().length === 0 ? initializeApp(cfg) : getApps()[0];
     db = fs.getFirestore(app);
     await dbPull();
+    
     // Live listener
     const ref = fs.doc(db, 'cashbook', 'main');
     fs.onSnapshot(ref, snap => {
@@ -1308,6 +1448,7 @@ async function connectWithConfig(cfg) {
       const localTs = gs('cb_syncTs', 0);
       if (r.ts && r.ts > localTs) applyRemote(r);
     });
+    
     setDbStatus('✅ Connected — syncing automatically');
     toast('☁️ Firebase connected!');
   } catch(e) {
@@ -1329,7 +1470,9 @@ async function dbSync() {
     await _fs.setDoc(_fs.doc(db, 'cashbook', 'main'), payload, { merge:true });
     ss('cb_syncTs', Date.now());
     setDbStatus('✅ Last sync: ' + new Date().toLocaleTimeString());
-  } catch(e) { console.warn('Sync error:', e); }
+  } catch(e) { 
+    console.warn('Sync error:', e); 
+  }
 }
 
 async function dbPull() {
@@ -1337,13 +1480,25 @@ async function dbPull() {
   try {
     const snap = await _fs.getDoc(_fs.doc(db, 'cashbook', 'main'));
     if (snap.exists()) applyRemote(snap.data());
-  } catch(e) { console.warn('Pull error:', e); }
+  } catch(e) { 
+    console.warn('Pull error:', e); 
+  }
 }
 
 function applyRemote(r) {
-  if (r.txs)      { txs = r.txs; ss('cb_txs', txs); }
-  if (r.people)   { people = r.people; ss('cb_people', people); }
-  if (r.currency) { currency = r.currency; ss('cb_currency', currency); document.getElementById('s-currency').value = currency; }
+  if (r.txs) { 
+    txs = r.txs; 
+    ss('cb_txs', txs); 
+  }
+  if (r.people) { 
+    people = r.people; 
+    ss('cb_people', people); 
+  }
+  if (r.currency) { 
+    currency = r.currency; 
+    ss('cb_currency', currency); 
+    document.getElementById('s-currency').value = currency; 
+  }
   ss('cb_syncTs', r.ts || Date.now());
   renderAll();
   renderPeopleTab();
@@ -1353,7 +1508,10 @@ function applyRemote(r) {
 }
 
 async function manualSync() {
-  if (!db) { toast('⚠ Firebase not connected'); return; }
+  if (!db) { 
+    toast('⚠ Firebase not connected'); 
+    return; 
+  }
   toast('🔄 Syncing...');
   await dbPull();
   await dbSync();
@@ -1366,8 +1524,10 @@ async function manualSync() {
 let _tt;
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), 2600);
+  el.textContent = msg; 
+  el.classList.add('show');
+  clearTimeout(_tt); 
+  _tt = setTimeout(() => el.classList.remove('show'), 2600);
 }
 </script>
 </body>
