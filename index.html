@@ -617,6 +617,8 @@ body{background:#fff!important;color:#000!important;}
 document.addEventListener('DOMContentLoaded', ()=>{
   try{
     document.querySelectorAll('.pk').forEach(el=>{
+      // If an inline onclick is present, skip adding a duplicate listener
+      if(el.getAttribute('onclick')) return;
       if(el.classList.contains('pk-listener-attached')) return;
       if(el.classList.contains('empty')) return;
       if(el.classList.contains('del')){ el.addEventListener('click', ()=>{ if(typeof pdel==='function') pdel(); }); }
@@ -679,7 +681,17 @@ const H_MASTER = '6e65b61d030e5ac6492802c6f619a63006e5b0e2cafc0170ab92a680831625
 const H_VIEW = '2926a2731f4b312c08982cacf8061eb14bf65c1a87cc5d70e864e079c6220731';
 async function sha256(s){ const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
 let pinEntry='',readOnly=false;
-function pk(d){if(pinEntry.length>=4)return;pinEntry+=d;updateDots();if(pinEntry.length===4)setTimeout(checkPin,120);}
+function pk(d){
+  // Debounce rapid duplicate calls (prevents double-invocation from multiple handlers)
+  if(!pk._last) pk._last = 0;
+  const now = Date.now();
+  if(now - pk._last < 40) return; // ignore calls within 40ms
+  pk._last = now;
+  if(pinEntry.length>=4) return;
+  pinEntry += d;
+  updateDots();
+  if(pinEntry.length===4) setTimeout(checkPin,120);
+}
 function pdel(){pinEntry=pinEntry.slice(0,-1);updateDots();}
 function updateDots(s){for(let i=0;i<4;i++){document.getElementById('pd'+i).className='pd'+(s==='err'?' err':i<pinEntry.length?' on':'');}}
 async function checkPin(){
