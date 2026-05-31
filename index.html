@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="light"/>
 <meta name="apple-mobile-web-app-title" content="Cashbook"/>
-<link rel="manifest" href="manifest.json"/>
+<link rel="manifest" id="manifestLink"/>
 <title>Cashbook</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -21,6 +21,7 @@
   --blue:#3d6bdf;--blue2:rgba(61,107,223,0.12);
   --purple:#8b5cf6;--purple2:rgba(139,92,246,0.12);
   --orange:#f07030;--orange2:rgba(240,112,48,0.12);
+  --teal:#00a8a0;--teal2:rgba(0,168,160,0.12);
   --sh-out:6px 6px 14px rgba(160,165,185,0.5),-4px -4px 10px rgba(255,255,255,0.9);
   --sh-in:inset 3px 3px 8px rgba(160,165,185,0.4),inset -2px -2px 6px rgba(255,255,255,0.8);
   --sh-card:0 2px 20px rgba(140,145,170,0.18),0 1px 4px rgba(140,145,170,0.1);
@@ -66,6 +67,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .tb-btn:hover{background:var(--bg3);}
 .tb-btn:active{box-shadow:var(--sh-in);}
 .tb-btn.primary{background:linear-gradient(135deg,#3d6bdf,#5a84ff);color:#fff;box-shadow:0 4px 14px rgba(61,107,223,0.35);}
+.tb-btn.install{background:linear-gradient(135deg,#00a8a0,#00c8be);color:#fff;box-shadow:0 4px 14px rgba(0,168,160,0.35);display:none;}
 .readonly-bar{background:linear-gradient(135deg,var(--red),#ff6080);color:#fff;padding:7px 18px;font-size:0.72rem;font-weight:700;text-align:center;letter-spacing:0.08em;flex-shrink:0;}
 
 /* NAV */
@@ -126,6 +128,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .tx-icon.transfer{background:var(--gold2);}
 .tx-icon.credit{background:var(--purple2);}
 .tx-icon.ownerfund{background:var(--orange2);}
+.tx-icon.fundreturn{background:var(--teal2);}
 .tx-body{flex:1;min-width:0;}
 .tx-desc{font-size:0.82rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tx-meta{display:flex;gap:5px;margin-top:3px;align-items:center;flex-wrap:wrap;}
@@ -155,7 +158,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .type-btn.active-transfer{background:var(--gold2);border-color:var(--gold);color:var(--gold);}
 .type-btn.active-credit{background:var(--purple2);border-color:var(--purple);color:var(--purple);}
 .type-btn.active-owner-fund{background:var(--orange2);border-color:var(--orange);color:var(--orange);}
-.type-btn.active-owner-fund-return{background:var(--green2);border-color:var(--green);color:var(--green);}
+.type-btn.active-fund-return{background:var(--teal2);border-color:var(--teal);color:var(--teal);}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .form-row.single{grid-template-columns:1fr;}
 .form-row.triple{grid-template-columns:1fr 1fr 1fr;}
@@ -170,8 +173,8 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .submit-btn{width:100%;padding:14px;border-radius:12px;font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:linear-gradient(135deg,#3d6bdf,#5a84ff);color:#fff;border:none;margin-top:6px;box-shadow:0 4px 16px rgba(61,107,223,0.35);transition:all 0.18s;}
 .submit-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
 .submit-btn:active{transform:translateY(0);}
-#transferFields,#creditFields,#ownerFundFields{display:none;margin-top:6px;}
-#transferFields.show,#creditFields.show,#ownerFundFields.show{display:block;}
+#transferFields,#creditFields,#ownerFundFields,#fundReturnFields,#salaryFields{display:none;margin-top:6px;}
+#transferFields.show,#creditFields.show,#ownerFundFields.show,#fundReturnFields.show,#salaryFields.show{display:block;}
 .info-box{background:var(--bg);box-shadow:var(--sh-in);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:0.7rem;color:var(--text2);line-height:1.6;margin-bottom:10px;}
 
 /* CREDIT SUMMARY */
@@ -270,7 +273,8 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   <div class="topbar">
     <div class="topbar-brand">Cash<span>book</span></div>
     <div class="topbar-right">
-      <button class="tb-btn" id="printBtn" onclick="switchTab('report',this)">&#x1F5A8; Print</button>
+      <button class="tb-btn install" id="installBtn" onclick="triggerInstall()">&#x2B07; Install</button>
+      <button class="tb-btn" onclick="switchTab('report',this)">&#x1F5A8; Print</button>
       <button class="tb-btn primary" onclick="switchTab('add',this)" id="addTabBtn">+ Add</button>
       <button class="tb-btn" onclick="lockApp()">&#x1F512;</button>
     </div>
@@ -298,12 +302,6 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
         <div class="mc-stat"><div class="mc-stat-lbl">Total Out</div><div class="mc-stat-val r" id="masterOut">0.00</div></div>
         <div class="mc-stat"><div class="mc-stat-lbl">Entries</div><div class="mc-stat-val b" id="masterCount">0</div></div>
       </div>
-      <div class="mc-stats" id="ownerOwedRow" style="margin-top:10px;display:none;">
-        <div class="mc-stat" style="grid-column:1/-1;background:rgba(240,112,48,0.18);border-color:rgba(240,112,48,0.3);">
-          <div class="mc-stat-lbl" style="color:rgba(255,200,150,0.8);">&#x1F7E0; Owner Funds to Return</div>
-          <div class="mc-stat-val" style="color:#ffcba0;font-size:1rem;" id="masterOwed">0.00</div>
-        </div>
-      </div>
     </div>
     <div class="sh">Balances by Person</div>
     <div class="person-grid" id="personGrid"></div>
@@ -316,13 +314,13 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
     <div class="sh">All Transactions</div>
     <div class="tx-filters" id="ledgerFilters">
       <button class="tx-filter on" onclick="setFilter('all',this)">All</button>
-      <button class="tx-filter" onclick="setFilter('income',this)">&#x1F49A; Sales</button>
+      <button class="tx-filter" onclick="setFilter('income',this)">&#x1F49A; Income</button>
       <button class="tx-filter" onclick="setFilter('expense',this)">&#x1F534; Expense</button>
       <button class="tx-filter" onclick="setFilter('salary',this)">&#x1F499; Salary</button>
       <button class="tx-filter" onclick="setFilter('transfer',this)">&#x1F7E1; Transfer</button>
       <button class="tx-filter" onclick="setFilter('credit',this)">&#x1F7E3; Credit</button>
       <button class="tx-filter" onclick="setFilter('owner-fund',this)">&#x1F7E0; Owner Fund</button>
-      <button class="tx-filter" onclick="setFilter('owner-fund-return',this)">&#x21A9;&#xFE0F; Fund Return</button>
+      <button class="tx-filter" onclick="setFilter('fund-return',this)">&#x1F535; Fund Return</button>
     </div>
     <div class="tx-filters" id="personFilterRow" style="margin-top:-4px;margin-bottom:12px;"></div>
     <div id="ledgerList"></div>
@@ -332,22 +330,22 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   <div class="tab" id="tab-add">
     <div class="sh">New Transaction</div>
     <div class="form-card">
-      <div class="type-switcher" style="grid-template-columns:repeat(4,1fr);">
-        <button class="type-btn active-income" id="tb-income" onclick="setType('income',this)">&#x1F49A;<br>Sales</button>
+      <div class="type-switcher" style="grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:18px;">
+        <button class="type-btn active-income" id="tb-income" onclick="setType('income',this)">&#x1F49A;<br>Income</button>
         <button class="type-btn" id="tb-expense" onclick="setType('expense',this)">&#x1F534;<br>Expense</button>
         <button class="type-btn" id="tb-salary" onclick="setType('salary',this)">&#x1F499;<br>Salary</button>
         <button class="type-btn" id="tb-transfer" onclick="setType('transfer',this)">&#x1F7E1;<br>Transfer</button>
         <button class="type-btn" id="tb-credit" onclick="setType('credit',this)">&#x1F7E3;<br>Credit Sale</button>
         <button class="type-btn" id="tb-owner-fund" onclick="setType('owner-fund',this)">&#x1F7E0;<br>Owner Fund</button>
-        <button class="type-btn" id="tb-owner-fund-return" onclick="setType('owner-fund-return',this)" style="grid-column:span 2;">&#x21A9;&#xFE0F;<br>Fund Return</button>
+        <button class="type-btn" id="tb-fund-return" onclick="setType('fund-return',this)" style="grid-column:1/-1;">&#x1F535;<br>Fund Return</button>
       </div>
-      <div class="form-row single" id="mainAmountRow" style="margin-bottom:12px;">
+      <div class="form-row single" style="margin-bottom:12px;">
         <div class="f-field">
           <label class="f-label" id="amtLabel">Amount (GHS) *</label>
           <input class="f-input f-amount" type="number" id="f-amount" placeholder="0.00" min="0" step="0.01"/>
         </div>
       </div>
-      <div class="form-row" id="mainPersonRow">
+      <div class="form-row">
         <div class="f-field">
           <label class="f-label" id="personLabel">Person *</label>
           <select class="f-select" id="f-person"></select>
@@ -357,13 +355,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
           <input class="f-input" type="date" id="f-date"/>
         </div>
       </div>
-      <div class="form-row single" id="mainDescRow">
-        <div class="f-field">
-          <label class="f-label">Description *</label>
-          <input class="f-input" type="text" id="f-desc" placeholder="What was this for?"/>
-        </div>
-      </div>
-      <div class="form-row single" id="mainCatRow">
+      <div class="form-row">
         <div class="f-field">
           <label class="f-label">Category</label>
           <select class="f-select" id="f-category">
@@ -375,39 +367,31 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
             <option>Salary</option><option>Other</option>
           </select>
         </div>
+        <div class="f-field">
+          <label class="f-label">Reference / Note</label>
+          <input class="f-input" type="text" id="f-note" placeholder="e.g. Receipt #007"/>
+        </div>
       </div>
       <!-- TRANSFER -->
       <div id="transferFields">
-        <div class="info-box">&#x1F4A1; Record an internal transfer between people in the business.</div>
+        <div class="info-box">&#x1F4A1; Use when someone is instructed to make a mobile money or bank transfer to another person on behalf of the business.</div>
         <div class="form-row">
           <div class="f-field"><label class="f-label">Sent By *</label><select class="f-select" id="f-tf-from"></select></div>
           <div class="f-field"><label class="f-label">Received By *</label><select class="f-select" id="f-tf-to"></select></div>
         </div>
-        <div class="form-row">
-          <div class="f-field">
-            <label class="f-label">Payment Method</label>
-            <select class="f-select" id="f-tf-method">
-              <option value="">&#8212; Select &#8212;</option>
-              <option value="Cash">Cash</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Mobile Money">Mobile Money</option>
-            </select>
-          </div>
-          <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="f-tf-date"/></div>
-        </div>
         <div class="form-row single">
-          <div class="f-field"><label class="f-label">Description</label><input class="f-input" type="text" id="f-tf-desc" placeholder="Optional note about this transfer"/></div>
+          <div class="f-field"><label class="f-label">MoMo / Bank Reference</label><input class="f-input" type="text" id="f-tf-ref" placeholder="e.g. MTN MoMo ref 123456"/></div>
         </div>
       </div>
       <!-- CREDIT SALE -->
       <div id="creditFields">
-        <div class="info-box">&#x1F95A; Record a sale on credit &#8212; track buyer, total amount, and amount paid so outstanding balance is visible.</div>
+        <div class="info-box">&#x1F95A; Egg sale on credit &#8212; track buyer, crates sold, price per crate, and amount paid so outstanding balance is visible.</div>
         <div class="form-row">
           <div class="f-field"><label class="f-label">Buyer Name *</label><input class="f-input" type="text" id="f-cr-buyer" placeholder="Buyer's full name"/></div>
-          <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="f-cr-date"/></div>
+          <div class="f-field"><label class="f-label">Price per Crate *</label><input class="f-input" type="number" id="f-cr-price" placeholder="0.00" min="0" step="0.01"/></div>
         </div>
         <div class="form-row">
-          <div class="f-field"><label class="f-label">Total Amount *</label><input class="f-input f-amount" type="number" id="f-cr-total" placeholder="0.00" min="0" step="0.01"/></div>
+          <div class="f-field"><label class="f-label">Crates Sold *</label><input class="f-input" type="number" id="f-cr-crates" placeholder="0" min="0" step="1"/></div>
           <div class="f-field"><label class="f-label">Amount Paid Now</label><input class="f-input" type="number" id="f-cr-paid" placeholder="0.00" min="0" step="0.01"/></div>
         </div>
         <div class="form-row">
@@ -418,18 +402,24 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
       </div>
       <!-- OWNER FUND -->
       <div id="ownerFundFields">
-        <div class="info-box" id="ownerFundNewInfo">&#x1F7E0; Record money sent by the owner to cover business expenses. This will show as funds to be returned.</div>
-        <div class="info-box" id="ownerFundReturnInfo" style="display:none;background:rgba(0,184,122,0.08);color:var(--green);">&#x2705; Log a repayment back to the owner. This reduces the outstanding amount owed.</div>
+        <div class="info-box">&#x1F7E0; Record money sent by an owner into the business to cover expenses when no funds are on the ground.</div>
         <div class="form-row">
-          <div class="f-field"><label class="f-label">Sent By *</label><select class="f-select" id="f-of-owner"></select></div>
+          <div class="f-field"><label class="f-label">Sent By (Owner) *</label><select class="f-select" id="f-of-sender"></select></div>
           <div class="f-field"><label class="f-label">Received By *</label><select class="f-select" id="f-of-receiver"></select></div>
         </div>
+      </div>
+      <!-- FUND RETURN -->
+      <div id="fundReturnFields">
+        <div class="info-box">&#x1F535; Record unused or refunded money being returned from the business back to an owner.</div>
         <div class="form-row">
-          <div class="f-field"><label class="f-label">Amount *</label><input class="f-input f-amount" type="number" id="f-of-amount" placeholder="0.00" min="0" step="0.01"/></div>
-          <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="f-of-date"/></div>
+          <div class="f-field"><label class="f-label">Returned By *</label><select class="f-select" id="f-fr-sender"></select></div>
+          <div class="f-field"><label class="f-label">Received By (Owner) *</label><select class="f-select" id="f-fr-receiver"></select></div>
         </div>
+      </div>
+      <!-- SALARY EXTRA -->
+      <div id="salaryFields">
         <div class="form-row single">
-          <div class="f-field"><label class="f-label">Description</label><input class="f-input" type="text" id="f-of-desc" placeholder="Optional note"/></div>
+          <div class="f-field"><label class="f-label">Paid By (Deducted from) *</label><select class="f-select" id="f-sal-paidby"></select></div>
         </div>
       </div>
       <button class="submit-btn" onclick="submitTx()">Save Transaction</button>
@@ -454,8 +444,9 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
     <div class="add-person-form">
       <div class="form-row">
         <div class="f-field"><label class="f-label">Full Name *</label><input class="f-input" id="p-name" placeholder="e.g. Abdul Jalil"/></div>
-        <div class="f-field"><label class="f-label">Role / Title</label><input class="f-input" id="p-role" placeholder="e.g. Caretaker"/></div>
+        <div class="f-field"><label class="f-label">Role / Title</label><input class="f-input" id="p-role" placeholder="e.g. Owner, Caretaker"/></div>
       </div>
+      <div class="info-box" style="margin-bottom:10px;">&#x1F4A1; People whose role contains <strong>"Owner"</strong> will appear in the <em>Owner Fund</em> and <em>Fund Return</em> sender/receiver fields.</div>
       <div class="form-row">
         <div class="f-field">
           <label class="f-label">Colour</label>
@@ -489,7 +480,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
             <option value="all">All Types</option><option value="income">Income</option>
             <option value="expense">Expenses</option><option value="salary">Salary</option>
             <option value="transfer">Transfers</option><option value="credit">Credit Sales</option>
-            <option value="owner-fund">Owner Funds</option>
+            <option value="owner-fund">Owner Funds</option><option value="fund-return">Fund Returns</option>
           </select>
         </div>
       </div>
@@ -531,8 +522,10 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
       <button class="submit-btn" style="background:linear-gradient(135deg,#c0203a,#e83e5c);margin-bottom:10px;" onclick="confirmClear()">Clear All Local Data</button>
       <div style="font-size:0.68rem;color:var(--text3);line-height:1.7;">
         <strong style="color:var(--text2);">Install as app:</strong><br>
-        iOS: Safari &#x2192; Share &#x2192; Add to Home Screen<br>
-        Android: Chrome &#x2192; Menu &#x2192; Add to Home Screen
+        Desktop: use the <strong>&#x2B07; Install</strong> button in the top bar (Chrome/Edge).<br>
+        iOS Safari: Share &#x2192; Add to Home Screen<br>
+        Android Chrome: Menu &#x2192; Add to Home Screen<br>
+        <em style="color:var(--text3);">Note: must be served via HTTPS or localhost for install to work.</em>
       </div>
     </div>
   </div>
@@ -556,7 +549,30 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 <div class="overlay" id="editOverlay" onclick="closeModal('editOverlay')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">Edit Transaction</div>
-    <div id="editFields"></div>
+    <div class="form-row">
+      <div class="f-field"><label class="f-label">Amount</label><input class="f-input" type="number" id="e-amount" min="0" step="0.01"/></div>
+      <div class="f-field"><label class="f-label">Date</label><input class="f-input" type="date" id="e-date"/></div>
+    </div>
+    <div class="form-row single" style="margin-top:8px;">
+      <div class="f-field"><label class="f-label">Description</label><input class="f-input" type="text" id="e-desc"/></div>
+    </div>
+    <div class="form-row" style="margin-top:8px;">
+      <div class="f-field">
+        <label class="f-label">Category</label>
+        <select class="f-select" id="e-category">
+          <option value="">&#8212; Select &#8212;</option>
+          <option>Feed &amp; Supplies</option><option>Transport</option>
+          <option>Utilities</option><option>Equipment</option>
+          <option>Medical / Vet</option><option>Labour</option>
+          <option>Sales Revenue</option><option>Loan / Advance</option>
+          <option>Salary</option><option>Other</option>
+        </select>
+      </div>
+      <div class="f-field"><label class="f-label">Person</label><select class="f-select" id="e-person"></select></div>
+    </div>
+    <div class="form-row single" style="margin-top:8px;">
+      <div class="f-field"><label class="f-label">Note</label><input class="f-input" type="text" id="e-note" placeholder="Reference / note"/></div>
+    </div>
     <div class="modal-btns">
       <button class="m-btn m-btn-cancel" onclick="closeModal('editOverlay')">Cancel</button>
       <button class="m-btn m-btn-save" onclick="confirmEdit()">Save Changes</button>
@@ -566,26 +582,48 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 
 <div id="toast"></div>
 
-<!-- CREDIT PAYMENT MODAL -->
-<div class="overlay" id="cpOverlay" onclick="closeModal('cpOverlay')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Log Payment</div>
-    <div class="modal-sub">Record a payment received from <strong id="cpBuyer"></strong></div>
-    <div class="form-row">
-      <div class="f-field"><label class="f-label">Amount Received *</label><input class="f-input f-amount" type="number" id="cp-amount" placeholder="0.00" min="0" step="0.01"/></div>
-      <div class="f-field"><label class="f-label">Date</label><input class="f-input" type="date" id="cp-date"/></div>
-    </div>
-    <div class="form-row single" style="margin-top:8px;">
-      <div class="f-field"><label class="f-label">Received By *</label><select class="f-select" id="cp-receiver"></select></div>
-    </div>
-    <div class="modal-btns">
-      <button class="m-btn m-btn-cancel" onclick="closeModal('cpOverlay')">Cancel</button>
-      <button class="m-btn m-btn-save" onclick="confirmCreditPayment()">Save Payment</button>
-    </div>
-  </div>
-</div>
-
 <script>
+// ── Inline Manifest (no external manifest.json needed) ──
+(function(){
+  const mf={
+    name:"Cashbook — Expense Tracker",short_name:"Cashbook",
+    description:"Personal expense and income tracker with per-person balances.",
+    start_url:"./",scope:"./",display:"standalone",
+    display_override:["standalone","minimal-ui"],
+    theme_color:"#0d0d0d",background_color:"#0d0d0d",orientation:"portrait",
+    icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230d0d0d'/><text y='148' x='16' font-size='148'>💰</text></svg>",sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]
+  };
+  const blob=new Blob([JSON.stringify(mf)],{type:'application/manifest+json'});
+  const url=URL.createObjectURL(blob);
+  document.getElementById('manifestLink').href=url;
+})();
+
+// ── Inline Service Worker (no external sw.js needed) ──
+const SW_CODE=`
+const CACHE='cashbook-v2';
+self.addEventListener('install',e=>{e.waitUntil(self.skipWaiting());});
+self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim());});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;});
+self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
+`;
+
+// ── PWA Install Prompt ──
+let _deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_deferredPrompt=e;
+  const btn=document.getElementById('installBtn');
+  if(btn)btn.style.display='';
+});
+window.addEventListener('appinstalled',()=>{
+  _deferredPrompt=null;
+  const btn=document.getElementById('installBtn');
+  if(btn)btn.style.display='none';
+  toast('&#x2705; App installed successfully!');
+});
+function triggerInstall(){
+  if(_deferredPrompt){_deferredPrompt.prompt();_deferredPrompt.userChoice.then(()=>{_deferredPrompt=null;});}
+  else{toast('&#x2139; Open in Chrome/Edge on Android or desktop to install');}
+}
 function esc(s){const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML;}
 function escA(s){return String(s??'').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');}
 
@@ -618,18 +656,6 @@ function unlockApp(ro){
   document.getElementById('pinScreen').style.display='none';
   document.getElementById('app').classList.add('on');
   document.getElementById('roBar').style.display=ro?'block':'none';
-  if(ro){
-    // Hide tabs not needed in view-only
-    ['settings','people','report'].forEach(tab=>{
-      const nb=document.querySelector('.nav-btn[data-tab="'+tab+'"]');
-      if(nb)nb.style.display='none';
-    });
-    // Hide add entry nav tab
-    const addNav=document.querySelector('.nav-btn[data-tab="add"]');
-    if(addNav)addNav.style.display='none';
-    // Hide Print and Add buttons in topbar
-    ['printBtn','addTabBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
-  }
   initApp();
 }
 function lockApp(){sessionStorage.removeItem('cb_s');document.getElementById('app').classList.remove('on');document.getElementById('pinScreen').style.display='flex';readOnly=false;pinEntry='';updateDots();}
@@ -741,14 +767,22 @@ async function manualPush(){toast('&#x2B06; Pushing&#8230;');await dbSync();toas
 function initApp(){
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('f-date').value=today;
-  ['f-tf-date','f-cr-date','f-of-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
   document.getElementById('r-from').value=today.slice(0,7)+'-01';
   document.getElementById('r-to').value=today;
   document.getElementById('s-currency').value=currency;
   populateSels();renderAll();renderPeopleTab();renderQuickBtns();renderCreditTab();
-  ['f-cr-total','f-cr-paid'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',updateCreditCalc);});
+  ['f-cr-crates','f-cr-price','f-cr-paid'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',updateCreditCalc);});
   initFirebase();
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  // Register inline service worker as blob
+  if('serviceWorker' in navigator){
+    try{
+      const swBlob=new Blob([SW_CODE],{type:'application/javascript'});
+      const swURL=URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swURL,{scope:'./'}).catch(()=>{
+        // blob SW scope issues on some browsers — silent fail
+      });
+    }catch(e){}
+  }
 }
 function renderAll(){renderDashboard();renderLedger();renderPersonFilterRow();}
 
@@ -767,23 +801,16 @@ function renderDashboard(){
     if(t.type==='income')totalIn+=t.amount;
     else if(t.type==='expense'||t.type==='salary')totalOut+=t.amount;
     else if(t.type==='owner-fund')totalIn+=t.amount;
+    else if(t.type==='fund-return')totalOut+=t.amount;
     else if(t.type==='credit')totalIn+=(t.creditPaid||0);
-    // transfers are internal movements — net zero at master level
-    // owner-fund returns reduce the amount owed back
-    else if(t.type==='owner-fund-return')totalOut+=t.amount;
   });
   const bal=totalIn-totalOut;
-  const ownerFundTotal=txs.filter(t=>t.type==='owner-fund').reduce((s,t)=>s+t.amount,0);
-  const ownerFundReturned=txs.filter(t=>t.type==='owner-fund-return').reduce((s,t)=>s+t.amount,0);
-  const ownerFundOwed=ownerFundTotal-ownerFundReturned;
   const ma=document.getElementById('masterAmt');
   ma.textContent=fmtAmt(bal);
   ma.className='mc-amount'+(bal<0?' neg':'');
   document.getElementById('masterIn').textContent=fmtAmt(totalIn);
   document.getElementById('masterOut').textContent=fmtAmt(totalOut);
   document.getElementById('masterCount').textContent=txs.length;
-  const owedEl=document.getElementById('masterOwed');
-  if(owedEl){owedEl.textContent=fmtAmt(ownerFundOwed);document.getElementById('ownerOwedRow').style.display=ownerFundOwed>0?'grid':'none';}
 
   const grid=document.getElementById('personGrid');grid.innerHTML='';
   people.forEach(p=>{
@@ -807,16 +834,12 @@ function renderDashboard(){
 function pStats(pid){
   let pIn=0,pOut=0;
   txs.forEach(t=>{
-    if(t.type==='transfer'){
-      if(t.transferFrom===pid)pOut+=t.amount;
-      if(t.transferTo===pid)pIn+=t.amount;
-      return;
-    }
     if(t.person!==pid)return;
     if(t.type==='income')pIn+=t.amount;
     else if(t.type==='expense'||t.type==='salary')pOut+=t.amount;
+    else if(t.type==='transfer')pOut+=t.amount;
     else if(t.type==='owner-fund')pIn+=t.amount;
-    else if(t.type==='owner-fund-return')pOut+=t.amount;
+    else if(t.type==='fund-return')pOut+=t.amount;
     else if(t.type==='credit')pIn+=(t.creditPaid||0);
   });
   return{pIn,pOut,pBal:pIn-pOut};
@@ -861,30 +884,18 @@ function renderLedger(){
 function makeTxEl(t,showActions){
   const person=people.find(p=>p.id===t.person);
   const c=person?pColor(person):COLORS.green;
-  const icons={income:'&#x1F49A;',expense:'&#x1F534;',salary:'&#x1F499;',transfer:'&#x1F7E1;',credit:'&#x1F7E3;','owner-fund':'&#x1F7E0;','owner-fund-return':'&#x21A9;&#xFE0F;'};
+  const icons={income:'&#x1F49A;',expense:'&#x1F534;',salary:'&#x1F499;',transfer:'&#x1F7E1;',credit:'&#x1F7E3;','owner-fund':'&#x1F7E0;','fund-return':'&#x1F535;'};
   const icon=icons[t.type]||'&#x2B1C;';
-  const iconCls=t.type==='owner-fund'||t.type==='owner-fund-return'?'ownerfund':(t.type||'expense');
+  const iconCls=t.type==='owner-fund'?'ownerfund':t.type==='fund-return'?'fundreturn':(t.type||'expense');
   const isIn=t.type==='income'||t.type==='owner-fund';
 
-  // Amount display
+  // Amount display — always show explicit sign, always show minus for negatives
   let amtHtml='';
   if(t.type==='credit'){
     const paid=t.creditPaid||0;
-    const total=t.creditTotal||(t.creditCrates||0)*(t.creditPrice||0);
-    const outstanding=total-paid;
-    amtHtml=`<div style="text-align:right">
-      <div class="tx-amount pos">+${fmtAmt(paid)}</div>
-      ${outstanding>0.005?`<div style="font-size:0.68rem;color:var(--red)">Owes ${fmtAmt(outstanding)}</div>`:`<div style="font-size:0.68rem;color:var(--green)">Settled &#x2713;</div>`}
-    </div>`;
+    amtHtml=`<div class="tx-amount pos">+${fmtAmt(paid)}</div>`;
   }else if(t.type==='transfer'){
-    const fromP=people.find(p=>p.id===t.transferFrom);
-    const toP=people.find(p=>p.id===t.transferTo);
-    amtHtml=`<div style="text-align:right">
-      <div class="tx-amount" style="color:var(--gold)">&#x21C4; ${fmtAmt(t.amount)}</div>
-      <div style="font-size:0.62rem;color:var(--text3)">${fromP?esc(fromP.name):'?'} &#x2192; ${toP?esc(toP.name):'?'}</div>
-    </div>`;
-  }else if(t.type==='owner-fund-return'){
-    amtHtml=`<div class="tx-amount" style="color:var(--green)">-${fmtAmt(t.amount)}</div>`;
+    amtHtml=`<div class="tx-amount" style="color:var(--gold)">&#x21C4; ${fmtAmt(t.amount)}</div>`;
   }else{
     const sign=isIn?'+':'-';
     const col=isIn?'pos':'neg';
@@ -893,24 +904,32 @@ function makeTxEl(t,showActions){
 
   let extraMeta='';
   if(t.type==='transfer'){
-    if(t.transferMethod)extraMeta+=`<span class="tx-cat">${esc(t.transferMethod)}</span>`;
+    const fp=people.find(p=>p.id===t.transferFrom);const tp=people.find(p=>p.id===t.transferTo);
+    extraMeta=`<span class="tx-cat">${fp?esc(fp.name):'?'} &#x2192; ${tp?esc(tp.name):'?'}</span>`;
+    if(t.transferRef)extraMeta+=`<span class="tx-cat">ref: ${esc(t.transferRef)}</span>`;
   }
   if(t.type==='credit'){
-    const total=t.creditTotal||(t.creditCrates||0)*(t.creditPrice||0);
+    const total=(t.creditCrates||0)*(t.creditPrice||0);
+    const outstanding=total-(t.creditPaid||0);
     if(t.creditBuyer)extraMeta+=`<span class="tx-cat">Buyer: ${esc(t.creditBuyer)}</span>`;
-    if(total>0)extraMeta+=`<span class="tx-cat">Total: ${fmtAmt(total)}</span>`;
-    const seller=people.find(p=>p.id===t.creditSeller);
-    const rcvr=people.find(p=>p.id===t.creditReceiver);
-    if(seller)extraMeta+=`<span class="tx-cat">By: ${esc(seller.name)}</span>`;
-    if(rcvr)extraMeta+=`<span class="tx-cat">Rcvd: ${esc(rcvr.name)}</span>`;
+    extraMeta+=`<span class="tx-cat">${t.creditCrates||0} crates &#64; ${fmtAmt(t.creditPrice||0)}</span>`;
+    extraMeta+=outstanding>0.005?`<span class="outstanding-tag">Owes ${fmtAmt(outstanding)}</span>`:total>0?`<span class="settled-tag">Settled &#x2713;</span>`:'';
   }
-  if(t.type==='owner-fund'||t.type==='owner-fund-return'){
-    const fromP=people.find(p=>p.id===t.ownerFrom);
+  if(t.type==='owner-fund'){
+    const sndp=people.find(p=>p.id===t.ownerSender);
+    extraMeta+=`<span class="tx-cat">From: ${esc(sndp?sndp.name:(t.ownerName||'Owner'))}</span>`;
     const rcvr=people.find(p=>p.id===t.ownerReceiver);
-    if(fromP)extraMeta+=`<span class="tx-cat">From: ${esc(fromP.name)}</span>`;
     if(rcvr)extraMeta+=`<span class="tx-cat">To: ${esc(rcvr.name)}</span>`;
-    // Legacy support
-    if(!fromP&&t.ownerName)extraMeta+=`<span class="tx-cat">From: ${esc(t.ownerName)}</span>`;
+  }
+  if(t.type==='fund-return'){
+    const sndp=people.find(p=>p.id===t.frSender);
+    const rcvp=people.find(p=>p.id===t.frReceiver);
+    if(sndp)extraMeta+=`<span class="tx-cat">From: ${esc(sndp.name)}</span>`;
+    if(rcvp)extraMeta+=`<span class="tx-cat">To (Owner): ${esc(rcvp.name)}</span>`;
+  }
+  if(t.type==='salary'&&t.salaryPaidBy){
+    const pb=people.find(p=>p.id===t.salaryPaidBy);
+    if(pb)extraMeta+=`<span class="tx-cat">Paid by: ${esc(pb.name)}</span>`;
   }
 
   const el=document.createElement('div');el.className='tx-item fade-in';el.dataset.id=t.id;
@@ -941,43 +960,25 @@ function setType(type,btn){
   if(btn)btn.className='type-btn active-'+type;
   document.getElementById('transferFields').className=type==='transfer'?'show':'';
   document.getElementById('creditFields').className=type==='credit'?'show':'';
-  document.getElementById('ownerFundFields').className=type==='owner-fund'||type==='owner-fund-return'?'show':'';
-  const hasOwnFields=['credit','owner-fund','owner-fund-return'].includes(type);
-  const transferType=type==='transfer';
-  // Show/hide main amount row (transfer uses f-amount, credit/owner-fund have their own)
-  const amtRow=document.getElementById('mainAmountRow');
-  if(amtRow)amtRow.style.display=hasOwnFields?'none':'block';
-  // Show/hide main person+date row
-  const personRow=document.getElementById('mainPersonRow');
-  if(personRow)personRow.style.display=(hasOwnFields||transferType)?'none':'grid';
-  // Show/hide desc (transfer has inline desc field, special types have own)
-  const descRow=document.getElementById('mainDescRow');
-  if(descRow)descRow.style.display=(hasOwnFields||transferType)?'none':'block';
-  const catRow=document.getElementById('mainCatRow');
-  if(catRow)catRow.style.display=(hasOwnFields||transferType)?'none':'block';
+  document.getElementById('ownerFundFields').className=type==='owner-fund'?'show':'';
+  document.getElementById('fundReturnFields').className=type==='fund-return'?'show':'';
+  document.getElementById('salaryFields').className=type==='salary'?'show':'';
   const cat=document.getElementById('f-category');
   if(type==='salary')cat.value='Salary';
   else if(type==='income')cat.value='Sales Revenue';
   else cat.value='';
-  document.getElementById('amtLabel').textContent='Amount ('+currency+') *';
-  // Dynamic labels
-  const pLabel=document.getElementById('personLabel');
-  if(type==='income')pLabel.textContent='Received By *';
-  else if(type==='expense')pLabel.textContent='Made By *';
-  else if(type==='salary')pLabel.textContent='Paid To *';
-  else pLabel.textContent='Person *';
-  // Show owner fund return info
-  const ofReturnInfo=document.getElementById('ownerFundReturnInfo');
-  if(ofReturnInfo)ofReturnInfo.style.display=type==='owner-fund-return'?'block':'none';
-  const ofNewInfo=document.getElementById('ownerFundNewInfo');
-  if(ofNewInfo)ofNewInfo.style.display=type==='owner-fund'?'block':'none';
+  document.getElementById('amtLabel').textContent=type==='credit'?'Amount (0 if fully unpaid)':'Amount ('+currency+') *';
+  // Person label context
+  const lbl={transfer:'Logged By',credit:'Sale Made By','owner-fund':'Logged By','fund-return':'Logged By',salary:'Employee (Paid To)'};
+  document.getElementById('personLabel').textContent=lbl[type]||'Person *';
 }
 function updateCreditCalc(){
-  const total=parseFloat(document.getElementById('f-cr-total').value)||0;
+  const crates=parseFloat(document.getElementById('f-cr-crates').value)||0;
+  const price=parseFloat(document.getElementById('f-cr-price').value)||0;
   const paid=parseFloat(document.getElementById('f-cr-paid').value)||0;
-  const outstanding=total-paid;
+  const total=crates*price;const outstanding=total-paid;
   const box=document.getElementById('creditCalcBox');
-  if(total>0){
+  if(crates>0||price>0){
     box.style.display='block';
     box.textContent='Total: '+fmtAmt(total)+' | Paid: '+fmtAmt(paid)+' | Outstanding: '+fmtAmt(outstanding);
     box.style.color=outstanding>0.005?'var(--red)':'var(--green)';
@@ -985,73 +986,83 @@ function updateCreditCalc(){
 }
 function submitTx(){
   if(!guardWrite())return;
-  const today=new Date().toISOString().split('T')[0];
-  const isSpecial=['transfer','credit','owner-fund','owner-fund-return'].includes(txType);
-  const amount=isSpecial?0:parseFloat(document.getElementById('f-amount').value)||0;
-  const person=isSpecial?'':document.getElementById('f-person').value;
-  const date=isSpecial?today:document.getElementById('f-date').value;
-  const desc=document.getElementById('f-desc').value.trim();
-  const cat=isSpecial?'':document.getElementById('f-category').value;
-
-  if(!isSpecial){
-    if(!person){toast('&#x26A0; Select a person');return;}
-    if(!desc){toast('&#x26A0; Add a description');return;}
-    if(!date){toast('&#x26A0; Select a date');return;}
-    if(amount<=0){toast('&#x26A0; Enter a valid amount');return;}
-  }
-
-  const tx={id:'tx_'+Date.now(),type:txType,amount,person,date,desc,cat,note:'',ts:Date.now()};
+  const amount=parseFloat(document.getElementById('f-amount').value)||0;
+  const person=document.getElementById('f-person').value;
+  const date=document.getElementById('f-date').value;
+  const cat=document.getElementById('f-category').value;
+  const note=document.getElementById('f-note').value.trim();
+  if(!person){toast('&#x26A0; Select a person');return;}
+  if(!date){toast('&#x26A0; Select a date');return;}
+  const tx={id:'tx_'+Date.now(),type:txType,amount,person,date,desc:'',cat,note,ts:Date.now()};
 
   if(txType==='transfer'){
     const fromP=document.getElementById('f-tf-from').value;
     const toP=document.getElementById('f-tf-to').value;
-    const method=document.getElementById('f-tf-method').value;
-    const tfDate=document.getElementById('f-tf-date').value||today;
+    const ref=document.getElementById('f-tf-ref').value.trim();
     if(!fromP||!toP){toast('&#x26A0; Select sender and receiver');return;}
     if(fromP===toP){toast('&#x26A0; Sender and receiver must differ');return;}
-    if(amount<=0&&parseFloat(document.getElementById('f-amount').value)<=0){toast('&#x26A0; Enter transfer amount');return;}
-    const tfAmt=parseFloat(document.getElementById('f-amount').value)||0;
-    if(tfAmt<=0){toast('&#x26A0; Enter transfer amount');return;}
-    const tfDesc=(document.getElementById('f-tf-desc')?.value||'').trim();
-    tx.amount=tfAmt;tx.date=tfDate;
-    tx.transferFrom=fromP;tx.transferTo=toP;tx.transferMethod=method;
-    if(tfDesc)tx.desc=tfDesc;
-    else{const fn=people.find(p=>p.id===fromP)?.name||'?';const tn=people.find(p=>p.id===toP)?.name||'?';tx.desc='Transfer: '+fn+' → '+tn+(method?' ('+method+')':'');}
+    if(amount<=0){toast('&#x26A0; Enter transfer amount');return;}
+    tx.transferFrom=fromP;tx.transferTo=toP;tx.transferRef=ref;
+    const fn=people.find(p=>p.id===fromP)?.name||'?';const tn=people.find(p=>p.id===toP)?.name||'?';
+    tx.desc='MoMo Transfer: '+fn+' \u2192 '+tn;
   }
   if(txType==='credit'){
     const buyer=document.getElementById('f-cr-buyer').value.trim();
     const seller=document.getElementById('f-cr-seller').value;
     const receiver=document.getElementById('f-cr-receiver').value;
-    const total=parseFloat(document.getElementById('f-cr-total').value)||0;
+    const crates=parseFloat(document.getElementById('f-cr-crates').value)||0;
+    const price=parseFloat(document.getElementById('f-cr-price').value)||0;
     const paid=parseFloat(document.getElementById('f-cr-paid').value)||0;
-    const crDate=document.getElementById('f-cr-date').value||today;
     if(!buyer){toast('&#x26A0; Enter buyer name');return;}
-    if(total<=0){toast('&#x26A0; Enter total sale amount');return;}
-    tx.amount=paid;tx.date=crDate;
-    tx.creditBuyer=buyer;tx.creditTotal=total;tx.creditPaid=paid;
-    tx.creditSeller=seller;tx.creditReceiver=receiver;
-    if(!desc)tx.desc='Credit sale - '+buyer;else tx.desc=desc;
+    if(crates<=0||price<=0){toast('&#x26A0; Enter crates and price');return;}
+    tx.amount=paid;tx.creditBuyer=buyer;tx.creditCrates=crates;
+    tx.creditPrice=price;tx.creditPaid=paid;tx.creditSeller=seller;tx.creditReceiver=receiver;
+    tx.desc='Egg sale \u2013 '+buyer+' ('+crates+' crates)';
   }
-  if(txType==='owner-fund'||txType==='owner-fund-return'){
-    const ofAmt=parseFloat(document.getElementById('f-of-amount').value)||0;
-    const ofOwner=document.getElementById('f-of-owner').value;
-    const ofReceiver=document.getElementById('f-of-receiver').value;
-    const ofDate=document.getElementById('f-of-date').value||today;
-    const ofDesc=document.getElementById('f-of-desc').value.trim();
-    if(ofAmt<=0){toast('&#x26A0; Enter the fund amount');return;}
-    if(!ofOwner){toast('&#x26A0; Select sent by');return;}
-    tx.amount=ofAmt;tx.date=ofDate;
-    tx.ownerFrom=ofOwner;tx.ownerReceiver=ofReceiver;
-    if(ofDesc)tx.desc=ofDesc;
-    else tx.desc=(txType==='owner-fund-return'?'Fund returned to owner':'Owner fund deposit');
+  if(txType==='owner-fund'){
+    if(amount<=0){toast('&#x26A0; Enter the fund amount');return;}
+    const senderSel=document.getElementById('f-of-sender').value;
+    const receiverSel=document.getElementById('f-of-receiver').value;
+    if(!senderSel){toast('&#x26A0; Select an owner to send funds');return;}
+    if(!receiverSel){toast('&#x26A0; Select a receiver');return;}
+    tx.ownerSender=senderSel;tx.ownerReceiver=receiverSel;
+    const sn=people.find(p=>p.id===senderSel)?.name||'Owner';
+    const rn=people.find(p=>p.id===receiverSel)?.name||'?';
+    tx.ownerName=sn;
+    tx.desc='Owner fund: '+sn+' \u2192 '+rn;
   }
-
+  if(txType==='fund-return'){
+    if(amount<=0){toast('&#x26A0; Enter the return amount');return;}
+    const frSender=document.getElementById('f-fr-sender').value;
+    const frReceiver=document.getElementById('f-fr-receiver').value;
+    if(!frSender){toast('&#x26A0; Select who is returning the funds');return;}
+    if(!frReceiver){toast('&#x26A0; Select the owner receiving the funds');return;}
+    tx.frSender=frSender;tx.frReceiver=frReceiver;
+    const sn=people.find(p=>p.id===frSender)?.name||'?';
+    const rn=people.find(p=>p.id===frReceiver)?.name||'Owner';
+    tx.desc='Fund return: '+sn+' \u2192 '+rn;
+  }
+  if(txType==='salary'){
+    if(amount<=0){toast('&#x26A0; Enter salary amount');return;}
+    const paidBy=document.getElementById('f-sal-paidby').value;
+    tx.salaryPaidBy=paidBy;
+    const emp=people.find(p=>p.id===person)?.name||'?';
+    const pb=people.find(p=>p.id===paidBy)?.name||'';
+    tx.desc='Salary \u2013 '+emp+(pb?' (paid by '+pb+')':'');
+  }
+  // Auto-generate description for simple types
+  if(!tx.desc){
+    const pn=people.find(p=>p.id===person)?.name||'';
+    if(txType==='income')tx.desc=(pn?pn+' \u2013 ':'')+'Income';
+    else if(txType==='expense')tx.desc='Expense'+(pn?' by '+pn:'');
+    else tx.desc=txType.charAt(0).toUpperCase()+txType.slice(1);
+  }
+  if(!['credit','transfer','owner-fund','fund-return','salary'].includes(txType)&&amount<=0){
+    toast('&#x26A0; Enter a valid positive amount');return;
+  }
   txs.push(tx);ss('cb_txs',txs);dbSync();renderAll();renderCreditTab();
-  // Reset all form fields
-  ['f-amount','f-desc','f-cr-buyer','f-cr-total','f-cr-paid','f-of-amount','f-of-desc','f-tf-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';})
-  ['f-tf-method'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('f-date').value=today;
-  ['f-tf-date','f-cr-date','f-of-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
+  ['f-amount','f-note','f-cr-buyer','f-cr-crates','f-cr-price','f-cr-paid','f-tf-ref'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('creditCalcBox').style.display='none';
   toast('&#x2705; Transaction saved!');switchTab('ledger');
 }
@@ -1064,6 +1075,7 @@ function renderQuickBtns(){
     {label:'&#x1F7E1; MoMo Transfer',type:'transfer'},
     {label:'&#x1F95A; Egg Sale Credit',type:'credit'},
     {label:'&#x1F7E0; Owner Fund',type:'owner-fund'},
+    {label:'&#x1F535; Fund Return',type:'fund-return'},
   ];
   shortcuts.forEach(s=>{
     const b=document.createElement('button');
@@ -1081,8 +1093,7 @@ function renderCreditTab(){
   creditTxs.forEach(t=>{
     const buyer=t.creditBuyer||'Unknown';
     if(!byBuyer[buyer])byBuyer[buyer]={total:0,paid:0,sales:[],seller:null};
-    const tTotal=t.creditTotal||(t.creditCrates||0)*(t.creditPrice||0);
-    byBuyer[buyer].total+=tTotal;
+    byBuyer[buyer].total+=(t.creditCrates||0)*(t.creditPrice||0);
     byBuyer[buyer].paid+=(t.creditPaid||0);
     byBuyer[buyer].sales.push(t);
     byBuyer[buyer].seller=t.creditSeller||t.person;
@@ -1096,17 +1107,9 @@ function renderCreditTab(){
       const outstanding=data.total-data.paid;
       const seller=people.find(p=>p.id===data.seller);
       const row=document.createElement('div');row.className='cs-row';
-      row.innerHTML=`<div><div class="cs-buyer">${esc(buyer)}</div>
-        <div class="cs-detail">${data.sales.length} sale(s)${seller?' via '+esc(seller.name):''}</div></div>
-        <div style="text-align:right">
-          <div class="cs-total">Total: ${fmtAmt(data.total)}</div>
-          <div class="cs-total" style="font-size:0.72rem;color:var(--green);">Paid: ${fmtAmt(data.paid)}</div>
-          ${outstanding>0.005
-            ?`<div class="cs-outstanding">Owes: ${fmtAmt(outstanding)}</div>
-              ${!readOnly?`<button onclick="openCreditPayment('${escA(buyer)}')" style="margin-top:5px;font-size:0.62rem;font-weight:700;padding:4px 10px;border-radius:8px;background:var(--blue2);color:var(--blue);border:none;cursor:pointer;">+ Log Payment</button>`:''}
-              `
-            :`<div class="cs-settled">Settled &#x2713;</div>`}
-        </div>`;
+      row.innerHTML=`<div><div class="cs-buyer">${esc(buyer)}</div><div class="cs-detail">${data.sales.length} sale(s) via ${seller?esc(seller.name):'&#8212;'}</div></div>
+        <div style="text-align:right"><div class="cs-total">Total: ${fmtAmt(data.total)}</div>
+        ${outstanding>0.005?`<div class="cs-outstanding">Owes: ${fmtAmt(outstanding)}</div>`:`<div class="cs-settled">Settled &#x2713;</div>`}</div>`;
       card.appendChild(row);
     });
     summaryEl.innerHTML='';summaryEl.appendChild(card);
@@ -1114,47 +1117,6 @@ function renderCreditTab(){
   const listEl=document.getElementById('creditList');listEl.innerHTML='';
   if(!creditTxs.length){listEl.innerHTML='<div class="tx-empty">No credit sales logged.</div>';return;}
   [...creditTxs].sort((a,b)=>(b.ts||0)-(a.ts||0)).forEach(t=>listEl.appendChild(makeTxEl(t,true)));
-}
-
-function openCreditPayment(buyer){
-  if(!guardWrite())return;
-  document.getElementById('cpBuyer').textContent=buyer;
-  // populate payment receiver dropdown
-  const sel=document.getElementById('cp-receiver');
-  sel.innerHTML=people.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
-  document.getElementById('cp-amount').value='';
-  document.getElementById('cp-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('cpOverlay').dataset.buyer=buyer;
-  document.getElementById('cpOverlay').classList.add('open');
-}
-function confirmCreditPayment(){
-  const buyer=document.getElementById('cpOverlay').dataset.buyer;
-  const amount=parseFloat(document.getElementById('cp-amount').value)||0;
-  const date=document.getElementById('cp-date').value;
-  const receiver=document.getElementById('cp-receiver').value;
-  if(amount<=0){toast('&#x26A0; Enter payment amount');return;}
-  // Find all outstanding sales for this buyer and apply payment
-  const buyerSales=txs.filter(t=>t.type==='credit'&&(t.creditBuyer||'Unknown')===buyer);
-  const totalPaid=buyerSales.reduce((s,t)=>s+(t.creditPaid||0),0);
-  const totalAmt=buyerSales.reduce((s,t)=>s+(t.creditTotal||(t.creditCrates||0)*(t.creditPrice||0)),0);
-  const newPaidTotal=Math.min(totalPaid+amount,totalAmt);
-  const remaining=newPaidTotal-totalPaid;
-  // Distribute payment across oldest unpaid sales first
-  let leftToApply=remaining;
-  [...buyerSales].sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(t=>{
-    if(leftToApply<=0)return;
-    const tTotal=t.creditTotal||(t.creditCrates||0)*(t.creditPrice||0);
-    const stillOwed=tTotal-(t.creditPaid||0);
-    const applying=Math.min(stillOwed,leftToApply);
-    t.creditPaid=(t.creditPaid||0)+applying;
-    leftToApply-=applying;
-  });
-  // Log a receipt transaction
-  const rcptPerson=receiver||people[0]?.id||'';
-  txs.push({id:'tx_'+Date.now(),type:'income',amount,person:rcptPerson,date,desc:'Credit payment received - '+buyer,cat:'Sales Revenue',note:'',ts:Date.now(),creditPaymentFor:buyer});
-  ss('cb_txs',txs);dbSync();renderAll();renderCreditTab();
-  closeModal('cpOverlay');
-  toast('&#x2705; Payment of '+fmtAmt(amount)+' logged for '+buyer);
 }
 
 function addPerson(){
@@ -1189,10 +1151,26 @@ function renderPeopleTab(){
     list.appendChild(row);
   });
 }
+function isOwner(p){return p.role&&p.role.toLowerCase().includes('owner');}
 function populateSels(){
-  const ids=['f-person','f-tf-from','f-tf-to','f-cr-seller','f-cr-receiver','f-of-receiver','f-of-owner','e-person'];
+  // General selects — all people
+  const ids=['f-person','f-tf-from','f-tf-to','f-cr-seller','f-cr-receiver','f-sal-paidby','e-person'];
   const opts=people.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
   ids.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+
+  // Owner-only selects (Owner Fund: Sent By; Fund Return: Received By)
+  const owners=people.filter(isOwner);
+  const ownerOpts=owners.length
+    ? owners.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('')
+    : `<option value="">— No owners added —</option>`;
+  ['f-of-sender','f-fr-receiver'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=ownerOpts;});
+
+  // Non-owner selects (Owner Fund: Received By; Fund Return: Sent By)
+  const nonOwners=people.filter(p=>!isOwner(p));
+  const nonOwnerOpts=nonOwners.length
+    ? nonOwners.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('')
+    : `<option value="">— No non-owners added —</option>`;
+  ['f-of-receiver','f-fr-sender'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=nonOwnerOpts;});
 }
 function populateReportSel(){
   const sel=document.getElementById('r-person');if(!sel)return;
@@ -1215,105 +1193,25 @@ function askEdit(id){
   if(!guardWrite())return;
   const t=txs.find(x=>x.id===id);if(!t)return;
   editPendingId=id;
-  const peopleOpts=people.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
-  const catOpts=`<option value="">&#8212; Select &#8212;</option>
-    <option>Feed &amp; Supplies</option><option>Transport</option><option>Utilities</option>
-    <option>Equipment</option><option>Medical / Vet</option><option>Labour</option>
-    <option>Sales Revenue</option><option>Loan / Advance</option><option>Salary</option><option>Other</option>`;
-  let html='';
-  if(t.type==='transfer'){
-    html=`
-      <div class="form-row"><div class="f-field"><label class="f-label">Amount *</label><input class="f-input" type="number" id="e-amount" value="${t.amount}" min="0" step="0.01"/></div>
-      <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="e-date" value="${t.date||''}"/></div></div>
-      <div class="form-row"><div class="f-field"><label class="f-label">Sent By *</label><select class="f-select" id="e-tf-from">${peopleOpts}</select></div>
-      <div class="f-field"><label class="f-label">Received By *</label><select class="f-select" id="e-tf-to">${peopleOpts}</select></div></div>
-      <div class="form-row"><div class="f-field"><label class="f-label">Payment Method</label>
-        <select class="f-select" id="e-tf-method"><option value="">&#8212; Select &#8212;</option><option>Cash</option><option>Bank Transfer</option><option>Mobile Money</option></select></div>
-      <div class="f-field"><label class="f-label">Description</label><input class="f-input" type="text" id="e-desc" value="${escA(t.desc||'')}"/></div></div>`;
-  }else if(t.type==='credit'){
-    const total=t.creditTotal||(t.creditCrates||0)*(t.creditPrice||0);
-    html=`
-      <div class="form-row"><div class="f-field"><label class="f-label">Buyer Name *</label><input class="f-input" type="text" id="e-cr-buyer" value="${escA(t.creditBuyer||'')}"/></div>
-      <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="e-date" value="${t.date||''}"/></div></div>
-      <div class="form-row"><div class="f-field"><label class="f-label">Total Amount *</label><input class="f-input" type="number" id="e-cr-total" value="${total}" min="0" step="0.01"/></div>
-      <div class="f-field"><label class="f-label">Amount Paid</label><input class="f-input" type="number" id="e-cr-paid" value="${t.creditPaid||0}" min="0" step="0.01"/></div></div>
-      <div class="form-row"><div class="f-field"><label class="f-label">Sale Made By</label><select class="f-select" id="e-cr-seller">${peopleOpts}</select></div>
-      <div class="f-field"><label class="f-label">Received By</label><select class="f-select" id="e-cr-receiver">${peopleOpts}</select></div></div>
-      <div class="form-row single"><div class="f-field"><label class="f-label">Description</label><input class="f-input" type="text" id="e-desc" value="${escA(t.desc||'')}"/></div></div>`;
-  }else if(t.type==='owner-fund'||t.type==='owner-fund-return'){
-    html=`
-      <div class="form-row"><div class="f-field"><label class="f-label">Amount *</label><input class="f-input" type="number" id="e-amount" value="${t.amount}" min="0" step="0.01"/></div>
-      <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="e-date" value="${t.date||''}"/></div></div>
-      <div class="form-row"><div class="f-field"><label class="f-label">Sent By *</label><select class="f-select" id="e-of-owner">${peopleOpts}</select></div>
-      <div class="f-field"><label class="f-label">Received By *</label><select class="f-select" id="e-of-receiver">${peopleOpts}</select></div></div>
-      <div class="form-row single"><div class="f-field"><label class="f-label">Description</label><input class="f-input" type="text" id="e-desc" value="${escA(t.desc||'')}"/></div></div>`;
-  }else{
-    // income, expense, salary
-    const pLabel=t.type==='income'?'Received By':t.type==='expense'?'Made By':t.type==='salary'?'Paid To':'Person';
-    html=`
-      <div class="form-row"><div class="f-field"><label class="f-label">Amount *</label><input class="f-input" type="number" id="e-amount" value="${t.amount}" min="0" step="0.01"/></div>
-      <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="e-date" value="${t.date||''}"/></div></div>
-      <div class="form-row single"><div class="f-field"><label class="f-label">Description *</label><input class="f-input" type="text" id="e-desc" value="${escA(t.desc||'')}"/></div></div>
-      <div class="form-row"><div class="f-field"><label class="f-label">Category</label><select class="f-select" id="e-category">${catOpts}</select></div>
-      <div class="f-field"><label class="f-label">${pLabel} *</label><select class="f-select" id="e-person">${peopleOpts}</select></div></div>`;
-  }
-  document.getElementById('editFields').innerHTML=html;
-  // Set select values after rendering
-  setTimeout(()=>{
-    if(t.type==='transfer'){
-      const ef=document.getElementById('e-tf-from');const et=document.getElementById('e-tf-to');
-      if(ef)ef.value=t.transferFrom||'';if(et)et.value=t.transferTo||'';
-      const em=document.getElementById('e-tf-method');if(em)em.value=t.transferMethod||'';
-    }else if(t.type==='credit'){
-      const es=document.getElementById('e-cr-seller');const er=document.getElementById('e-cr-receiver');
-      if(es)es.value=t.creditSeller||'';if(er)er.value=t.creditReceiver||'';
-    }else if(t.type==='owner-fund'||t.type==='owner-fund-return'){
-      const eo=document.getElementById('e-of-owner');const er=document.getElementById('e-of-receiver');
-      if(eo)eo.value=t.ownerFrom||'';if(er)er.value=t.ownerReceiver||'';
-    }else{
-      const ep=document.getElementById('e-person');const ec=document.getElementById('e-category');
-      if(ep)ep.value=t.person||'';if(ec)ec.value=t.cat||'';
-    }
-  },10);
+  document.getElementById('e-amount').value=t.amount;
+  document.getElementById('e-date').value=t.date;
+  document.getElementById('e-desc').value=t.desc;
+  document.getElementById('e-note').value=t.note||'';
+  document.getElementById('e-person').innerHTML=people.map(p=>`<option value="${escA(p.id)}"${p.id===t.person?' selected':''}>${esc(p.name)}</option>`).join('');
+  document.getElementById('e-category').value=t.cat||'';
   document.getElementById('editOverlay').classList.add('open');
 }
 function confirmEdit(){
   if(!editPendingId)return;
   const idx=txs.findIndex(t=>t.id===editPendingId);if(idx<0)return;
-  const t=txs[idx];
-  const desc=(document.getElementById('e-desc')?.value||'').trim();
-  const date=document.getElementById('e-date')?.value||t.date;
-
-  if(t.type==='transfer'){
-    const amount=parseFloat(document.getElementById('e-amount')?.value)||0;
-    const fromP=document.getElementById('e-tf-from')?.value;
-    const toP=document.getElementById('e-tf-to')?.value;
-    const method=document.getElementById('e-tf-method')?.value||'';
-    if(amount<=0){toast('&#x26A0; Enter valid amount');return;}
-    if(!fromP||!toP||fromP===toP){toast('&#x26A0; Select different sender and receiver');return;}
-    txs[idx]={...t,amount,date,desc,transferFrom:fromP,transferTo:toP,transferMethod:method};
-  }else if(t.type==='credit'){
-    const total=parseFloat(document.getElementById('e-cr-total')?.value)||0;
-    const paid=parseFloat(document.getElementById('e-cr-paid')?.value)||0;
-    const buyer=(document.getElementById('e-cr-buyer')?.value||'').trim();
-    const seller=document.getElementById('e-cr-seller')?.value||'';
-    const receiver=document.getElementById('e-cr-receiver')?.value||'';
-    if(!buyer||total<=0){toast('&#x26A0; Enter buyer and total amount');return;}
-    txs[idx]={...t,date,desc,creditBuyer:buyer,creditTotal:total,creditPaid:paid,amount:paid,creditSeller:seller,creditReceiver:receiver};
-  }else if(t.type==='owner-fund'||t.type==='owner-fund-return'){
-    const amount=parseFloat(document.getElementById('e-amount')?.value)||0;
-    const ownerFrom=document.getElementById('e-of-owner')?.value||'';
-    const ownerReceiver=document.getElementById('e-of-receiver')?.value||'';
-    if(amount<=0){toast('&#x26A0; Enter valid amount');return;}
-    txs[idx]={...t,amount,date,desc,ownerFrom,ownerReceiver};
-  }else{
-    const amount=parseFloat(document.getElementById('e-amount')?.value)||0;
-    const person=document.getElementById('e-person')?.value||'';
-    const cat=document.getElementById('e-category')?.value||'';
-    if(amount<=0){toast('&#x26A0; Enter valid amount');return;}
-    if(!desc){toast('&#x26A0; Enter description');return;}
-    txs[idx]={...t,amount,date,desc,person,cat};
-  }
+  const amount=parseFloat(document.getElementById('e-amount').value);
+  const date=document.getElementById('e-date').value;
+  const desc=document.getElementById('e-desc').value.trim();
+  const note=document.getElementById('e-note').value.trim();
+  const person=document.getElementById('e-person').value;
+  const cat=document.getElementById('e-category').value;
+  if(!amount||amount<=0){toast('&#x26A0; Enter valid amount');return;}
+  txs[idx]={...txs[idx],amount,date,desc:desc||txs[idx].desc,note,person,cat};
   ss('cb_txs',txs);dbSync();renderAll();renderCreditTab();
   closeModal('editOverlay');toast('&#x2705; Transaction updated');
 }
@@ -1331,7 +1229,7 @@ function generateReport(){
   if(rType!=='all')f=f.filter(t=>t.type===rType);
   f.sort((a,b)=>a.date<b.date?-1:1);
   const totalIn=f.filter(t=>['income','owner-fund'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-  const totalOut=f.filter(t=>['expense','salary'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+  const totalOut=f.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
   const bal=totalIn-totalOut;
   const pName=pId==='all'?'All People':(people.find(p=>p.id===pId)?.name||pId);
   document.getElementById('rpTitle').textContent='Cashbook Report';
@@ -1343,8 +1241,7 @@ function generateReport(){
   document.getElementById('rpBody').innerHTML=f.map(t=>{
     const p=people.find(x=>x.id===t.person);
     const isIn=['income','owner-fund'].includes(t.type);
-    const creditTotal=t.creditTotal||(t.creditCrates||0)*(t.creditPrice||0);
-    const dispAmt=t.type==='credit'?'+'+fmtAmt(t.creditPaid||0)+' (total '+fmtAmt(creditTotal)+')':
+    const dispAmt=t.type==='credit'?'+'+fmtAmt(t.creditPaid||0)+' (total '+fmtAmt((t.creditCrates||0)*(t.creditPrice||0))+')':
       (isIn?'+':'-')+fmtAmt(t.amount);
     return`<tr>
       <td>${fmtDate(t.date)}</td>
@@ -1361,7 +1258,7 @@ function generateReport(){
     people.forEach(p=>{
       const pt=f.filter(t=>t.person===p.id);
       const pIn=pt.filter(t=>['income','owner-fund'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-      const pOut=pt.filter(t=>['expense','salary'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+      const pOut=pt.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
       const pBal=pIn-pOut;
       bd+=`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.role||'&#8212;')}</td><td style="color:var(--green)">+${fmtAmt(pIn)}</td><td style="color:var(--red)">${fmtAmt(pOut)}</td><td style="font-weight:700;color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
     });
