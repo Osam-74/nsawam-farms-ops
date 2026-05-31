@@ -770,7 +770,37 @@ const FS_DOC = ['cashbook', 'main'];
 // This runs ONLY if the cloud document doesn't exist yet.
 // After you confirm data is in the cloud, you can remove SEED_PEOPLE
 // and SEED_TXS arrays from this file entirely.
-// ══════════════════════════════════════════════════════════════════════
+// ==============================================================================
+// Seed data (edit or remove after pushing to Firestore)
+const SEED_PEOPLE = [
+  { id: 'p_francis', name: 'Francis', role: 'Shop', color: 'blue' },
+  { id: 'p_jalil', name: 'Jalil', role: 'Caretaker', color: 'green' },
+  { id: 'p_damian', name: 'Damian', role: 'Manager', color: 'gold' },
+  { id: 'p_isaac', name: 'Mr Isaac', role: 'Buyer', color: 'purple' },
+  { id: 'p_madamgrace', name: 'Madam Grace', role: 'Buyer', color: 'red' },
+  { id: 'p_ama', name: 'Ama', role: 'Buyer', color: 'green' },
+  { id: 'p_memuna', name: 'Memuna', role: 'Buyer', color: 'blue' },
+  { id: 'p_samual', name: 'Samual', role: 'Driver', color: 'gold' },
+  { id: 'p_fuga', name: 'Fuga', role: 'Driver', color: 'red' }
+];
+
+// Transactions: a mix of credit sales and purchases based on your data samples
+const SEED_TXS = [
+  // Credit sales
+  { id: 'tx_seed_cr_1', type: 'credit', amount: 40.00, person: 'p_francis', date: '2026-05-30', desc: 'Egg sale – Ama (1 crates)', cat: 'Sales Revenue', creditBuyer: 'Ama', creditCrates: 1, creditPrice: 40.00, creditPaid: 40.00, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-30') },
+  { id: 'tx_seed_cr_2', type: 'credit', amount: 1050.00, person: 'p_francis', date: '2026-05-29', desc: 'Egg sale – Madam Grace (30 crates)', cat: 'Sales Revenue', creditBuyer: 'Madam Grace', creditCrates: 30, creditPrice: 35.00, creditPaid: 0, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-29') },
+  { id: 'tx_seed_cr_3', type: 'credit', amount: 1280.00, person: 'p_francis', date: '2026-05-29', desc: 'Egg sale – Madam Grace (32 crates)', cat: 'Sales Revenue', creditBuyer: 'Madam Grace', creditCrates: 32, creditPrice: 40.00, creditPaid: 0, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-29') },
+  { id: 'tx_seed_cr_4', type: 'credit', amount: 1505.00, person: 'p_francis', date: '2026-05-24', desc: 'Egg sale – Mr Isaac (43 crates)', cat: 'Sales Revenue', creditBuyer: 'Mr Isaac', creditCrates: 43, creditPrice: 35.00, creditPaid: 1505.00, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-24') },
+  { id: 'tx_seed_cr_5', type: 'credit', amount: 900.00, person: 'p_francis', date: '2026-05-20', desc: 'Egg sale – Madam Grace (30 crates)', cat: 'Sales Revenue', creditBuyer: 'Madam Grace', creditCrates: 30, creditPrice: 30.00, creditPaid: 0, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-20') },
+  { id: 'tx_seed_cr_6', type: 'credit', amount: 140.00, person: 'p_francis', date: '2026-05-20', desc: 'Egg sale – Memuna (4 crates)', cat: 'Sales Revenue', creditBuyer: 'Memuna', creditCrates: 4, creditPrice: 35.00, creditPaid: 140.00, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-20') },
+  { id: 'tx_seed_cr_7', type: 'credit', amount: 999.90, person: 'p_francis', date: '2026-05-12', desc: 'Egg sale – Grace (30 crates)', cat: 'Sales Revenue', creditBuyer: 'Grace', creditCrates: 30, creditPrice: 33.33, creditPaid: 999.90, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-12') },
+  // Feed purchase (expense)
+  { id: 'tx_seed_feed_1', type: 'expense', amount: 9948.12, person: 'p_francis', date: '2026-05-27', desc: 'Purchase – 2100.0 (42.00) NEW FORMULA FEEDMILL', cat: 'Feed & Supplies', _seed: true, ts: Date.parse('2026-05-27') },
+  // Walk-in / general sales
+  { id: 'tx_seed_sale_1', type: 'income', amount: 315.00, person: 'p_francis', date: '2026-05-23', desc: 'Walk-in sale – Mix (7 trays)', cat: 'Sales Revenue', _seed: true, ts: Date.parse('2026-05-23') },
+  { id: 'tx_seed_sale_2', type: 'income', amount: 135.00, person: 'p_francis', date: '2026-05-21', desc: 'Walk-in sale – Mix (3 trays)', cat: 'Sales Revenue', _seed: true, ts: Date.parse('2026-05-21') }
+];
+// ==============================================================================
 async function runMigration() {
   if (!db || !_fs) { toast('⚠ Not connected to cloud yet'); return; }
   try {
