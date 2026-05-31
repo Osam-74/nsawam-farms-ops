@@ -618,6 +618,22 @@ body{background:#fff!important;color:#000!important;}
   </div>
 </div>
 
+    <!-- CREDIT UPDATE MODAL -->
+    <div class="overlay" id="creditOverlay" onclick="closeModal('creditOverlay')">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">Receive Payment</div>
+        <div class="modal-sub" id="cu-sub">Enter payment details</div>
+        <div class="form-row">
+          <div class="f-field"><label class="f-label">Amount Received</label><input class="f-input" type="number" id="cu-amount" min="0" step="0.01"/></div>
+          <div class="f-field"><label class="f-label">Date</label><input class="f-input" type="date" id="cu-date"/></div>
+        </div>
+        <div class="modal-btns">
+          <button class="m-btn m-btn-cancel" onclick="closeModal('creditOverlay')">Cancel</button>
+          <button class="m-btn m-btn-save" onclick="confirmUpdateCredit()">Apply Payment</button>
+        </div>
+      </div>
+    </div>
+
 <div id="toast"></div>
 
 <script>
@@ -634,6 +650,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
       el.classList.add('pk-listener-attached');
     });
   }catch(e){console.warn('PIN fallback attach failed',e);} 
+});
+
+// Global error handler to surface runtime exceptions in the UI for easier debugging
+window.addEventListener('error', (ev) => {
+  try{
+    console.error('[GlobalError]', ev.message, ev.filename+':'+ev.lineno+':'+ev.colno, ev.error);
+    setSyncStatus('error', '✗ JavaScript error');
+    setDbStatus('❌ JS error: ' + (ev.message||'Unknown'));
+    toast('JS error: ' + (ev.message||'See console'));
+  }catch(e){console.error('Error handler failed',e);}
 });
 
 // ══════════════════════════════════════════════════════════════════════
@@ -716,7 +742,12 @@ function unlockApp(ro){
   document.getElementById('pinScreen').style.display='none';
   document.getElementById('app').classList.add('on');
   document.getElementById('roBar').style.display=ro?'block':'none';
-  initApp();
+  try{ initApp(); }catch(e){
+    console.error('initApp failed',e);
+    setSyncStatus('error','✗ Startup error');
+    setDbStatus('❌ Startup error: '+(e&&e.message));
+    toast('Startup error: '+(e&&e.message||'see console'));
+  }
 }
 function lockApp(){sessionStorage.removeItem('cb_s');document.getElementById('app').classList.remove('on');document.getElementById('pinScreen').style.display='flex';readOnly=false;pinEntry='';updateDots();}
 function guardWrite(){if(readOnly){toast('&#x1F512; View-only mode');return false;}return true;}
@@ -737,6 +768,7 @@ let txs = [];
 let currency = 'GHS';
 let ledgerFilter='all', personFilter='all', txType='income';
 let deletePendingId=null, editPendingId=null;
+let creditUpdateBuyer = null;
 let db=null, _fs=null;
 let _syncTimeout = null;
 let _migrationNeeded = false;
@@ -1304,9 +1336,10 @@ function renderCreditTab(){
       const outstanding=data.total-data.paid;
       const seller=people.find(p=>p.id===data.seller);
       const row=document.createElement('div');row.className='cs-row';
-      row.innerHTML=`<div><div class="cs-buyer">${esc(buyer)}</div><div class="cs-detail">${data.sales.length} sale(s) via ${seller?esc(seller.name):'&#8212;'}</div></div>
-        <div style="text-align:right"><div class="cs-total">Total: ${fmtAmt(data.total)}</div>
-        ${outstanding>0.005?`<div class="cs-outstanding">Owes: ${fmtAmt(outstanding)}</div>`:`<div class="cs-settled">Settled &#x2713;</div>`}</div>`;
+        row.innerHTML=`<div><div class="cs-buyer">${esc(buyer)}</div><div class="cs-detail">${data.sales.length} sale(s) via ${seller?esc(seller.name):'&#8212;'}</div></div>
+          <div style="text-align:right"><div class="cs-total">Total: ${fmtAmt(data.total)}</div>
+          ${outstanding>0.005?`<div class="cs-outstanding">Owes: ${fmtAmt(outstanding)}</div>`:`<div class="cs-settled">Settled &#x2713;</div>`}
+          <div style="margin-top:8px"><button class="tb-btn" onclick="askUpdateCredit('${escA(buyer)}')">Receive Payment</button></div></div>`;
       card.appendChild(row);
     });
     summaryEl.innerHTML='';summaryEl.appendChild(card);
@@ -1393,6 +1426,45 @@ function confirmDelete(){
   txs=txs.filter(t=>t.id!==deletePendingId);
   ss('cb_txs',txs);dbSync();renderAll();renderCreditTab();
   closeModal('delOverlay');toast('&#x1F5D1; Transaction deleted');
+}
+
+function askUpdateCredit(buyer){
+  if(!guardWrite())return;
+  creditUpdateBuyer = buyer;
+  const sales = txs.filter(t=>t.type==='credit' && (t.creditBuyer||'')===buyer);
+  const total = sales.reduce((s,t)=>(s + ((t.creditCrates||0)*(t.creditPrice||0))),0);
+  const paid = sales.reduce((s,t)=>(s + (t.creditPaid||0)),0);
+  const outstanding = total - paid;
+  const sub = document.getElementById('cu-sub'); if(sub) sub.textContent = esc(buyer) + ' — Total: ' + fmtAmt(total) + ' | Outstanding: ' + fmtAmt(outstanding);
+  const amt = document.getElementById('cu-amount'); if(amt) amt.value = outstanding>0? outstanding.toFixed(2): '';
+  const d = document.getElementById('cu-date'); if(d) d.value = new Date().toISOString().split('T')[0];
+  document.getElementById('creditOverlay').classList.add('open');
+}
+
+function confirmUpdateCredit(){
+  if(!creditUpdateBuyer) return;
+  const raw = document.getElementById('cu-amount').value;
+  const date = document.getElementById('cu-date').value || new Date().toISOString().split('T')[0];
+  const amt = parseFloat(raw);
+  if(isNaN(amt) || amt<=0){ toast('&#x26A0; Enter a payment amount'); return; }
+  // Distribute payment to oldest outstanding sales for this buyer
+  const sales = txs.filter(t=>t.type==='credit' && (t.creditBuyer||'')===creditUpdateBuyer).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  let remaining = amt;
+  for(const t of sales){
+    const total = (t.creditCrates||0)*(t.creditPrice||0);
+    const owe = total - (t.creditPaid||0);
+    if(owe <= 0) continue;
+    const apply = Math.min(owe, remaining);
+    t.creditPaid = (t.creditPaid||0) + apply;
+    t.amount = t.creditPaid; // reflect paid amount
+    // append note about payment
+    const note = t.note? t.note + '; ' : '';
+    t.note = note + 'Payment ' + fmtAmt(apply) + ' on ' + date;
+    remaining -= apply;
+    if(remaining <= 0) break;
+  }
+  ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab(); closeModal('creditOverlay'); toast('&#x2705; Payment applied');
+  creditUpdateBuyer = null;
 }
 
 function askEdit(id){
