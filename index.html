@@ -333,6 +333,7 @@ body{background:#fff!important;color:#000!important;}
             <div class="mc-stat"><div class="mc-stat-lbl">Entries</div><div class="mc-stat-val b" id="masterCount">0</div></div>
           </div>
         </div>
+          <div id="owingList" style="margin-bottom:12px;font-size:0.86rem;color:var(--text2);"></div>
         <div class="sh">Balances by Person</div>
         <div class="person-grid" id="personGrid"></div>
         <div class="sh">Recent Transactions</div>
@@ -558,6 +559,13 @@ body{background:#fff!important;color:#000!important;}
             <em style="color:var(--text3);">Note: must be served via HTTPS for install to work.</em>
           </div>
         </div>
+        <div class="form-card">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <button class="submit-btn" style="background:linear-gradient(135deg,#8b5cf6,#6b46c1);" onclick="prunePeopleToStaff()">Prune People to Staff</button>
+            <button class="submit-btn" style="background:linear-gradient(135deg,#2a9d8f,#2a6b6b);" onclick="normalizeCreditSales()">Normalize Credit Sales</button>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text3);line-height:1.6;margin-top:8px">Prune removes non-staff people who are not referenced by transactions. Normalize converts fully-settled credit sales into regular Sales.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -766,41 +774,8 @@ const FB = {
 const FS_DOC = ['cashbook', 'main'];
 
 // ══════════════════════════════════════════════════════════════════════
-// ONE-TIME MIGRATION: Push seed data to Firestore
-// This runs ONLY if the cloud document doesn't exist yet.
-// After you confirm data is in the cloud, you can remove SEED_PEOPLE
-// and SEED_TXS arrays from this file entirely.
-// ==============================================================================
-// Seed data (edit or remove after pushing to Firestore)
-const SEED_PEOPLE = [
-  { id: 'p_francis', name: 'Francis', role: 'Shop', color: 'blue' },
-  { id: 'p_jalil', name: 'Jalil', role: 'Caretaker', color: 'green' },
-  { id: 'p_damian', name: 'Damian', role: 'Manager', color: 'gold' },
-  { id: 'p_isaac', name: 'Mr Isaac', role: 'Buyer', color: 'purple' },
-  { id: 'p_madamgrace', name: 'Madam Grace', role: 'Buyer', color: 'red' },
-  { id: 'p_ama', name: 'Ama', role: 'Buyer', color: 'green' },
-  { id: 'p_memuna', name: 'Memuna', role: 'Buyer', color: 'blue' },
-  { id: 'p_samual', name: 'Samual', role: 'Driver', color: 'gold' },
-  { id: 'p_fuga', name: 'Fuga', role: 'Driver', color: 'red' }
-];
-
-// Transactions: a mix of credit sales and purchases based on your data samples
-const SEED_TXS = [
-  // Credit sales
-  { id: 'tx_seed_cr_1', type: 'credit', amount: 40.00, person: 'p_francis', date: '2026-05-30', desc: 'Egg sale – Ama (1 crates)', cat: 'Sales Revenue', creditBuyer: 'Ama', creditCrates: 1, creditPrice: 40.00, creditPaid: 40.00, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-30') },
-  { id: 'tx_seed_cr_2', type: 'credit', amount: 1050.00, person: 'p_francis', date: '2026-05-29', desc: 'Egg sale – Madam Grace (30 crates)', cat: 'Sales Revenue', creditBuyer: 'Madam Grace', creditCrates: 30, creditPrice: 35.00, creditPaid: 0, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-29') },
-  { id: 'tx_seed_cr_3', type: 'credit', amount: 1280.00, person: 'p_francis', date: '2026-05-29', desc: 'Egg sale – Madam Grace (32 crates)', cat: 'Sales Revenue', creditBuyer: 'Madam Grace', creditCrates: 32, creditPrice: 40.00, creditPaid: 0, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-29') },
-  { id: 'tx_seed_cr_4', type: 'credit', amount: 1505.00, person: 'p_francis', date: '2026-05-24', desc: 'Egg sale – Mr Isaac (43 crates)', cat: 'Sales Revenue', creditBuyer: 'Mr Isaac', creditCrates: 43, creditPrice: 35.00, creditPaid: 1505.00, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-24') },
-  { id: 'tx_seed_cr_5', type: 'credit', amount: 900.00, person: 'p_francis', date: '2026-05-20', desc: 'Egg sale – Madam Grace (30 crates)', cat: 'Sales Revenue', creditBuyer: 'Madam Grace', creditCrates: 30, creditPrice: 30.00, creditPaid: 0, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-20') },
-  { id: 'tx_seed_cr_6', type: 'credit', amount: 140.00, person: 'p_francis', date: '2026-05-20', desc: 'Egg sale – Memuna (4 crates)', cat: 'Sales Revenue', creditBuyer: 'Memuna', creditCrates: 4, creditPrice: 35.00, creditPaid: 140.00, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-20') },
-  { id: 'tx_seed_cr_7', type: 'credit', amount: 999.90, person: 'p_francis', date: '2026-05-12', desc: 'Egg sale – Grace (30 crates)', cat: 'Sales Revenue', creditBuyer: 'Grace', creditCrates: 30, creditPrice: 33.33, creditPaid: 999.90, creditSeller: 'p_francis', creditReceiver: 'p_francis', _seed: true, ts: Date.parse('2026-05-12') },
-  // Feed purchase (expense)
-  { id: 'tx_seed_feed_1', type: 'expense', amount: 9948.12, person: 'p_francis', date: '2026-05-27', desc: 'Purchase – 2100.0 (42.00) NEW FORMULA FEEDMILL', cat: 'Feed & Supplies', _seed: true, ts: Date.parse('2026-05-27') },
-  // Walk-in / general sales
-  { id: 'tx_seed_sale_1', type: 'income', amount: 315.00, person: 'p_francis', date: '2026-05-23', desc: 'Walk-in sale – Mix (7 trays)', cat: 'Sales Revenue', _seed: true, ts: Date.parse('2026-05-23') },
-  { id: 'tx_seed_sale_2', type: 'income', amount: 135.00, person: 'p_francis', date: '2026-05-21', desc: 'Walk-in sale – Mix (3 trays)', cat: 'Sales Revenue', _seed: true, ts: Date.parse('2026-05-21') }
-];
-// ==============================================================================
+// NOTE: seed arrays removed after successful migration. runMigration/initFirebase
+// guard against missing SEED_PEOPLE/SEED_TXS so the page works without them.
 async function runMigration() {
   if (!db || !_fs) { toast('⚠ Not connected to cloud yet'); return; }
   try {
@@ -825,8 +800,9 @@ async function runMigration() {
     const existingPeopleIds = new Set(cloudPeople.map(p => p.id));
     const existingTxIds = new Set(cloudTxs.map(t => t.id));
 
-    const newPeople = SEED_PEOPLE.filter(p => !existingPeopleIds.has(p.id));
-    const newTxs = SEED_TXS.filter(t => !existingTxIds.has(t.id));
+    // Guard against removed seed arrays
+    const newPeople = (typeof SEED_PEOPLE !== 'undefined' && Array.isArray(SEED_PEOPLE)) ? SEED_PEOPLE.filter(p => !existingPeopleIds.has(p.id)) : [];
+    const newTxs = (typeof SEED_TXS !== 'undefined' && Array.isArray(SEED_TXS)) ? SEED_TXS.filter(t => !existingTxIds.has(t.id)) : [];
 
     const mergedPeople = [...cloudPeople, ...newPeople];
     const mergedTxs = [...cloudTxs, ...newTxs];
@@ -871,8 +847,8 @@ async function initFirebase() {
         _migrationNeeded = true;
         showMigrationBanner();
         // Use seed data locally for now so user can see it
-        people = [...SEED_PEOPLE];
-        txs = [...SEED_TXS];
+        if (typeof SEED_PEOPLE !== 'undefined' && Array.isArray(SEED_PEOPLE)) people = [...SEED_PEOPLE];
+        if (typeof SEED_TXS !== 'undefined' && Array.isArray(SEED_TXS)) txs = [...SEED_TXS];
         currency = 'GHS';
         renderAll(); renderPeopleTab(); populateSels(); renderCreditTab();
         setSyncStatus('syncing', '⚠ Cloud empty — push seed data');
@@ -1013,7 +989,9 @@ function renderDashboard(){
   document.getElementById('masterCount').textContent=txs.length;
 
   const grid=document.getElementById('personGrid');grid.innerHTML='';
-  people.forEach(p=>{
+  // Show only staff members on dashboard. Buyers/customers are not shown here unless they have outstanding credit (displayed above).
+  const staff = people.filter(isStaff);
+  staff.forEach(p=>{
     const{pIn,pOut,pBal}=pStats(p.id);const c=pColor(p);
     const card=document.createElement('div');card.className='person-card fade-in';
     card.innerHTML=`<div class="pc-avatar" style="background:${c.bg};color:${c.text}">${esc(pInit(p))}</div>
@@ -1023,12 +1001,29 @@ function renderDashboard(){
     card.onclick=()=>{personFilter=personFilter===p.id?'all':p.id;switchTab('ledger');renderPersonFilterRow();renderLedger();};
     grid.appendChild(card);
   });
-  if(!people.length)grid.innerHTML='<div style="grid-column:1/-1;font-size:0.78rem;color:var(--text3);">No people added yet.</div>';
+  if(!staff.length)grid.innerHTML='<div style="grid-column:1/-1;font-size:0.78rem;color:var(--text3);">No staff added yet.</div>';
 
   const recent=[...txs].sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,5);
   const rl=document.getElementById('recentList');
   rl.innerHTML=recent.length?'':'<div class="tx-empty">No transactions yet.<br>Tap <strong>+ Add</strong> to record one.</div>';
   recent.forEach(t=>rl.appendChild(makeTxEl(t,false)));
+
+  // Show buyers/customers with outstanding credit just below master card
+  const owingEl = document.getElementById('owingList');
+  if(owingEl){
+    const creditTxs = txs.filter(t=>t.type==='credit');
+    const byBuyer = {};
+    creditTxs.forEach(t=>{
+      const buyer = t.creditBuyer || 'Unknown';
+      if(!byBuyer[buyer]) byBuyer[buyer] = {total:0,paid:0};
+      byBuyer[buyer].total += (t.creditCrates||0)*(t.creditPrice||0);
+      byBuyer[buyer].paid += (t.creditPaid||0);
+    });
+    const owes = Object.entries(byBuyer).map(([name,data])=>({name, owing: data.total - data.paid})).filter(x=>x.owing>0.005);
+    if(owes.length){
+      owingEl.innerHTML = owes.map(o=>`<div style="margin-bottom:4px;color:var(--text3)">${esc(o.name)} owes ${fmtAmt(o.owing)}</div>`).join('');
+    } else { owingEl.innerHTML = ''; }
+  }
 }
 
 function pStats(pid){
@@ -1359,6 +1354,17 @@ function renderPeopleTab(){
 
 function isOwner(p){return p.role&&p.role.toLowerCase().includes('owner');}
 
+// Determine staff members: owners and named employees (Francis, Jalil), caretakers, assistants, managers
+function isStaff(p){
+  if(!p) return false;
+  const role = (p.role||'').toLowerCase();
+  const name = (p.name||'').toLowerCase();
+  // Only treat explicit owners or the two named employees as staff
+  if(role.includes('owner')) return true;
+  if(name.startsWith('francis')||name.startsWith('jalil')) return true;
+  return false;
+}
+
 function populateSels(){
   const ids=['f-person','f-tf-from','f-tf-to','f-cr-seller','f-cr-receiver','f-sal-paidby','e-person'];
   const opts=people.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
@@ -1393,7 +1399,8 @@ function askEdit(id){
   if(!guardWrite())return;
   const t=txs.find(x=>x.id===id);if(!t)return;
   editPendingId=id;
-  document.getElementById('e-amount').value=t.amount;
+  // For credit transactions, show the amount paid so far (creditPaid)
+  document.getElementById('e-amount').value=(t.type==='credit'? (t.creditPaid||0) : (t.amount||0));
   document.getElementById('e-date').value=t.date;
   document.getElementById('e-desc').value=t.desc;
   document.getElementById('e-note').value=t.note||'';
@@ -1410,8 +1417,15 @@ function confirmEdit(){
   const note=document.getElementById('e-note').value.trim();
   const person=document.getElementById('e-person').value;
   const cat=document.getElementById('e-category').value;
-  if(!amount||amount<=0){toast('&#x26A0; Enter valid amount');return;}
-  txs[idx]={...txs[idx],amount,date,desc:desc||txs[idx].desc,note,person,cat};
+  if(isNaN(amount)){toast('&#x26A0; Enter valid amount');return;}
+  // Credit transactions may have 0 (unpaid) or partial paid amounts — allow zero
+  if(txs[idx].type==='credit'){
+    if(amount<0){toast('&#x26A0; Enter valid amount');return;}
+    txs[idx]={...txs[idx],creditPaid:amount,amount:amount,date,desc:desc||txs[idx].desc,note,person,cat};
+  }else{
+    if(!amount||amount<=0){toast('&#x26A0; Enter valid amount');return;}
+    txs[idx]={...txs[idx],amount,date,desc:desc||txs[idx].desc,note,person,cat};
+  }
   ss('cb_txs',txs);dbSync();renderAll();renderCreditTab();
   closeModal('editOverlay');toast('&#x2705; Transaction updated');
 }
@@ -1476,6 +1490,64 @@ function saveCurrency(){
   if(!guardWrite())return;
   currency=document.getElementById('s-currency').value.trim()||'GHS';
   ss('cb_currency',currency);renderAll();dbSync();toast('&#x2705; Currency updated to '+currency);
+}
+
+// Admin: prune people to keep only owners and explicit staff (Francis, Janine/Jalil)
+function prunePeopleToStaff(){
+  if(!guardWrite())return;
+  if(!confirm('Remove non-staff people who are not referenced by transactions? This will NOT remove people referenced by any transaction. Continue?')) return;
+  // Names to always keep as staff (case-insensitive)
+  const staffNames = ['francis','janine','jalil'];
+  // gather referenced person IDs from existing transactions
+  const refs = new Set();
+  txs.forEach(t=>{
+    if(t.person) refs.add(t.person);
+    if(t.transferFrom) refs.add(t.transferFrom);
+    if(t.transferTo) refs.add(t.transferTo);
+    if(t.ownerSender) refs.add(t.ownerSender);
+    if(t.ownerReceiver) refs.add(t.ownerReceiver);
+    if(t.salaryPaidBy) refs.add(t.salaryPaidBy);
+    if(t.creditSeller) refs.add(t.creditSeller);
+    if(t.creditReceiver) refs.add(t.creditReceiver);
+  });
+  const before = people.length;
+  people = people.filter(p=>{
+    if(!p) return false;
+    const name = (p.name||'').toLowerCase();
+    if((p.role||'').toLowerCase().includes('owner')) return true;
+    if(staffNames.some(n=>name.includes(n))) return true;
+    if(refs.has(p.id)) return true;
+    return false;
+  });
+  const removed = before - people.length;
+  ss('cb_people',people); dbSync(); populateSels(); renderPeopleTab(); renderAll();
+  toast('🗑️ Removed '+removed+' people');
+}
+
+// Admin: convert fully-settled credit sales into regular sales (income)
+function normalizeCreditSales(){
+  if(!guardWrite())return;
+  if(!confirm('Convert fully-settled credit sales into regular Sales (income)?')) return;
+  let changed=0;
+  txs.forEach(t=>{
+    if(!t) return;
+    if(t.type==='credit'){
+      const total = (t.creditCrates||0) * (t.creditPrice||0);
+      const paid = (t.creditPaid||0);
+      if(total>0 && paid >= total - 0.005){
+        t.type = 'income';
+        t.amount = total;
+        // mark settled
+        t.creditPaid = total;
+        changed++;
+      }
+    } else if(t.creditCrates && t.type!=='credit'){
+      // ensure entries with credit fields are typed as credit
+      t.type='credit'; changed++;
+    }
+  });
+  if(changed>0){ ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab(); }
+  toast('✅ Updated '+changed+' transactions');
 }
 
 function confirmClear(){
