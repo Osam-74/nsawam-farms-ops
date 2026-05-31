@@ -640,7 +640,7 @@ window.addEventListener('online', () => setSyncStatus('syncing', 'Back online �
 window.addEventListener('offline', () => setSyncStatus('offline', '● Offline — changes will sync when reconnected'));
 
 // ══════════════════════════════════════════════════════════════════════
-// PIN — SHA-256 hashes. Master: 0812 View: 8888
+// PIN
 // ══════════════════════════════════════════════════════════════════════
 const H_MASTER = '6e65b61d030e5ac6492802c6f619a63006e5b0e2cafc0170ab92a68083162528';
 const H_VIEW = '2926a2731f4b312c08982cacf8061eb14bf65c1a87cc5d70e864e079c6220731';
@@ -675,27 +675,6 @@ function guardWrite(){if(readOnly){toast('&#x1F512; View-only mode');return fals
 // ══════════════════════════════════════════════════════════════════════
 const gs=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}};
 const ss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){console.warn('localStorage write failed:',e);}};
-
-// ══════════════════════════════════════════════════════════════════════
-// SEED DATA — This is your real data that needs to be pushed to cloud
-// once. After migration, the app will only read from cloud.
-// Each item has `_seed: true` so you can identify them in Firestore.
-// ══════════════════════════════════════════════════════════════════════
-const SEED_PEOPLE = [
-  {id:'p1',name:'Jalil',role:'Caretaker',color:'green',_seed:true},
-  {id:'p2',name:'Damian',role:'Consultant',color:'blue',_seed:true},
-  {id:'p3',name:'Francis',role:'Assistant',color:'gold',_seed:true},
-];
-
-const SEED_TXS = [
-  {id:'seed1',type:'expense',amount:1190,person:'p1',date:'2026-05-27',desc:'Jalil transport + Feed delivery + charges',cat:'Transport',note:'',ts:1748304000000,_seed:true},
-  {id:'seed2',type:'expense',amount:250,person:'p1',date:'2026-05-23',desc:'Vet',cat:'Medical / Vet',note:'',ts:1747958400000,_seed:true},
-  {id:'seed3',type:'expense',amount:90,person:'p1',date:'2026-05-20',desc:'Insecticide',cat:'Other',note:'',ts:1747699200000,_seed:true},
-  {id:'seed4',type:'expense',amount:150,person:'p1',date:'2026-05-17',desc:'Transport to purchase feed',cat:'Transport',note:'Paid to Jalil',ts:1747440000000,_seed:true},
-  {id:'seed5',type:'expense',amount:805,person:'p1',date:'2026-05-17',desc:'Feed transport to farm',cat:'Transport',note:'Paid to Jalil',ts:1747440001000,_seed:true},
-  {id:'seed6',type:'expense',amount:4973.98,person:'p1',date:'2026-05-16',desc:'Feed purchase — NEW FORMULA FEEDMILL',cat:'Feed & Supplies',note:'1100kg, 22 bags @ GHS 226.09/bag',ts:1747353600000,_seed:true},
-  {id:'seed7',type:'expense',amount:9948.12,person:'p1',date:'2026-05-27',desc:'Feed purchase — NEW FORMULA FEEDMILL',cat:'Feed & Supplies',note:'2100kg, 42 bags @ GHS 236.86/bag',ts:1748304001000,_seed:true},
-];
 
 // ══════════════════════════════════════════════════════════════════════
 // Working data — starts empty, populated from Firestore
