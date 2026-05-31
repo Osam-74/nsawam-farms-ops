@@ -7,7 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="light"/>
 <meta name="apple-mobile-web-app-title" content="Cashbook"/>
-<link rel="manifest" id="manifestLink"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%233d6bdf'/><text y='148' x='16' font-size='148'>💰</text></svg>"/>
 <title>Cashbook</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -54,8 +55,16 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 @keyframes shake{0%,100%{transform:translateX(0);}25%,75%{transform:translateX(-6px);}50%{transform:translateX(6px);}}
 .shaking{animation:shake 0.38s ease;}
 
+/* SYNC BAR */
+#syncBar{position:fixed;top:0;left:0;right:0;z-index:9998;display:flex;align-items:center;gap:8px;padding:5px 16px;font-size:0.65rem;font-weight:700;letter-spacing:0.05em;transition:background 0.3s;pointer-events:none;}
+#syncBar.syncing{background:#854d0e;color:#fef3c7;}
+#syncBar.synced{background:#14532d;color:#bbf7d0;}
+#syncBar.error{background:#7f1d1d;color:#fecaca;}
+#syncBar.offline{background:#312e81;color:#c7d2fe;}
+#syncDot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
 /* APP */
-#app{display:none;height:100%;flex-direction:column;}
+#app{display:none;height:100%;flex-direction:column;padding-top:26px;}
 #app.on{display:flex;}
 
 /* TOPBAR */
@@ -229,9 +238,9 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 @media print{
-  #pinScreen,#app .topbar,.nav,#toast,.overlay,.report-controls,.tb-btn,.tx-actions,.pr-del,.type-switcher,.submit-btn,.form-card,.tx-filters,#tab-dashboard,#tab-ledger,#tab-people,#tab-settings,#tab-add,#tab-credit{display:none!important;}
+  #pinScreen,#syncBar,#app .topbar,.nav,#toast,.overlay,.report-controls,.tb-btn,.tx-actions,.pr-del,.type-switcher,.submit-btn,.form-card,.tx-filters,#tab-dashboard,#tab-ledger,#tab-people,#tab-settings,#tab-add,#tab-credit{display:none!important;}
   body{background:#fff!important;color:#000!important;}
-  #app{display:block!important;}
+  #app{display:block!important;padding-top:0!important;}
   .scroll,.main{overflow:visible!important;}
   #tab-report{display:block!important;}
   .report-preview{display:block!important;background:#fff!important;border:none!important;box-shadow:none!important;}
@@ -250,6 +259,12 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 </style>
 </head>
 <body>
+
+<!-- Sync status bar — always visible at the top -->
+<div id="syncBar" class="syncing">
+  <div id="syncDot"></div>
+  <span id="syncMsg">Connecting to cloud…</span>
+</div>
 
 <div id="pinScreen">
   <div class="pin-logo-wrap">&#x1F4B0;</div>
@@ -519,13 +534,13 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
     </div>
     <div class="sh">Data</div>
     <div class="form-card">
-      <button class="submit-btn" style="background:linear-gradient(135deg,#c0203a,#e83e5c);margin-bottom:10px;" onclick="confirmClear()">Clear All Local Data</button>
+      <button class="submit-btn" style="background:linear-gradient(135deg,#c0203a,#e83e5c);margin-bottom:10px;" onclick="confirmClear()">Clear All Data</button>
       <div style="font-size:0.68rem;color:var(--text3);line-height:1.7;">
         <strong style="color:var(--text2);">Install as app:</strong><br>
         Desktop: use the <strong>&#x2B07; Install</strong> button in the top bar (Chrome/Edge).<br>
         iOS Safari: Share &#x2192; Add to Home Screen<br>
         Android Chrome: Menu &#x2192; Add to Home Screen<br>
-        <em style="color:var(--text3);">Note: must be served via HTTPS or localhost for install to work.</em>
+        <em style="color:var(--text3);">Note: must be served via HTTPS for install to work.</em>
       </div>
     </div>
   </div>
@@ -583,60 +598,66 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 <div id="toast"></div>
 
 <script>
-// ── Inline Manifest (no external manifest.json needed) ──
-(function(){
-  const mf={
-    name:"Cashbook — Expense Tracker",short_name:"Cashbook",
-    description:"Personal expense and income tracker with per-person balances.",
-    start_url:"./",scope:"./",display:"standalone",
-    display_override:["standalone","minimal-ui"],
-    theme_color:"#0d0d0d",background_color:"#0d0d0d",orientation:"portrait",
-    icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230d0d0d'/><text y='148' x='16' font-size='148'>💰</text></svg>",sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]
-  };
-  const blob=new Blob([JSON.stringify(mf)],{type:'application/manifest+json'});
-  const url=URL.createObjectURL(blob);
-  document.getElementById('manifestLink').href=url;
-})();
-
-// ── Inline Service Worker (no external sw.js needed) ──
-const SW_CODE=`
-const CACHE='cashbook-v2';
-self.addEventListener('install',e=>{e.waitUntil(self.skipWaiting());});
-self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim());});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;});
-self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting();});
-`;
-
-// ── PWA Install Prompt ──
-let _deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();_deferredPrompt=e;
-  const btn=document.getElementById('installBtn');
-  if(btn)btn.style.display='';
+// ══════════════════════════════════════════════════════════════════════
+// PWA — Install prompt (must be captured before any async work)
+// ══════════════════════════════════════════════════════════════════════
+let _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredPrompt = e;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = '';
 });
-window.addEventListener('appinstalled',()=>{
-  _deferredPrompt=null;
-  const btn=document.getElementById('installBtn');
-  if(btn)btn.style.display='none';
+window.addEventListener('appinstalled', () => {
+  _deferredPrompt = null;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'none';
   toast('&#x2705; App installed successfully!');
 });
-function triggerInstall(){
-  if(_deferredPrompt){_deferredPrompt.prompt();_deferredPrompt.userChoice.then(()=>{_deferredPrompt=null;});}
-  else{toast('&#x2139; Open in Chrome/Edge on Android or desktop to install');}
+function triggerInstall() {
+  if (_deferredPrompt) { _deferredPrompt.prompt(); _deferredPrompt.userChoice.then(() => { _deferredPrompt = null; }); }
+  else { toast('&#x2139; Open in Chrome/Edge on Android or desktop to install'); }
 }
+
+// ══════════════════════════════════════════════════════════════════════
+// Service Worker — external file (required for install prompt to fire)
+// ══════════════════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(reg => console.log('[SW] Registered:', reg.scope))
+      .catch(err => console.warn('[SW] Registration failed:', err));
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// Helpers
+// ══════════════════════════════════════════════════════════════════════
 function esc(s){const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML;}
 function escA(s){return String(s??'').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');}
 
-// PIN — hardcoded SHA-256 hashes. Master: 0812, View: 8888
-// Hash = sha256(pin) — no salt
-const H_MASTER='6e65b61d030e5ac6492802c6f619a63006e5b0e2cafc0170ab92a68083162528';
-const H_VIEW='2926a2731f4b312c08982cacf8061eb14bf65c1a87cc5d70e864e079c6220731';
+// ══════════════════════════════════════════════════════════════════════
+// Sync bar
+// ══════════════════════════════════════════════════════════════════════
+function setSyncStatus(state, msg) {
+  const bar = document.getElementById('syncBar');
+  const dot = document.getElementById('syncDot');
+  const msgEl = document.getElementById('syncMsg');
+  bar.className = state;
+  msgEl.textContent = msg;
+}
+window.addEventListener('online',  () => setSyncStatus('syncing', 'Back online — reconnecting…'));
+window.addEventListener('offline', () => setSyncStatus('offline', '● Offline — changes will sync when reconnected'));
 
+// ══════════════════════════════════════════════════════════════════════
+// PIN — SHA-256 hashes. Master: 0812  View: 8888
+// ══════════════════════════════════════════════════════════════════════
+const H_MASTER = '6e65b61d030e5ac6492802c6f619a63006e5b0e2cafc0170ab92a68083162528';
+const H_VIEW   = '2926a2731f4b312c08982cacf8061eb14bf65c1a87cc5d70e864e079c6220731';
 async function sha256(s){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-
 let pinEntry='',readOnly=false;
 function pk(d){if(pinEntry.length>=4)return;pinEntry+=d;updateDots();if(pinEntry.length===4)setTimeout(checkPin,120);}
 function pdel(){pinEntry=pinEntry.slice(0,-1);updateDots();}
@@ -662,16 +683,21 @@ function lockApp(){sessionStorage.removeItem('cb_s');document.getElementById('ap
 function guardWrite(){if(readOnly){toast('&#x1F512; View-only mode');return false;}return true;}
 (function(){const s=sessionStorage.getItem('cb_s');if(s==='master'||s==='view'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>unlockApp(s==='view'));else unlockApp(s==='view');}})();
 
+// ══════════════════════════════════════════════════════════════════════
+// Local cache helpers — localStorage is a CACHE only, not source of truth
+// Firestore is the source of truth. On every load we pull from Firestore.
+// ══════════════════════════════════════════════════════════════════════
 const gs=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}};
-const ss=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const ss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){console.warn('localStorage write failed:',e);}};
 
-let people=gs('cb_people',[
+// Default people (only used if Firestore has absolutely nothing)
+const DEFAULT_PEOPLE = [
   {id:'p1',name:'Jalil',role:'Caretaker',color:'green'},
   {id:'p2',name:'Damian',role:'Consultant',color:'blue'},
   {id:'p3',name:'Francis',role:'Assistant',color:'gold'},
-]);
+];
 
-// Seed transactions — only inserted once
+// Seed transactions — inserted into Firestore only if the cloud doc has no txs at all
 const SEEDS=[
   {id:'seed1',type:'expense',amount:1190,person:'p1',date:'2026-05-27',desc:'Jalil transport + Feed delivery + charges',cat:'Transport',note:'',ts:1748304000000},
   {id:'seed2',type:'expense',amount:250,person:'p1',date:'2026-05-23',desc:'Vet',cat:'Medical / Vet',note:'',ts:1747958400000},
@@ -681,14 +707,16 @@ const SEEDS=[
   {id:'seed6',type:'expense',amount:4973.98,person:'p1',date:'2026-05-16',desc:'Feed purchase — NEW FORMULA FEEDMILL',cat:'Feed & Supplies',note:'1100kg, 22 bags @ GHS 226.09/bag',ts:1747353600000},
   {id:'seed7',type:'expense',amount:9948.12,person:'p1',date:'2026-05-27',desc:'Feed purchase — NEW FORMULA FEEDMILL',cat:'Feed & Supplies',note:'2100kg, 42 bags @ GHS 236.86/bag',ts:1748304001000},
 ];
-let txs=gs('cb_txs',[]);
-SEEDS.forEach(s=>{if(!txs.find(t=>t.id===s.id))txs.push(s);});
-ss('cb_txs',txs);
 
-let currency=gs('cb_currency','GHS');
-let ledgerFilter='all',personFilter='all',txType='income';
-let deletePendingId=null,editPendingId=null;
-let db=null,_fs=null;
+// Working data — populated from Firestore on load
+let people = gs('cb_people', DEFAULT_PEOPLE);
+let txs    = gs('cb_txs', []);
+let currency = gs('cb_currency', 'GHS');
+
+let ledgerFilter='all', personFilter='all', txType='income';
+let deletePendingId=null, editPendingId=null;
+let db=null, _fs=null;
+let _syncTimeout = null; // debounce timer for Firestore writes
 
 const COLORS={
   green:{bg:'rgba(0,184,122,0.12)',text:'#00b87a'},
@@ -710,80 +738,156 @@ function fmtAmt(n){
   return(n<0?'-':'')+currency+' '+abs;
 }
 
-// Firebase — Firestore, baked-in config
-const FB={
-  apiKey:"AIzaSyDqoU6l1L1gVK6Fongm-8HJkvsTvf8F310",
-  authDomain:"farmexpense-4d316.firebaseapp.com",
-  projectId:"farmexpense-4d316",
-  storageBucket:"farmexpense-4d316.firebasestorage.app",
-  messagingSenderId:"220654741906",
-  appId:"1:220654741906:web:e9e78b3cd44f110781f94b"
+// ══════════════════════════════════════════════════════════════════════
+// FIREBASE — your expense-4d9f5 project
+// Shared document: cashbook/main
+// Every device reads and writes the same document — no per-user split
+// ══════════════════════════════════════════════════════════════════════
+const FB = {
+  apiKey:            "AIzaSyDEl6cN6IYqAZrbwIxW36tFudj8OzxVbpQ",
+  authDomain:        "expense-4d9f5.firebaseapp.com",
+  projectId:         "expense-4d9f5",
+  storageBucket:     "expense-4d9f5.firebasestorage.app",
+  messagingSenderId: "323704270723",
+  appId:             "1:323704270723:web:f5d7d6a2695d332937d0b6"
 };
-async function initFirebase(){
-  try{
-    const{initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const fs=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    _fs=fs;
-    const app=getApps().length===0?initializeApp(FB):getApps()[0];
-    db=fs.getFirestore(app);
-    const ref=fs.doc(db,'cashbook','main');
-    fs.onSnapshot(ref,snap=>{
-      if(!snap.exists())return;
-      const r=snap.data();
-      const lt=gs('cb_syncTs',0);
-      if(r.ts&&r.ts>lt)applyRemote(r);
-    });
-    setDbStatus('&#x2705; Connected &#8212; syncing live across all devices');
-    await dbPull();
-  }catch(e){console.warn('Firebase:',e);setDbStatus('&#x26A0;&#xFE0F; Cloud sync unavailable &#8212; working offline');}
-}
-function setDbStatus(m){const el=document.getElementById('dbStatus');if(el)el.innerHTML=m;}
-async function dbSync(){
-  if(!db||!_fs)return;
-  try{
-    await _fs.setDoc(_fs.doc(db,'cashbook','main'),{txs,people,currency,ts:Date.now()},{merge:true});
-    ss('cb_syncTs',Date.now());
-    setDbStatus('&#x2705; Last sync: '+new Date().toLocaleTimeString());
-  }catch(e){console.warn('Sync err:',e);}
-}
-async function dbPull(){
-  if(!db||!_fs)return;
-  try{
-    const snap=await _fs.getDoc(_fs.doc(db,'cashbook','main'));
-    if(snap.exists())applyRemote(snap.data());
-  }catch(e){console.warn('Pull err:',e);}
-}
-function applyRemote(r){
-  if(r.txs){txs=r.txs;ss('cb_txs',txs);}
-  if(r.people){people=r.people;ss('cb_people',people);}
-  if(r.currency){currency=r.currency;ss('cb_currency',currency);}
-  ss('cb_syncTs',r.ts||Date.now());
-  renderAll();renderPeopleTab();populateSels();renderCreditTab();
-  setDbStatus('&#x2705; Last sync: '+new Date().toLocaleTimeString());
-}
-async function manualPull(){toast('&#x2B07; Pulling&#8230;');await dbPull();toast('&#x2705; Pulled from cloud');}
-async function manualPush(){toast('&#x2B06; Pushing&#8230;');await dbSync();toast('&#x2705; Pushed to cloud');}
 
-function initApp(){
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('f-date').value=today;
-  document.getElementById('r-from').value=today.slice(0,7)+'-01';
-  document.getElementById('r-to').value=today;
-  document.getElementById('s-currency').value=currency;
-  populateSels();renderAll();renderPeopleTab();renderQuickBtns();renderCreditTab();
-  ['f-cr-crates','f-cr-price','f-cr-paid'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',updateCreditCalc);});
-  initFirebase();
-  // Register inline service worker as blob
-  if('serviceWorker' in navigator){
-    try{
-      const swBlob=new Blob([SW_CODE],{type:'application/javascript'});
-      const swURL=URL.createObjectURL(swBlob);
-      navigator.serviceWorker.register(swURL,{scope:'./'}).catch(()=>{
-        // blob SW scope issues on some browsers — silent fail
-      });
-    }catch(e){}
+// Firestore document path — shared across all devices
+const FS_DOC = ['cashbook', 'main'];
+
+async function initFirebase() {
+  try {
+    setSyncStatus('syncing', 'Connecting to cloud…');
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+    const fs = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    _fs = fs;
+    const app = getApps().length === 0 ? initializeApp(FB) : getApps()[0];
+    db = fs.getFirestore(app);
+
+    // Real-time listener — fires whenever ANY device writes to the doc
+    const ref = fs.doc(db, ...FS_DOC);
+    fs.onSnapshot(ref, snap => {
+      if (!snap.exists()) {
+        // Doc doesn't exist yet — this is first run, seed it
+        console.log('[DB] No cloud data — seeding defaults');
+        seedCloudIfEmpty();
+        return;
+      }
+      const remote = snap.data();
+      applyRemote(remote);
+    }, err => {
+      console.warn('[DB] Snapshot error:', err);
+      setSyncStatus('error', '✗ Sync error — check console');
+    });
+
+  } catch (e) {
+    console.warn('[DB] Firebase init failed:', e);
+    setSyncStatus('error', '⚠ Cloud unavailable — working offline');
+    setDbStatus('⚠️ Cloud sync unavailable — working offline. Check your internet connection.');
   }
 }
+
+async function seedCloudIfEmpty() {
+  if (!db || !_fs) return;
+  try {
+    const ref = _fs.doc(db, ...FS_DOC);
+    await _fs.setDoc(ref, {
+      txs: SEEDS,
+      people: DEFAULT_PEOPLE,
+      currency: 'GHS',
+      ts: Date.now()
+    });
+    console.log('[DB] Seeded cloud with defaults');
+  } catch (e) {
+    console.warn('[DB] Seed failed:', e);
+  }
+}
+
+// Apply data received from Firestore to working state + cache
+function applyRemote(remote) {
+  if (remote.txs     !== undefined) txs      = remote.txs;
+  if (remote.people  !== undefined) people   = remote.people;
+  if (remote.currency!== undefined) currency = remote.currency;
+  // Update local cache so offline use works
+  ss('cb_txs',      txs);
+  ss('cb_people',   people);
+  ss('cb_currency', currency);
+  // Re-render everything
+  renderAll();
+  renderPeopleTab();
+  populateSels();
+  renderCreditTab();
+  const timeStr = new Date().toLocaleTimeString();
+  setSyncStatus('synced', '✓ Synced — ' + timeStr);
+  setDbStatus('✅ Live sync active. Last update: ' + timeStr);
+}
+
+// Write the full shared state to Firestore (debounced 800ms)
+function dbSync() {
+  if (!db || !_fs) return;
+  clearTimeout(_syncTimeout);
+  setSyncStatus('syncing', 'Saving…');
+  _syncTimeout = setTimeout(async () => {
+    try {
+      await _fs.setDoc(_fs.doc(db, ...FS_DOC), {
+        txs, people, currency, ts: Date.now()
+      });
+      const t = new Date().toLocaleTimeString();
+      setSyncStatus('synced', '✓ Saved — ' + t);
+      setDbStatus('✅ Last sync: ' + t);
+    } catch (e) {
+      console.warn('[DB] Sync write error:', e);
+      setSyncStatus('error', '✗ Save failed');
+      setDbStatus('❌ Save failed. Will retry on next action.');
+    }
+  }, 800);
+}
+
+async function dbPull() {
+  if (!db || !_fs) { toast('⚠ Not connected'); return; }
+  try {
+    setSyncStatus('syncing', 'Pulling from cloud…');
+    const snap = await _fs.getDoc(_fs.doc(db, ...FS_DOC));
+    if (snap.exists()) { applyRemote(snap.data()); toast('✅ Pulled from cloud'); }
+    else { toast('ℹ No cloud data found'); }
+  } catch (e) { console.warn('[DB] Pull failed:', e); toast('✗ Pull failed'); }
+}
+
+function setDbStatus(m) { const el=document.getElementById('dbStatus'); if(el) el.innerHTML=m; }
+async function manualPull() { toast('⬇ Pulling…'); await dbPull(); }
+async function manualPush() {
+  if (!db || !_fs) { toast('⚠ Not connected'); return; }
+  toast('⬆ Pushing…');
+  try {
+    await _fs.setDoc(_fs.doc(db, ...FS_DOC), { txs, people, currency, ts: Date.now() });
+    const t = new Date().toLocaleTimeString();
+    setSyncStatus('synced', '✓ Pushed — ' + t);
+    setDbStatus('✅ Pushed to cloud: ' + t);
+    toast('✅ Pushed to cloud');
+  } catch (e) { console.warn('[DB] Push failed:', e); toast('✗ Push failed'); }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// App init
+// ══════════════════════════════════════════════════════════════════════
+function initApp() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f-date').value = today;
+  document.getElementById('r-from').value = today.slice(0,7)+'-01';
+  document.getElementById('r-to').value   = today;
+  document.getElementById('s-currency').value = currency;
+  populateSels();
+  renderAll();
+  renderPeopleTab();
+  renderQuickBtns();
+  renderCreditTab();
+  ['f-cr-crates','f-cr-price','f-cr-paid'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.addEventListener('input',updateCreditCalc);
+  });
+  // Connect to Firestore — this triggers onSnapshot which will replace local cache data
+  initFirebase();
+}
+
 function renderAll(){renderDashboard();renderLedger();renderPersonFilterRow();}
 
 function switchTab(name,btn){
@@ -888,8 +992,6 @@ function makeTxEl(t,showActions){
   const icon=icons[t.type]||'&#x2B1C;';
   const iconCls=t.type==='owner-fund'?'ownerfund':t.type==='fund-return'?'fundreturn':(t.type||'expense');
   const isIn=t.type==='income'||t.type==='owner-fund';
-
-  // Amount display — always show explicit sign, always show minus for negatives
   let amtHtml='';
   if(t.type==='credit'){
     const paid=t.creditPaid||0;
@@ -897,11 +999,9 @@ function makeTxEl(t,showActions){
   }else if(t.type==='transfer'){
     amtHtml=`<div class="tx-amount" style="color:var(--gold)">&#x21C4; ${fmtAmt(t.amount)}</div>`;
   }else{
-    const sign=isIn?'+':'-';
-    const col=isIn?'pos':'neg';
+    const sign=isIn?'+':'-';const col=isIn?'pos':'neg';
     amtHtml=`<div class="tx-amount ${col}">${sign}${currency} ${Math.abs(t.amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</div>`;
   }
-
   let extraMeta='';
   if(t.type==='transfer'){
     const fp=people.find(p=>p.id===t.transferFrom);const tp=people.find(p=>p.id===t.transferTo);
@@ -922,8 +1022,7 @@ function makeTxEl(t,showActions){
     if(rcvr)extraMeta+=`<span class="tx-cat">To: ${esc(rcvr.name)}</span>`;
   }
   if(t.type==='fund-return'){
-    const sndp=people.find(p=>p.id===t.frSender);
-    const rcvp=people.find(p=>p.id===t.frReceiver);
+    const sndp=people.find(p=>p.id===t.frSender);const rcvp=people.find(p=>p.id===t.frReceiver);
     if(sndp)extraMeta+=`<span class="tx-cat">From: ${esc(sndp.name)}</span>`;
     if(rcvp)extraMeta+=`<span class="tx-cat">To (Owner): ${esc(rcvp.name)}</span>`;
   }
@@ -931,7 +1030,6 @@ function makeTxEl(t,showActions){
     const pb=people.find(p=>p.id===t.salaryPaidBy);
     if(pb)extraMeta+=`<span class="tx-cat">Paid by: ${esc(pb.name)}</span>`;
   }
-
   const el=document.createElement('div');el.className='tx-item fade-in';el.dataset.id=t.id;
   el.innerHTML=`
     <div class="tx-icon ${iconCls}">${icon}</div>
@@ -968,7 +1066,6 @@ function setType(type,btn){
   else if(type==='income')cat.value='Sales Revenue';
   else cat.value='';
   document.getElementById('amtLabel').textContent=type==='credit'?'Amount (0 if fully unpaid)':'Amount ('+currency+') *';
-  // Person label context
   const lbl={transfer:'Logged By',credit:'Sale Made By','owner-fund':'Logged By','fund-return':'Logged By',salary:'Employee (Paid To)'};
   document.getElementById('personLabel').textContent=lbl[type]||'Person *';
 }
@@ -1028,8 +1125,7 @@ function submitTx(){
     tx.ownerSender=senderSel;tx.ownerReceiver=receiverSel;
     const sn=people.find(p=>p.id===senderSel)?.name||'Owner';
     const rn=people.find(p=>p.id===receiverSel)?.name||'?';
-    tx.ownerName=sn;
-    tx.desc='Owner fund: '+sn+' \u2192 '+rn;
+    tx.ownerName=sn;tx.desc='Owner fund: '+sn+' \u2192 '+rn;
   }
   if(txType==='fund-return'){
     if(amount<=0){toast('&#x26A0; Enter the return amount');return;}
@@ -1050,7 +1146,6 @@ function submitTx(){
     const pb=people.find(p=>p.id===paidBy)?.name||'';
     tx.desc='Salary \u2013 '+emp+(pb?' (paid by '+pb+')':'');
   }
-  // Auto-generate description for simple types
   if(!tx.desc){
     const pn=people.find(p=>p.id===person)?.name||'';
     if(txType==='income')tx.desc=(pn?pn+' \u2013 ':'')+'Income';
@@ -1060,7 +1155,10 @@ function submitTx(){
   if(!['credit','transfer','owner-fund','fund-return','salary'].includes(txType)&&amount<=0){
     toast('&#x26A0; Enter a valid positive amount');return;
   }
-  txs.push(tx);ss('cb_txs',txs);dbSync();renderAll();renderCreditTab();
+  txs.push(tx);
+  ss('cb_txs',txs); // update local cache immediately
+  dbSync();          // push to Firestore (debounced)
+  renderAll();renderCreditTab();
   ['f-amount','f-note','f-cr-buyer','f-cr-crates','f-cr-price','f-cr-paid','f-tf-ref'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('creditCalcBox').style.display='none';
@@ -1153,23 +1251,14 @@ function renderPeopleTab(){
 }
 function isOwner(p){return p.role&&p.role.toLowerCase().includes('owner');}
 function populateSels(){
-  // General selects — all people
   const ids=['f-person','f-tf-from','f-tf-to','f-cr-seller','f-cr-receiver','f-sal-paidby','e-person'];
   const opts=people.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
   ids.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
-
-  // Owner-only selects (Owner Fund: Sent By; Fund Return: Received By)
   const owners=people.filter(isOwner);
-  const ownerOpts=owners.length
-    ? owners.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('')
-    : `<option value="">— No owners added —</option>`;
+  const ownerOpts=owners.length?owners.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join(''):`<option value="">— No owners added —</option>`;
   ['f-of-sender','f-fr-receiver'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=ownerOpts;});
-
-  // Non-owner selects (Owner Fund: Received By; Fund Return: Sent By)
   const nonOwners=people.filter(p=>!isOwner(p));
-  const nonOwnerOpts=nonOwners.length
-    ? nonOwners.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('')
-    : `<option value="">— No non-owners added —</option>`;
+  const nonOwnerOpts=nonOwners.length?nonOwners.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join(''):`<option value="">— No non-owners added —</option>`;
   ['f-of-receiver','f-fr-sender'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=nonOwnerOpts;});
 }
 function populateReportSel(){
@@ -1277,9 +1366,12 @@ function saveCurrency(){
 }
 function confirmClear(){
   if(!guardWrite())return;
-  if(!confirm('Delete ALL local data? This cannot be undone.'))return;
-  txs=[];people=[];ss('cb_txs',txs);ss('cb_people',people);
-  renderAll();renderPeopleTab();renderCreditTab();populateSels();toast('&#x1F5D1; Data cleared');
+  if(!confirm('Clear ALL data from cloud and all devices? This cannot be undone.'))return;
+  txs=[];people=[];currency='GHS';
+  ss('cb_txs',txs);ss('cb_people',people);ss('cb_currency',currency);
+  dbSync(); // write the empty state to Firestore — clears all devices
+  renderAll();renderPeopleTab();renderCreditTab();populateSels();
+  toast('&#x1F5D1; All data cleared');
 }
 
 let _tt;
