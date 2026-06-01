@@ -363,9 +363,15 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
             <input class="f-input f-amount" type="number" id="f-amount" placeholder="0.00" min="0" step="0.01"/>
           </div>
         </div>
+          <div class="form-row" id="f-buyer-wrap" style="display:none;">
+            <div class="f-field">
+              <label class="f-label">Buyer Name</label>
+              <input class="f-input" type="text" id="f-buyer" placeholder="Buyer's name (optional)" />
+            </div>
+          </div>
         <div class="form-row">
           <div class="f-field">
-            <label class="f-label">Person *</label>
+            <label class="f-label" id="label-person">Person *</label>
             <select class="f-select" id="f-person"></select>
           </div>
           <div class="f-field">
@@ -1089,6 +1095,8 @@ function makeTxEl(t,showActions){
   }
 
   let extraMeta='';
+  // Show buyer for sales
+  if(t.buyer) extraMeta += `<span class="tx-cat">Buyer: ${esc(t.buyer)}</span>`;
   if(t.type==='transfer'){
     const fp=people.find(p=>p.id===t.transferFrom); const tp=people.find(p=>p.id===t.transferTo);
     extraMeta=`<span class="tx-cat">${fp?esc(fp.name):'?'} &#x2192; ${tp?esc(tp.name):'?'}</span>`;
@@ -1164,6 +1172,18 @@ function setType(type, btn) {
   document.getElementById('amtLabel').textContent = 'Amount ('+currency+') *';
   // If switching to credit type, ensure the receiver field visibility matches current paid value
   if(type==='credit' && typeof updateCreditCalc === 'function'){ try{ updateCreditCalc(); } catch(e){} }
+  // Update person label and buyer field visibility depending on type
+  try{
+    const pLabel = document.getElementById('label-person');
+    const buyerWrap = document.getElementById('f-buyer-wrap');
+    if(pLabel){
+      if(type==='income') pLabel.textContent = 'Sale Made By *';
+      else if(type==='expense') pLabel.textContent = 'Paid By *';
+      else if(type==='salary') pLabel.textContent = 'Employee *';
+      else pLabel.textContent = 'Person *';
+    }
+    if(buyerWrap){ buyerWrap.style.display = (type==='income') ? '' : 'none'; }
+  }catch(e){}
 }
 
 function updateCreditCalc(){
@@ -1199,8 +1219,18 @@ function submitTx(){
     if(!date){toast('&#x26A0; Select a date');return;}
     if(amount<=0){toast('&#x26A0; Enter a valid amount');return;}
     const pn=people.find(p=>p.id===person)?.name||'';
+    // For sales (income) we can optionally capture buyer name
+    let buyer = '';
+    if(txType==='income'){
+      const bEl = document.getElementById('f-buyer'); if(bEl) buyer = bEl.value.trim();
+      if(buyer) tx.buyer = buyer;
+    }
     tx.amount=amount; tx.person=person; tx.date=date; tx.cat=cat; tx.note=note;
-    tx.desc=txType==='income'?(pn?pn+' — ':'')+cat||'Income':'Expense'+(pn?' by '+pn:'');
+    if(txType==='income'){
+      tx.desc = 'Sale' + (buyer?(' — to '+buyer):'') + (pn?(' by '+pn):'') + (cat?(' — '+cat):'');
+    } else {
+      tx.desc = 'Expense' + (pn?(' by '+pn):'');
+    }
   }
 
   if(txType==='salary'){
@@ -1297,7 +1327,7 @@ function submitTx(){
   txs.push(tx); ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab();
 
   // Clear fields
-  ['f-amount','f-note','f-cr-buyer','f-cr-total','f-cr-paid','f-cr-note','f-tf-ref','f-of-note','f-fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-amount','f-note','f-buyer','f-cr-buyer','f-cr-total','f-cr-paid','f-cr-note','f-tf-ref','f-of-note','f-fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('creditCalcBox').style.display='none';
   const today2=new Date().toISOString().split('T')[0];
   ['f-date','f-tf-date','f-cr-date','f-of-date','f-fr-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today2;});
@@ -1555,46 +1585,85 @@ function generateReport(){
   const pId=document.getElementById('r-person').value;
   const rType=document.getElementById('r-type').value;
   let f=[...txs];
-  if(from)f=f.filter(t=>t.date>=from);
-  if(to)f=f.filter(t=>t.date<=to);
-  if(pId!=='all')f=f.filter(t=>t.person===pId);
-  if(rType!=='all')f=f.filter(t=>t.type===rType);
+  if(from) f=f.filter(t=>t.date>=from);
+  if(to) f=f.filter(t=>t.date<=to);
+  if(pId!=='all') f=f.filter(t=>t.person===pId);
+  if(rType!=='all') f=f.filter(t=>t.type===rType);
   f.sort((a,b)=>a.date<b.date?-1:1);
-  const totalIn=f.filter(t=>['income','owner-fund'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-  const totalOut=f.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-  const bal=totalIn-totalOut;
-  const pName=pId==='all'?'All People':(people.find(p=>p.id===pId)?.name||pId);
+
+  // Expenses table: expense, salary, fund-return
+  const expenses = f.filter(t=>['expense','salary','fund-return'].includes(t.type));
+  const totalExpenses = expenses.reduce((s,t)=>s+(t.amount||0),0);
+
+  // Sales table: income and credit (use creditTotal for credit sales)
+  const sales = f.filter(t=>t.type==='income' || t.type==='credit');
+  const totalSales = sales.reduce((s,t)=> s + (t.type==='credit' ? (t.creditTotal||0) : (t.amount||0)), 0);
+
+  // Cash injections (owner funds)
+  const cashInjection = f.filter(t=>t.type==='owner-fund').reduce((s,t)=>s+(t.amount||0),0);
+
+  // Available balance: follow dashboard logic (income + owner-fund + creditPaid) - (expense + salary + fund-return)
+  const totalIn = f.filter(t=>t.type==='income').reduce((s,t)=>s+(t.amount||0),0)
+    + cashInjection + f.filter(t=>t.type==='credit').reduce((s,t)=>s+(t.creditPaid||0),0);
+  const totalOut = f.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+(t.amount||0),0);
+  const available = totalIn - totalOut;
+
+  const pName = pId==='all' ? 'All People' : (people.find(p=>p.id===pId)?.name||pId);
   document.getElementById('rpTitle').textContent='Cashbook Report';
   document.getElementById('rpSub').textContent=fmtDate(from)+' – '+fmtDate(to)+' · '+pName+' · '+f.length+' entries';
-  document.getElementById('rpSummary').innerHTML=`
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total In</div><div class="rp-sum-val" style="color:var(--green)">+${fmtAmt(totalIn)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total Out</div><div class="rp-sum-val" style="color:var(--red)">${fmtAmt(totalOut)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Balance</div><div class="rp-sum-val" style="color:${bal>=0?'var(--green)':'var(--red)'}">${fmtAmt(bal)}</div></div>`;
-  document.getElementById('rpBody').innerHTML=f.map(t=>{
-    const p=people.find(x=>x.id===t.person);
-    const isIn=['income','owner-fund'].includes(t.type);
-    const dispAmt=t.type==='credit'?'+'+fmtAmt(t.creditPaid||0)+' / '+fmtAmt(t.creditTotal||0):(isIn?'+':'-')+fmtAmt(t.amount);
-    return`<tr><td>${fmtDate(t.date)}</td><td>${p?esc(p.name):'—'}</td>
-      <td>${esc(t.desc)}${t.note?'<br><small style="color:var(--text3)">'+esc(t.note)+'</small>':''}</td>
-      <td>${esc(t.cat||'—')}</td><td style="text-transform:capitalize">${esc(t.type)}</td>
-      <td style="text-align:right;font-family:'DM Mono',monospace;color:${isIn?'var(--green)':'var(--red)'}">${dispAmt}</td></tr>`;
-  }).join('');
-  if(pId==='all'&&people.length>1){
-    let bd='<div style="margin-top:20px;margin-bottom:8px;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Balance by Person</div>';
-    bd+='<table class="rp-table"><thead><tr><th>Person</th><th>Role</th><th>In</th><th>Out</th><th>Balance</th></tr></thead><tbody>';
-    people.forEach(p=>{
-      const pt=f.filter(t=>t.person===p.id);
-      const pIn=pt.filter(t=>['income','owner-fund'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-      const pOut=pt.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-      const pBal=pIn-pOut;
-      bd+=`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.role||'—')}</td><td style="color:var(--green)">+${fmtAmt(pIn)}</td><td style="color:var(--red)">${fmtAmt(pOut)}</td><td style="font-weight:700;color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
+
+  // Summary boxes
+  document.getElementById('rpSummary').innerHTML = `
+    <div class="rp-sum-box"><div class="rp-sum-lbl">Total Sales</div><div class="rp-sum-val" style="color:var(--green)">+${fmtAmt(totalSales)}</div></div>
+    <div class="rp-sum-box"><div class="rp-sum-lbl">Total Expenses</div><div class="rp-sum-val" style="color:var(--red)">${fmtAmt(totalExpenses)}</div></div>
+    <div class="rp-sum-box"><div class="rp-sum-lbl">Cash Injection</div><div class="rp-sum-val" style="color:var(--gold)">${fmtAmt(cashInjection)}</div></div>
+    <div class="rp-sum-box"><div class="rp-sum-lbl">Available Balance</div><div class="rp-sum-val" style="color:${available>=0?'var(--green)':'var(--red)'}">${fmtAmt(available)}</div></div>`;
+
+  // Expenses table (Date, Description, Amount)
+  let expHtml = '<div style="margin-top:10px;font-weight:800">Expenses</div>';
+  if(!expenses.length) expHtml += '<div class="tx-empty">No expenses in this range.</div>';
+  else{
+    expHtml += '<table class="rp-table"><thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody>';
+    expenses.forEach(t=>{
+      expHtml += `<tr><td>${fmtDate(t.date)}</td><td>${esc(t.desc)}${t.note?'<br><small style="color:var(--text3)">'+esc(t.note)+'</small>':''}</td><td style="text-align:right">${fmtAmt(t.amount||0)}</td></tr>`;
     });
-    bd+='</tbody></table>';
-    document.getElementById('rpPersonBreakdown').innerHTML=bd;
+    expHtml += `</tbody><tfoot><tr><td></td><td style="font-weight:800">Total Expenses</td><td style="text-align:right;font-weight:800">${fmtAmt(totalExpenses)}</td></tr></tfoot></table>`;
+  }
+
+  // Sales table (Description, Total)
+  let salesHtml = '<div style="margin-top:18px;font-weight:800">Sales</div>';
+  if(!sales.length) salesHtml += '<div class="tx-empty">No sales in this range.</div>';
+  else{
+    salesHtml += '<table class="rp-table"><thead><tr><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody>';
+    sales.forEach(t=>{
+      const amt = t.type==='credit' ? (t.creditTotal||0) : (t.amount||0);
+      salesHtml += `<tr><td>${esc(t.desc)}${t.note?'<br><small style="color:var(--text3)">'+esc(t.note)+'</small>':''}</td><td style="text-align:right">${fmtAmt(amt)}</td></tr>`;
+    });
+    salesHtml += `</tbody><tfoot><tr><td style="font-weight:800">Total Sales</td><td style="text-align:right;font-weight:800">${fmtAmt(totalSales)}</td></tr></tfoot></table>`;
+  }
+
+  document.getElementById('rpBody').innerHTML = expHtml + salesHtml;
+
+  // Balances by person (non-owners)
+  if(pId==='all'&&people.length){
+    let bd = '<div style="margin-top:20px;margin-bottom:8px;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Balance by Person</div>';
+    bd += '<table class="rp-table"><thead><tr><th>Person</th><th>Role</th><th>In</th><th>Out</th><th>Balance</th></tr></thead><tbody>';
+    people.filter(p=>!isOwner(p)).forEach(p=>{
+      const pt = f.filter(t=>t.person===p.id || (t.type==='transfer' && (t.transferFrom===p.id || t.transferTo===p.id)));
+      const pIn = pt.filter(t=>['income','owner-fund'].includes(t.type)).reduce((s,t)=>s+(t.type==='credit'? (t.creditPaid||0) : (t.amount||0)),0)
+        + pt.filter(t=>t.type==='transfer'&&t.transferTo===p.id).reduce((s,t)=>s+(t.amount||0),0);
+      const pOut = pt.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+(t.amount||0),0)
+        + pt.filter(t=>t.type==='transfer'&&t.transferFrom===p.id).reduce((s,t)=>s+(t.amount||0),0);
+      const pBal = pIn - pOut;
+      bd += `<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.role||'—')}</td><td style="color:var(--green)">+${fmtAmt(pIn)}</td><td style="color:var(--red)">${fmtAmt(pOut)}</td><td style="font-weight:700;color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
+    });
+    bd += '</tbody></table>';
+    document.getElementById('rpPersonBreakdown').innerHTML = bd;
   } else document.getElementById('rpPersonBreakdown').innerHTML='';
+
   document.getElementById('reportPreview').style.display='block';
   document.getElementById('reportPreview').scrollIntoView({behavior:'smooth'});
-  toast('&#x1F4CB; Report: '+f.length+' transactions');
+  toast('📋 Report: '+f.length+' transactions');
 }
 
 function saveCurrency(){
