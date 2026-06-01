@@ -1400,6 +1400,9 @@ function confirmCreditPayment(){
     // Add to payments log
     if(!t.payments) t.payments=[];
     t.payments.push({amount:alloc,receiver,receiverName:rName,date,note:'Balance payment'});
+    // Mark this transaction's latest receiver as the person who actually received this payment
+    t.creditReceiver = receiver;
+    t.creditReceiverName = rName;
     // Update note on the transaction
     t.note=(t.note?t.note+' | ':'')+fmtAmt(alloc)+' rcvd by '+rName+' on '+date;
   }
