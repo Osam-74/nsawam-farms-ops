@@ -430,7 +430,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
         </div>
         <div class="form-row">
           <div class="f-field"><label class="f-label">Sale Made By *</label><select class="f-select" id="f-cr-seller"></select></div>
-          <div class="f-field"><label class="f-label">Money Received By</label><select class="f-select" id="f-cr-receiver"></select></div>
+          <div class="f-field" id="f-cr-receiver-wrap"><label class="f-label">Money Received By</label><select class="f-select" id="f-cr-receiver"></select></div>
         </div>
         <div class="form-row">
           <div class="f-field">
@@ -1162,6 +1162,8 @@ function setType(type, btn) {
     else cat.value='';
   }
   document.getElementById('amtLabel').textContent = 'Amount ('+currency+') *';
+  // If switching to credit type, ensure the receiver field visibility matches current paid value
+  if(type==='credit' && typeof updateCreditCalc === 'function'){ try{ updateCreditCalc(); } catch(e){} }
 }
 
 function updateCreditCalc(){
@@ -1174,6 +1176,9 @@ function updateCreditCalc(){
     box.textContent='Total: '+fmtAmt(total)+' | Paid: '+fmtAmt(paid)+' | Outstanding: '+fmtAmt(outstanding);
     box.style.color=outstanding>0.005?'var(--red)':'var(--green)';
   } else { box.style.display='none'; }
+  // Show Money Received By only when some amount is paid now
+  const recvWrap = document.getElementById('f-cr-receiver-wrap');
+  if(recvWrap){ recvWrap.style.display = (paid>0) ? '' : 'none'; }
 }
 
 // ══════════════════════════════════════════════════════════════════════
