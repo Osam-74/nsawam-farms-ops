@@ -509,6 +509,14 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
   <div class="tab" id="tab-credit">
     <div class="sh">Credit Sales Overview</div>
     <div id="creditSummary"></div>
+    <div style="margin-top:12px;margin-bottom:12px;" class="form-card">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;align-items:end;">
+        <div class="f-field"><label class="f-label">Buyer</label><select class="f-select" id="creditBuyerSel"><option value="">— Select buyer —</option></select></div>
+        <div class="f-field"><label class="f-label">Amount (GHS)</label><input class="f-input" type="number" id="creditPayAmount" min="0.01" step="0.01" placeholder="0.00"/></div>
+        <div class="f-field"><label class="f-label">Received By</label><select class="f-select" id="creditPayReceiver"></select></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="submit-btn" style="padding:10px;margin:0;" onclick="recordBuyerPayment()">Record Payment</button></div>
+      </div>
+    </div>
     <div class="sh">All Credit Transactions</div>
     <div id="creditList"></div>
   </div>
@@ -1346,8 +1354,54 @@ function renderCreditTab(){
     summaryEl.innerHTML=''; summaryEl.appendChild(card);
   }
   const listEl=document.getElementById('creditList'); listEl.innerHTML='';
-  if(!creditTxs.length){listEl.innerHTML='<div class="tx-empty">No credit sales logged.</div>';return;}
+  // Ensure the payment form is populated even if there are no credit txs
+  try{ populateCreditPaymentForm(); } catch(e){/* ignore */}
+  if(!creditTxs.length){listEl.innerHTML='<div class="tx-empty">No credit sales logged.</div>'; return;}
   [...creditTxs].sort((a,b)=>(b.ts||0)-(a.ts||0)).forEach(t=>listEl.appendChild(makeTxEl(t,true)));
+}
+
+// Populate credit payment form buyers + receiver
+function populateCreditPaymentForm(){
+  const buyers = [...new Set(txs.filter(t=>t.type==='credit').map(t=>t.creditBuyer||'Unknown'))].filter(x=>x&&x!=='');
+  const sel = document.getElementById('creditBuyerSel'); if(sel){
+    sel.innerHTML = '<option value="">— Select buyer —</option>' + buyers.map(b=>`<option value="${escA(b)}">${esc(b)}</option>`).join('');
+  }
+  // receivers = non-owners
+  const recv = nonOwners().map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
+  const rsel = document.getElementById('creditPayReceiver'); if(rsel) rsel.innerHTML = recv;
+}
+
+function recordBuyerPayment(){
+  if(!guardWrite()) return;
+  const buyer = document.getElementById('creditBuyerSel').value;
+  const amt = parseFloat(document.getElementById('creditPayAmount').value)||0;
+  const receiver = document.getElementById('creditPayReceiver').value;
+  const date = document.getElementById('p-date') ? document.getElementById('p-date').value : new Date().toISOString().split('T')[0];
+  if(!buyer){toast('&#x26A0; Select a buyer');return;}
+  if(amt<=0){toast('&#x26A0; Enter a valid amount');return;}
+  if(!receiver){toast('&#x26A0; Select who received the money');return;}
+
+  // allocate oldest-first across buyer's credit txs
+  let remaining = amt;
+  const list = txs.filter(t=>t.type==='credit'&&(t.creditBuyer||'Unknown')===buyer).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  if(!list.length){toast('&#x26A0; No credit sales found for this buyer');return;}
+  const rName = people.find(p=>p.id===receiver)?.name||'?';
+  for(const t of list){
+    if(remaining<=0) break;
+    const owed = Math.max(0,(t.creditTotal||0)-(t.creditPaid||0));
+    if(owed<=0) continue;
+    const alloc = Math.min(owed, remaining);
+    t.creditPaid = (t.creditPaid||0) + alloc;
+    t.amount = t.creditPaid; // keep amount in sync
+    remaining -= alloc;
+    if(!t.payments) t.payments = [];
+    t.payments.push({amount:alloc,receiver,receiverName:rName,date,note:'Part payment'});
+    t.note = (t.note?t.note+' | ':'') + fmtAmt(alloc) + ' rcvd by '+rName+' on '+date;
+  }
+
+  ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab(); populateCreditPaymentForm();
+  document.getElementById('creditPayAmount').value='';
+  toast('&#x2705; Payment recorded');
 }
 
 function askCreditPayment(buyer){
