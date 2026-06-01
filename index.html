@@ -954,7 +954,10 @@ function makeTxEl(t,showActions){
   if(t.type==='credit'){const total=t.creditTotal||0;const outstanding=total-(t.creditPaid||0);if(t.creditBuyer)extraMeta+=`<span class="tx-cat">Buyer: ${esc(t.creditBuyer)}</span>`;const rcvr=people.find(p=>p.id===t.creditReceiver);if(rcvr)extraMeta+=`<span class="tx-cat">Rcvd by: ${esc(rcvr.name)}</span>`;extraMeta+=outstanding>0.005?`<span class="outstanding-tag">Owes ${fmtAmt(outstanding)}</span>`:total>0?`<span class="settled-tag">Settled &#x2713;</span>`:'`';}
   if(t.type==='owner-fund'){const sndp=people.find(p=>p.id===t.ownerSender);const rcvr=people.find(p=>p.id===t.ownerReceiver);if(sndp)extraMeta+=`<span class="tx-cat">From: ${esc(sndp.name)}</span>`;if(rcvr)extraMeta+=`<span class="tx-cat">To: ${esc(rcvr.name)}</span>`;}
   if(t.type==='fund-return'){const sndp=people.find(p=>p.id===t.frSender);const rcvp=people.find(p=>p.id===t.frReceiver);if(sndp)extraMeta+=`<span class="tx-cat">From: ${esc(sndp.name)}</span>`;if(rcvp)extraMeta+=`<span class="tx-cat">To (Owner): ${esc(rcvp.name)}</span>`;}
-  if(t.type==='salary'&&t.salaryPaidBy){const pb=people.find(p=>p.id===t.salaryPaidBy);if(pb)extraMeta+=`<span class="tx-cat">Paid by: ${esc(pb.name)}</span>`;}
+  if(t.type==='salary'){
+    if(t.employeeName) extraMeta+=`<span class="tx-cat">Employee: ${esc(t.employeeName)}</span>`;
+    if(t.salaryPaidBy){const pb=people.find(p=>p.id===t.salaryPaidBy);if(pb)extraMeta+=`<span class="tx-cat">Paid by: ${esc(pb.name)}</span>`;}
+  }
   const el=document.createElement('div');el.className='tx-item fade-in';el.dataset.id=t.id;
   el.innerHTML=`<div class="tx-icon ${iconCls}">${icon}</div><div class="tx-body"><div class="tx-desc">${esc(t.desc)}</div><div class="tx-meta">${person?`<span class="tx-person" style="background:${c.bg};color:${c.text}">${esc(person.name)}</span>`:''}${t.cat?`<span class="tx-cat">${esc(t.cat)}</span>`:''}<span class="tx-cat">${fmtDate(t.date)}</span>${extraMeta}</div>${t.note?`<div class="tx-note">&#x1F4CC; ${esc(t.note)}</div>`:''}</div>${amtHtml}${showActions&&!readOnly?`<div class="tx-actions"><button class="tx-btn edit" onclick="event.stopPropagation();askEdit('${escA(t.id)}')" title="Edit">&#x270E;</button><button class="tx-btn del" onclick="event.stopPropagation();askDelete('${escA(t.id)}','${escA(t.desc)}')" title="Delete">&#x2715;</button></div>`:''}`;
   return el;
@@ -1009,10 +1012,19 @@ function submitTx(){
     if(txType==='income'){tx.desc='Sale'+(buyer?(' — to '+buyer):'')+(pn?(' by '+pn):'')+(cat?(' — '+cat):'');}else{tx.desc='Expense'+(pn?(' by '+pn):'');}
   }
   if(txType==='salary'){
-    const amount=parseFloat(document.getElementById('f-amount').value)||0;const person=document.getElementById('f-person').value;const date=document.getElementById('f-date').value;const paidBy=document.getElementById('f-sal-paidby').value;const note=document.getElementById('f-note').value.trim();
+    const amount=parseFloat(document.getElementById('f-amount').value)||0;
+    const person=document.getElementById('f-person').value; // employee
+    const date=document.getElementById('f-date').value;
+    const paidBy=document.getElementById('f-sal-paidby').value; // who pays (deducted from)
+    const note=document.getElementById('f-note').value.trim();
     if(!person||!date||amount<=0){toast('&#x26A0; Fill all required fields');return;}
     const emp=people.find(p=>p.id===person)?.name||'?';const pb=people.find(p=>p.id===paidBy)?.name||'';
-    tx.amount=amount;tx.person=person;tx.date=date;tx.cat='Salary';tx.note=note;tx.salaryPaidBy=paidBy;tx.desc='Salary — '+emp+(pb?' (paid by '+pb+')':'');
+    tx.amount=amount;
+    tx.person=paidBy; // record the payer as the transaction 'person' so their balance is debited
+    tx.employee=person; // store employee separately
+    tx.employeeName=emp;
+    tx.date=date;tx.cat='Salary';tx.note=note;tx.salaryPaidBy=paidBy;
+    tx.desc='Salary — '+emp+(pb?' (paid by '+pb+')':'');
   }
   if(txType==='transfer'){
     const amount=parseFloat(document.getElementById('f-tf-amount').value)||0;const fromP=document.getElementById('f-tf-from').value;const toP=document.getElementById('f-tf-to').value;const date=document.getElementById('f-tf-date').value;const ref=document.getElementById('f-tf-ref').value.trim();
