@@ -996,6 +996,8 @@ function setType(type,btn){
     const pLabel=document.getElementById('label-person');const buyerWrap=document.getElementById('f-buyer-wrap');
     if(pLabel){if(type==='income')pLabel.textContent='Sale Made By *';else if(type==='expense')pLabel.textContent='Paid By *';else if(type==='salary')pLabel.textContent='Employee *';else pLabel.textContent='Person *';}
     if(buyerWrap){buyerWrap.style.display=(type==='income')?'':'none';}
+      const srcEl=document.getElementById('f-source');
+      if(srcEl){const wrap=srcEl.parentElement;wrap.style.display=(type==='income')?'block':'none'; if(type!=='income')srcEl.value='shop';}
   }catch(e){}
 }
 function updateCreditCalc(){
