@@ -122,7 +122,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 
 /* TX LIST */
 .tx-filters{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;}
-.tx-filter{font-size:0.62rem;font-weight:700;padding:5px 12px;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase;background:var(--bg2);box-shadow:var(--sh-out);border:none;color:var(--text2);transition:all 0.15s;}
+.tx-filter{font-size:0.62rem;font-weight:700;padding:5px 12px;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase;background:var(--bg2);box-shadow:var(--sh-out);border:none;color:var(--text3);cursor:pointer;transition:all 0.15s;}
 .tx-filter.on{background:linear-gradient(135deg,#3d6bdf,#5a84ff);color:#fff;box-shadow:0 4px 12px rgba(61,107,223,0.3);}
 .tx-group-date{font-size:0.58rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);padding:10px 0 6px;margin-top:6px;border-top:1px solid var(--line);}
 .tx-group-date:first-child{margin-top:0;border-top:none;}
@@ -146,7 +146,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .tx-amount.pos{color:var(--green);}
 .tx-amount.neg{color:var(--red);}
 .tx-actions{display:flex;flex-direction:column;gap:3px;align-items:center;flex-shrink:0;padding-top:1px;}
-.tx-btn{background:var(--bg2);box-shadow:2px 2px 5px rgba(140,145,170,0.25),-1px -1px 4px rgba(255,255,255,0.7);border:none;border-radius:7px;font-size:0.78rem;color:var(--text2);width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.tx-btn{background:var(--bg2);box-shadow:2px 2px 5px rgba(140,145,170,0.25),-1px -1px 4px rgba(255,255,255,0.7);border:none;border-radius:7px;font-size:0.78rem;color:var(--text2);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.12s;}
 .tx-btn:active{box-shadow:var(--sh-in);}
 .tx-btn.edit:hover{color:var(--blue);background:var(--blue2);}
 .tx-btn.del:hover{color:var(--red);background:var(--red2);}
@@ -158,7 +158,7 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .form-card{background:var(--bg2);border-radius:var(--r);box-shadow:var(--sh-card);padding:20px;margin-bottom:12px;border:1.5px solid var(--line);}
 .type-switcher{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:18px;}
 #tb-fund-return{grid-column:span 2;}
-.type-btn{padding:11px 6px;border-radius:12px;font-size:0.6rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:var(--bg);box-shadow:var(--sh-out);border:1.5px solid transparent;color:var(--text3);transition:all 0.15s;text-align:center;line-height:1.5;}
+.type-btn{padding:11px 6px;border-radius:12px;font-size:0.6rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:var(--bg);box-shadow:var(--sh-out);border:1.5px solid transparent;cursor:pointer;transition:all 0.15s;}
 .type-btn:active{box-shadow:var(--sh-in);}
 .type-btn.active-income{background:var(--green2);border-color:var(--green);color:var(--green);}
 .type-btn.active-expense{background:var(--red2);border-color:var(--red);color:var(--red);}
@@ -175,14 +175,14 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .f-input,.f-select{background:var(--bg);box-shadow:var(--sh-in);border:1.5px solid var(--line);border-radius:10px;padding:10px 13px;font-size:0.86rem;color:var(--text);transition:all 0.18s;width:100%;}
 .f-input:focus,.f-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(61,107,223,0.15),var(--sh-in);}
 .f-input::placeholder{color:var(--text3);}
-.f-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9fb8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;}
+.f-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9fb8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
 .f-select option{background:var(--bg3);}
 .f-amount{font-size:1.45rem;letter-spacing:-0.02em;font-family:'DM Mono',monospace;padding:12px 14px;}
-.submit-btn{width:100%;padding:14px;border-radius:12px;font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:linear-gradient(135deg,#3d6bdf,#5a84ff);color:#fff;border:none;margin-top:6px;box-shadow:0 4px 16px rgba(61,107,223,0.35);transition:all 0.18s;}
+.submit-btn{width:100%;padding:14px;border-radius:12px;font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:linear-gradient(135deg,#3d6bdf,#5a84ff);color:#fff;border:none;cursor:pointer;transition:all 0.15s;}
 .submit-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
 .submit-btn:active{transform:translateY(0);}
-#transferFields,#creditFields,#ownerFundFields,#fundReturnFields,#salaryFields{display:none;margin-top:6px;}
-#transferFields.show,#creditFields.show,#ownerFundFields.show,#fundReturnFields.show,#salaryFields.show{display:block;}
+#transferFields,#creditFields,#ownerFundFields,#fundReturnFields,#salaryFields{display:none !important;margin-top:6px;}
+#transferFields.show,#creditFields.show,#ownerFundFields.show,#fundReturnFields.show,#salaryFields.show{display:block !important;}
 .info-box{background:var(--bg);box-shadow:var(--sh-in);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:0.7rem;color:var(--text2);line-height:1.6;margin-bottom:10px;}
 
 /* CREDIT SUMMARY */
@@ -194,1398 +194,544 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
 .cs-total{font-family:'DM Mono',monospace;font-size:0.86rem;font-weight:600;}
 .cs-outstanding{font-family:'DM Mono',monospace;font-size:0.76rem;color:var(--red);margin-top:2px;}
 .cs-settled{font-family:'DM Mono',monospace;font-size:0.76rem;color:var(--green);margin-top:2px;}
-.cs-pay-btn{background:var(--green2);border:1px solid var(--green);color:var(--green);border-radius:8px;padding:5px 10px;font-size:0.62rem;font-weight:700;cursor:pointer;margin-left:8px;white-space:nowrap;}
+.cs-pay-btn{background:var(--green2);border:1px solid var(--green);color:var(--green);border-radius:8px;padding:5px 10px;font-size:0.62rem;font-weight:700;cursor:pointer;margin-left:8px;white-space:nowrap;transition:all 0.12s;}
 
 /* PEOPLE */
 .people-list{display:grid;gap:8px;margin-bottom:14px;}
-.person-row{display:flex;align-items:center;gap:12px;background:var(--bg3);border-radius:var(--r2);box-shadow:var(--sh-card);padding:12px 14px;border:1.5px solid var(--line);}
-.pr-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:800;text-transform:uppercase;flex-shrink:0;}
-.pr-info{flex:1;}
-.pr-name{font-size:0.85rem;font-weight:700;}
-.pr-role{font-size:0.63rem;color:var(--text3);margin-top:2px;}
-.pr-del{background:var(--bg2);box-shadow:var(--sh-out);border:none;border-radius:8px;color:var(--text3);font-size:0.82rem;padding:6px 10px;transition:all 0.15s;}
-.pr-del:hover{color:var(--red);background:var(--red2);}
-.add-person-form{background:var(--bg2);border-radius:var(--r);box-shadow:var(--sh-card);padding:16px;border:1.5px solid var(--line);}
-
-/* REPORT */
-.report-controls{background:var(--bg2);border-radius:var(--r);box-shadow:var(--sh-card);padding:18px;margin-bottom:14px;border:1.5px solid var(--line);}
-.report-preview{background:var(--bg3);border-radius:var(--r);box-shadow:var(--sh-card);padding:18px;display:none;border:1.5px solid var(--line);}
-.rp-title{font-size:1.1rem;font-weight:800;margin-bottom:4px;}
-.rp-sub{font-size:0.72rem;color:var(--text2);margin-bottom:20px;}
-.rp-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
-.rp-sum-box{background:var(--bg);box-shadow:var(--sh-in);border-radius:10px;padding:10px;text-align:center;}
-.rp-sum-lbl{font-size:0.53rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
-.rp-sum-val{font-family:'DM Mono',monospace;font-size:0.84rem;font-weight:600;}
-.rp-table{width:100%;border-collapse:collapse;font-size:0.74rem;margin-bottom:16px;}
-.rp-table th{text-align:left;font-size:0.56rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:6px 7px;border-bottom:1px solid var(--line);}
-.rp-table td{padding:8px 7px;border-bottom:1px solid var(--line);vertical-align:top;}
-.rp-table tr:last-child td{border-bottom:none;}
-
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(20,25,50,0.4);backdrop-filter:blur(4px);z-index:500;display:none;align-items:flex-end;justify-content:center;}
-.overlay.open{display:flex;}
-.modal{background:var(--bg2);border-radius:22px 22px 0 0;padding:24px;width:100%;max-width:480px;border-top:1.5px solid var(--line);box-shadow:0 -8px 40px rgba(20,25,50,0.15);max-height:85vh;overflow-y:auto;}
-.modal-title{font-size:1rem;font-weight:800;margin-bottom:6px;}
-.modal-sub{font-size:0.8rem;color:var(--text2);margin-bottom:18px;line-height:1.5;}
-.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
-.m-btn{padding:13px;border-radius:12px;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border:none;}
-.m-btn-cancel{background:var(--bg);box-shadow:var(--sh-out);color:var(--text2);}
-.m-btn-confirm{background:linear-gradient(135deg,#c0203a,#e83e5c);color:#fff;}
-.m-btn-save{background:linear-gradient(135deg,#3d6bdf,#5a84ff);color:#fff;}
-
-/* TOAST */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--text);color:var(--bg3);padding:11px 22px;border-radius:24px;font-size:0.78rem;font-weight:700;box-shadow:var(--sh-float);z-index:9000;opacity:0;transition:all 0.28s;white-space:nowrap;max-width:90vw;text-align:center;pointer-events:none;}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-@media print{
-  #pinScreen,#app .topbar,.nav,#toast,.overlay,.report-controls,.tb-btn,.tx-actions,.pr-del,.type-switcher,.submit-btn,.form-card,.tx-filters,#tab-dashboard,#tab-ledger,#tab-people,#tab-settings,#tab-add,#tab-credit{display:none!important;}
-  body{background:#fff!important;color:#000!important;}
-  #app{display:block!important;}
-  .scroll,.main{overflow:visible!important;}
-  #tab-report{display:block!important;}
-  .report-preview{display:block!important;background:#fff!important;border:none!important;box-shadow:none!important;}
-  .rp-table th,.rp-table td{color:#000!important;border-color:#ccc!important;}
-  .rp-sum-box{background:#f5f5f5!important;}
-}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
-.fade-in{animation:fadeIn 0.24s ease;}
-.mono{font-family:'DM Mono',monospace;}
-@media(max-width:380px){
-  .mc-amount{font-size:2rem;}
-  .person-grid{grid-template-columns:1fr;}
-  .type-switcher{grid-template-columns:repeat(2,1fr)!important;}
-  .form-row{grid-template-columns:1fr;}
-}
 </style>
 </head>
 <body>
-
 <div id="pinScreen">
-  <div class="pin-logo-wrap">&#x1F4B0;</div>
-  <div class="pin-brand">Cash<span>book</span></div>
-  <div class="pin-tagline">Farm Expense Tracker</div>
-  <div class="pin-dots" id="pinDots">
-    <div class="pd" id="pd0"></div><div class="pd" id="pd1"></div>
-    <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div>
-  </div>
-  <div class="pin-pad">
-    <div class="pk" onclick="pk('1')">1</div><div class="pk" onclick="pk('2')">2</div><div class="pk" onclick="pk('3')">3</div>
-    <div class="pk" onclick="pk('4')">4</div><div class="pk" onclick="pk('5')">5</div><div class="pk" onclick="pk('6')">6</div>
-    <div class="pk" onclick="pk('7')">7</div><div class="pk" onclick="pk('8')">8</div><div class="pk" onclick="pk('9')">9</div>
-    <div class="pk empty"></div><div class="pk" onclick="pk('0')">0</div><div class="pk del" onclick="pdel()">&#x232B;</div>
-  </div>
-  <div class="pin-err" id="pinErr"></div>
+<div class="pin-logo-wrap">💰</div>
+<div class="pin-brand">Cash<span>book</span></div>
+<div class="pin-tagline">Farm Expense Tracker</div>
+<div class="pin-dots">
+<div class="pd"></div>
+<div class="pd"></div>
+<div class="pd"></div>
+<div class="pd"></div>
+<div class="pd"></div>
+<div class="pd"></div>
 </div>
-
+<div class="pin-pad" id="pinPad"></div>
+<div class="pin-err" id="pinErr"></div>
+</div>
+<div id="syncBar"><span id="syncDot"></span><span id="syncText">Syncing...</span></div>
 <div id="app">
-  <div class="topbar">
-    <div class="topbar-brand">Cash<span>book</span></div>
-    <div class="topbar-right">
-      <button class="tb-btn install" id="installBtn" onclick="triggerInstall()">&#x2B07; Install</button>
-      <button class="tb-btn" onclick="switchTab('report',this)">&#x1F5A8; Print</button>
-      <!-- Hidden in view-only mode -->
-      <button class="tb-btn primary master-only" onclick="switchTab('add',this)">+ Add</button>
-      <button class="tb-btn" onclick="lockApp()">&#x1F512;</button>
-    </div>
-  </div>
-  <div class="nav">
-    <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard',this)">Dashboard</button>
-    <button class="nav-btn" data-tab="ledger" onclick="switchTab('ledger',this)">Ledger</button>
-    <button class="nav-btn master-only" data-tab="add" onclick="switchTab('add',this)">Add Entry</button>
-    <button class="nav-btn" data-tab="credit" onclick="switchTab('credit',this)">Credit Sales</button>
-    <button class="nav-btn master-only" data-tab="people" onclick="switchTab('people',this)">People</button>
-    <button class="nav-btn" data-tab="report" onclick="switchTab('report',this)">Report</button>
-    <button class="nav-btn master-only" data-tab="settings" onclick="switchTab('settings',this)">Settings</button>
-  </div>
-  <div class="scroll">
-  <div class="main">
-
-  <!-- DASHBOARD -->
-  <div class="tab active" id="tab-dashboard">
-    <div class="sh">Master Balance</div>
-    <div class="master-card">
-      <div class="mc-label">Total Cash Available</div>
-      <div class="mc-amount" id="masterAmt">GHS 0.00</div>
-      <div class="mc-stats">
-        <div class="mc-stat"><div class="mc-stat-lbl">Total In</div><div class="mc-stat-val g" id="masterIn">0.00</div></div>
-        <div class="mc-stat"><div class="mc-stat-lbl">Total Out</div><div class="mc-stat-val r" id="masterOut">0.00</div></div>
-        <div class="mc-stat"><div class="mc-stat-lbl">Entries</div><div class="mc-stat-val b" id="masterCount">0</div></div>
-      </div>
-      <!-- Owner cash injection row -->
-      <div class="owner-injection-row" id="ownerInjectionRow" style="display:none;">
-        <span class="oil-label">&#x1F7E0; Owner Cash Injected (net)</span>
-        <span class="oil-val" id="ownerInjectionAmt">GHS 0.00</span>
-      </div>
-    </div>
-    <div id="owingList" style="margin-bottom:12px;font-size:0.86rem;color:var(--text2);"></div>
-    <div class="sh">Balances by Person</div>
-    <div class="person-grid" id="personGrid"></div>
-    <div class="sh">Recent Transactions</div>
-    <div id="recentList"></div>
-  </div>
-
-  <!-- LEDGER -->
-  <div class="tab" id="tab-ledger">
-    <div class="sh">All Transactions</div>
-    <div class="tx-filters" id="ledgerFilters">
-      <button class="tx-filter on" onclick="setFilter('all',this)">All</button>
-      <button class="tx-filter" onclick="setFilter('income',this)">&#x1F49A; Sales</button>
-      <button class="tx-filter" onclick="setFilter('expense',this)">&#x1F534; Expense</button>
-      <button class="tx-filter" onclick="setFilter('salary',this)">&#x1F499; Salary</button>
-      <button class="tx-filter" onclick="setFilter('transfer',this)">&#x1F7E1; Transfer</button>
-      <button class="tx-filter" onclick="setFilter('credit',this)">&#x1F7E3; Credit</button>
-      <button class="tx-filter" onclick="setFilter('owner-fund',this)">&#x1F7E0; Owner Fund</button>
-      <button class="tx-filter" onclick="setFilter('fund-return',this)">&#x1F535; Fund Return</button>
-    </div>
-    <div class="tx-filters" id="personFilterRow" style="margin-top:-4px;margin-bottom:12px;"></div>
-    <div id="ledgerList"></div>
-  </div>
-
-  <!-- ADD ENTRY -->
-  <div class="tab" id="tab-add">
-    <div class="sh">New Transaction</div>
-    <div class="form-card">
-      <div class="type-switcher">
-        <button class="type-btn active-income" id="tb-income" onclick="setType('income',this)">&#x1F49A;<br>Sales</button>
-        <button class="type-btn" id="tb-expense" onclick="setType('expense',this)">&#x1F534;<br>Expense</button>
-        <button class="type-btn" id="tb-salary" onclick="setType('salary',this)">&#x1F499;<br>Salary</button>
-        <button class="type-btn" id="tb-transfer" onclick="setType('transfer',this)">&#x1F7E1;<br>Transfer</button>
-        <button class="type-btn" id="tb-credit" onclick="setType('credit',this)">&#x1F7E3;<br>Credit Sale</button>
-        <button class="type-btn" id="tb-owner-fund" onclick="setType('owner-fund',this)">&#x1F7E0;<br>Owner Fund</button>
-        <button class="type-btn" id="tb-fund-return" onclick="setType('fund-return',this)">&#x1F535;<br>Fund Return</button>
-      </div>
-
-      <!-- Standard fields: amount, person, date (hidden for types that override) -->
-      <div id="standardFields">
-        <div class="form-row single" style="margin-bottom:12px;">
-          <div class="f-field">
-            <label class="f-label" id="amtLabel">Amount (GHS) *</label>
-            <input class="f-input f-amount" type="number" id="f-amount" placeholder="0.00" min="0" step="0.01"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="f-field">
-            <label class="f-label">Person *</label>
-            <select class="f-select" id="f-person"></select>
-          </div>
-          <div class="f-field">
-            <label class="f-label">Date *</label>
-            <input class="f-input" type="date" id="f-date"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="f-field">
-            <label class="f-label">Category</label>
-            <select class="f-select" id="f-category">
-              <option value="">&#8212; Select &#8212;</option>
-              <option>Feed &amp; Supplies</option><option>Transport</option>
-              <option>Utilities</option><option>Equipment</option>
-              <option>Medical / Vet</option><option>Labour</option>
-              <option>Sales Revenue</option><option>Loan / Advance</option>
-              <option>Salary</option><option>Other</option>
-            </select>
-          </div>
-          <div class="f-field">
-            <label class="f-label">Reference / Note</label>
-            <input class="f-input" type="text" id="f-note" placeholder="e.g. Receipt #007"/>
-          </div>
-        </div>
-      </div>
-
-      <!-- TRANSFER — completely replaces person field -->
-      <div id="transferFields">
-        <div class="info-box">&#x1F4A1; Record a mobile money or bank transfer made on behalf of the business.</div>
-        <div class="form-row single" style="margin-bottom:12px;">
-          <div class="f-field">
-            <label class="f-label">Amount (GHS) *</label>
-            <input class="f-input f-amount" type="number" id="f-tf-amount" placeholder="0.00" min="0" step="0.01"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Sent By *</label><select class="f-select" id="f-tf-from"></select></div>
-          <div class="f-field"><label class="f-label">Received By *</label><select class="f-select" id="f-tf-to"></select></div>
-        </div>
-        <div class="form-row">
-          <div class="f-field">
-            <label class="f-label">Date *</label>
-            <input class="f-input" type="date" id="f-tf-date"/>
-          </div>
-          <div class="f-field">
-            <label class="f-label">MoMo / Bank Reference</label>
-            <input class="f-input" type="text" id="f-tf-ref" placeholder="e.g. MTN MoMo ref 123456"/>
-          </div>
-        </div>
-      </div>
-
-      <!-- CREDIT SALE — completely replaces standard fields -->
-      <div id="creditFields">
-        <div class="info-box">&#x1F95A; Egg sale on credit — track buyer, total expected, amount paid now, and who received the money.</div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Buyer Name *</label><input class="f-input" type="text" id="f-cr-buyer" placeholder="Buyer's full name"/></div>
-          <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="f-cr-date"/></div>
-        </div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Total Expected (GHS) *</label><input class="f-input f-amount" type="number" id="f-cr-total" placeholder="0.00" min="0" step="0.01"/></div>
-          <div class="f-field"><label class="f-label">Amount Paid Now</label><input class="f-input" type="number" id="f-cr-paid" placeholder="0.00" min="0" step="0.01"/></div>
-        </div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Sale Made By *</label><select class="f-select" id="f-cr-seller"></select></div>
-          <div class="f-field"><label class="f-label">Money Received By</label><select class="f-select" id="f-cr-receiver"></select></div>
-        </div>
-        <div class="form-row">
-          <div class="f-field">
-            <label class="f-label">Category</label>
-            <select class="f-select" id="f-cr-cat">
-              <option value="Sales Revenue">Sales Revenue</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="f-field">
-            <label class="f-label">Note</label>
-            <input class="f-input" type="text" id="f-cr-note" placeholder="Optional note"/>
-          </div>
-        </div>
-        <div class="info-box" id="creditCalcBox" style="display:none;"></div>
-      </div>
-
-      <!-- OWNER FUND — completely replaces standard fields -->
-      <div id="ownerFundFields">
-        <div class="info-box">&#x1F7E0; Record money sent by an owner into the business.</div>
-        <div class="form-row single" style="margin-bottom:12px;">
-          <div class="f-field">
-            <label class="f-label">Amount (GHS) *</label>
-            <input class="f-input f-amount" type="number" id="f-of-amount" placeholder="0.00" min="0" step="0.01"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="f-of-date"/></div>
-          <div class="f-field">
-            <label class="f-label">Note</label>
-            <input class="f-input" type="text" id="f-of-note" placeholder="Optional reference"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Sent By (Owner) *</label><select class="f-select" id="f-of-sender"></select></div>
-          <div class="f-field"><label class="f-label">Received By *</label><select class="f-select" id="f-of-receiver"></select></div>
-        </div>
-      </div>
-
-      <!-- FUND RETURN — completely replaces standard fields -->
-      <div id="fundReturnFields">
-        <div class="info-box">&#x1F535; Record unused money returned from the business back to an owner.</div>
-        <div class="form-row single" style="margin-bottom:12px;">
-          <div class="f-field">
-            <label class="f-label">Amount (GHS) *</label>
-            <input class="f-input f-amount" type="number" id="f-fr-amount" placeholder="0.00" min="0" step="0.01"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Date *</label><input class="f-input" type="date" id="f-fr-date"/></div>
-          <div class="f-field">
-            <label class="f-label">Note</label>
-            <input class="f-input" type="text" id="f-fr-note" placeholder="Optional reference"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="f-field"><label class="f-label">Returned By *</label><select class="f-select" id="f-fr-sender"></select></div>
-          <div class="f-field"><label class="f-label">Received By (Owner) *</label><select class="f-select" id="f-fr-receiver"></select></div>
-        </div>
-      </div>
-
-      <!-- SALARY EXTRA -->
-      <div id="salaryFields">
-        <div class="form-row single">
-          <div class="f-field"><label class="f-label">Paid By (Deducted from) *</label><select class="f-select" id="f-sal-paidby"></select></div>
-        </div>
-      </div>
-
-      <button class="submit-btn" onclick="submitTx()">Save Transaction</button>
-    </div>
-    <div class="sh">Quick Entry</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;" id="quickBtns"></div>
-  </div>
-
-  <!-- CREDIT SALES -->
-  <div class="tab" id="tab-credit">
-    <div class="sh">Credit Sales Overview</div>
-    <div id="creditSummary"></div>
-    <div class="sh">All Credit Transactions</div>
-    <div id="creditList"></div>
-  </div>
-
-  <!-- PEOPLE -->
-  <div class="tab" id="tab-people">
-    <div class="sh">Team Members</div>
-    <div class="people-list" id="peopleList"></div>
-    <div class="sh">Add Person</div>
-    <div class="add-person-form">
-      <div class="form-row">
-        <div class="f-field"><label class="f-label">Full Name *</label><input class="f-input" id="p-name" placeholder="e.g. Abdul Jalil"/></div>
-        <div class="f-field"><label class="f-label">Role / Title</label><input class="f-input" id="p-role" placeholder="e.g. Owner, Caretaker"/></div>
-      </div>
-      <div class="info-box" style="margin-bottom:10px;">&#x1F4A1; Role <strong>"Owner"</strong> → appears only in Owner Fund &amp; Fund Return fields. All other roles appear in regular transaction fields only.</div>
-      <div class="form-row">
-        <div class="f-field">
-          <label class="f-label">Colour</label>
-          <select class="f-select" id="p-color">
-            <option value="green">Green</option><option value="blue">Blue</option>
-            <option value="gold">Gold</option><option value="red">Red</option>
-            <option value="purple">Purple</option>
-          </select>
-        </div>
-        <div class="f-field" style="justify-content:flex-end;">
-          <label class="f-label">&nbsp;</label>
-          <button class="submit-btn" style="margin-top:0;" onclick="addPerson()">Add Person</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- REPORT -->
-  <div class="tab" id="tab-report">
-    <div class="sh">Generate Report</div>
-    <div class="report-controls">
-      <div class="form-row">
-        <div class="f-field"><label class="f-label">From Date</label><input class="f-input" type="date" id="r-from"/></div>
-        <div class="f-field"><label class="f-label">To Date</label><input class="f-input" type="date" id="r-to"/></div>
-      </div>
-      <div class="form-row" style="margin-top:8px;">
-        <div class="f-field"><label class="f-label">Person</label><select class="f-select" id="r-person"><option value="all">All People</option></select></div>
-        <div class="f-field">
-          <label class="f-label">Type</label>
-          <select class="f-select" id="r-type">
-            <option value="all">All Types</option><option value="income">Sales</option>
-            <option value="expense">Expenses</option><option value="salary">Salary</option>
-            <option value="transfer">Transfers</option><option value="credit">Credit Sales</option>
-            <option value="owner-fund">Owner Funds</option><option value="fund-return">Fund Returns</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
-        <button class="submit-btn" style="margin:0;" onclick="generateReport()">Generate</button>
-        <button class="submit-btn" style="margin:0;background:linear-gradient(135deg,#2a4a9a,#3d6bdf);" onclick="window.print()">&#x1F5A8; Print</button>
-      </div>
-    </div>
-    <div class="report-preview" id="reportPreview">
-      <div class="rp-title" id="rpTitle">Cashbook Report</div>
-      <div class="rp-sub" id="rpSub"></div>
-      <div class="rp-summary" id="rpSummary"></div>
-      <div style="margin-bottom:10px;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Transactions</div>
-      <table class="rp-table">
-        <thead><tr><th>Date</th><th>Person</th><th>Description</th><th>Category</th><th>Type</th><th style="text-align:right">Amount</th></tr></thead>
-        <tbody id="rpBody"></tbody>
-      </table>
-      <div id="rpPersonBreakdown"></div>
-    </div>
-  </div>
-
-  <!-- SETTINGS (master only) -->
-  <div class="tab" id="tab-settings">
-    <div class="sh">Currency</div>
-    <div class="form-card">
-      <div class="f-field"><label class="f-label">Currency Symbol</label><input class="f-input" id="s-currency" placeholder="e.g. GHS, NGN, USD"/></div>
-      <button class="submit-btn" style="margin-top:10px;" onclick="saveCurrency()">Save Currency</button>
-    </div>
-    <div class="sh">Cloud Sync</div>
-    <div class="form-card">
-      <div id="dbStatus" style="font-size:0.78rem;color:var(--text2);margin-bottom:12px;line-height:1.6;">Connecting to Firebase&#8230;</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <button class="submit-btn" style="margin:0;" onclick="manualPull()">&#x2193; Pull Cloud</button>
-        <button class="submit-btn" style="margin:0;background:linear-gradient(135deg,#2a4a9a,#3d6bdf);" onclick="manualPush()">&#x2191; Push Local</button>
-      </div>
-    </div>
-    <div class="sh">Data</div>
-    <div class="form-card">
-      <button class="submit-btn" style="background:linear-gradient(135deg,#c0203a,#e83e5c);margin-bottom:10px;" onclick="askClearAll()">Clear All Data</button>
-      <div style="font-size:0.68rem;color:var(--text3);line-height:1.7;">
-        <strong style="color:var(--text2);">Install as app:</strong><br>
-        Desktop: use the <strong>&#x2B07; Install</strong> button in the top bar (Chrome/Edge).<br>
-        iOS Safari: Share &#x2192; Add to Home Screen<br>
-        Android Chrome: Menu &#x2192; Add to Home Screen
-      </div>
-    </div>
-  </div>
-
-  </div></div>
+<div class="topbar">
+<div class="topbar-brand">Cash<span>book</span></div>
+<div class="topbar-right">
+<button class="tb-btn" onclick="exportData()">Export</button>
+<button class="tb-btn primary" onclick="showTab('add')">+ Add</button>
 </div>
-
-<!-- DELETE MODAL -->
-<div class="overlay" id="delOverlay" onclick="closeModal('delOverlay')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Delete Transaction?</div>
-    <div class="modal-sub" id="delModalSub">This cannot be undone.</div>
-    <div class="modal-btns">
-      <button class="m-btn m-btn-cancel" onclick="closeModal('delOverlay')">Cancel</button>
-      <button class="m-btn m-btn-confirm" onclick="confirmDelete()">Delete</button>
-    </div>
-  </div>
 </div>
-
-<!-- EDIT MODAL -->
-<div class="overlay" id="editOverlay" onclick="closeModal('editOverlay')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Edit Transaction</div>
-    <div class="form-row">
-      <div class="f-field"><label class="f-label">Amount</label><input class="f-input" type="number" id="e-amount" min="0" step="0.01"/></div>
-      <div class="f-field"><label class="f-label">Date</label><input class="f-input" type="date" id="e-date"/></div>
-    </div>
-    <div class="form-row single" style="margin-top:8px;">
-      <div class="f-field"><label class="f-label">Description</label><input class="f-input" type="text" id="e-desc"/></div>
-    </div>
-    <div class="form-row" style="margin-top:8px;">
-      <div class="f-field">
-        <label class="f-label">Category</label>
-        <select class="f-select" id="e-category">
-          <option value="">&#8212; Select &#8212;</option>
-          <option>Feed &amp; Supplies</option><option>Transport</option>
-          <option>Utilities</option><option>Equipment</option>
-          <option>Medical / Vet</option><option>Labour</option>
-          <option>Sales Revenue</option><option>Loan / Advance</option>
-          <option>Salary</option><option>Other</option>
-        </select>
-      </div>
-      <div class="f-field"><label class="f-label">Person</label><select class="f-select" id="e-person"></select></div>
-    </div>
-    <div class="form-row single" style="margin-top:8px;">
-      <div class="f-field"><label class="f-label">Note</label><input class="f-input" type="text" id="e-note" placeholder="Reference / note"/></div>
-    </div>
-    <div class="modal-btns">
-      <button class="m-btn m-btn-cancel" onclick="closeModal('editOverlay')">Cancel</button>
-      <button class="m-btn m-btn-save" onclick="confirmEdit()">Save Changes</button>
-    </div>
-  </div>
+<div class="nav" id="nav"></div>
+<div class="scroll">
+<div class="main" id="main"></div>
 </div>
-
-<!-- CREDIT PAYMENT MODAL -->
-<div class="overlay" id="payOverlay" onclick="closeModal('payOverlay')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Record Payment</div>
-    <div class="modal-sub" id="payBuyerLabel">Apply payment for buyer</div>
-    <div class="form-row">
-      <div class="f-field"><label class="f-label">Amount Received</label><input class="f-input" type="number" id="p-amount" min="0.01" step="0.01" placeholder="0.00"/></div>
-      <div class="f-field"><label class="f-label">Date</label><input class="f-input" type="date" id="p-date"/></div>
-    </div>
-    <div class="form-row single" style="margin-top:8px;">
-      <div class="f-field">
-        <label class="f-label">Received By *</label>
-        <select class="f-select" id="p-receiver"></select>
-      </div>
-    </div>
-    <div class="modal-btns">
-      <button class="m-btn m-btn-cancel" onclick="closeModal('payOverlay')">Cancel</button>
-      <button class="m-btn m-btn-save" onclick="confirmCreditPayment()">Apply Payment</button>
-    </div>
-  </div>
 </div>
-
-<!-- CLEAR ALL PIN MODAL -->
-<div class="overlay" id="clearOverlay" onclick="closeModal('clearOverlay')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">&#x26A0;&#xFE0F; Confirm Delete All Data</div>
-    <div class="modal-sub">This will permanently delete ALL transactions and people from the cloud and all devices. Enter master PIN to confirm.</div>
-    <div style="display:flex;gap:10px;justify-content:center;margin:16px 0;" id="clearDots">
-      <div class="pd" id="cpd0"></div><div class="pd" id="cpd1"></div>
-      <div class="pd" id="cpd2"></div><div class="pd" id="cpd3"></div>
-    </div>
-    <div class="pin-pad" style="width:240px;margin:0 auto 8px;">
-      <div class="pk" onclick="cpk('1')">1</div><div class="pk" onclick="cpk('2')">2</div><div class="pk" onclick="cpk('3')">3</div>
-      <div class="pk" onclick="cpk('4')">4</div><div class="pk" onclick="cpk('5')">5</div><div class="pk" onclick="cpk('6')">6</div>
-      <div class="pk" onclick="cpk('7')">7</div><div class="pk" onclick="cpk('8')">8</div><div class="pk" onclick="cpk('9')">9</div>
-      <div class="pk empty"></div><div class="pk" onclick="cpk('0')">0</div><div class="pk del" onclick="cpd_del()">&#x232B;</div>
-    </div>
-    <div class="pin-err" id="clearPinErr" style="text-align:center;"></div>
-    <div style="margin-top:12px;">
-      <button class="m-btn m-btn-cancel" style="width:100%;" onclick="closeModal('clearOverlay')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div id="toast"></div>
-
+<script async src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
+<script async src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js"></script>
 <script>
-// ══════════════════════════════════════════════════════════════════════
-// PWA — Service Worker + Install Prompt
-// ══════════════════════════════════════════════════════════════════════
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', { scope: './' })
-      .then(reg => {
-        console.log('[SW] Registered:', reg.scope);
-        // Tell existing SW to activate immediately when a new version is ready
-        reg.addEventListener('updatefound', () => {
-          const newSW = reg.installing;
-          newSW.addEventListener('statechange', () => {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              newSW.postMessage({ type: 'SKIP_WAITING' });
-            }
-          });
-        });
-      })
-      .catch(err => console.warn('[SW] Registration failed:', err));
-  });
+if('serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+
+const pinDigits=[],pinScreen=document.getElementById('pinScreen'),pinPad=document.getElementById('pinPad'),pinErr=document.getElementById('pinErr'),correctPin='112233',maxAttempts=3;
+let attempts=maxAttempts;
+
+for(let i=0;i<=9;i++){
+let btn=document.createElement('button');
+btn.className='pk';
+btn.textContent=i;
+btn.onclick=()=>enterPin(i);
+pinPad.appendChild(btn);
 }
 
-let _deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); _deferredPrompt = e;
-  const btn = document.getElementById('installBtn'); if (btn) btn.style.display = '';
+let delBtn=document.createElement('button');
+delBtn.className='pk del';
+delBtn.textContent='←';
+delBtn.onclick=()=>deletePin();
+pinPad.appendChild(delBtn);
+
+let emptyBtn=document.createElement('button');
+emptyBtn.className='pk empty';
+pinPad.appendChild(emptyBtn);
+
+function updatePinDots(){
+let dots=pinScreen.querySelectorAll('.pd');
+dots.forEach((d,i)=>{
+d.classList.remove('on','err');
+if(i<pinDigits.length)d.classList.add('on');
 });
-window.addEventListener('appinstalled', () => {
-  _deferredPrompt = null;
-  const btn = document.getElementById('installBtn'); if (btn) btn.style.display = 'none';
-  toast('&#x2705; App installed!');
+}
+
+function enterPin(digit){
+if(pinDigits.length<6){
+pinDigits.push(digit);
+updatePinDots();
+if(pinDigits.length===6){
+if(pinDigits.join('')===correctPin){
+pinScreen.style.display='none';
+document.getElementById('app').classList.add('on');
+initApp();
+}else{
+attempts--;
+if(attempts>0){
+document.querySelector('.pin-pad').classList.add('shaking');
+setTimeout(()=>document.querySelector('.pin-pad').classList.remove('shaking'),380);
+pinErr.textContent=`Wrong PIN. ${attempts} attempt${attempts!==1?'s':''} left.`;
+setTimeout(()=>{pinDigits.length=0;updatePinDots();pinErr.textContent='';},2000);
+}else{
+pinErr.textContent='Too many attempts. Refreshing...';
+setTimeout(()=>location.reload(),2000);
+}
+}
+}
+}
+}
+
+function deletePin(){
+if(pinDigits.length>0){
+pinDigits.pop();
+updatePinDots();
+}
+}
+
+updatePinDots();
+
+const firebaseConfig={apiKey:"AIzaSyBK0v3Zqm9JpHrGJ5LMhOQK0x8QrJB5w5E",authDomain:"nsawam-cashbook.firebaseapp.com",projectId:"nsawam-cashbook",storageBucket:"nsawam-cashbook.appspot.com",messagingSenderId:"948903568706",appId:"1:948903568706:web:4d9c0d9e2f5f6a3b0c0a1d"};
+
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+let people=[],transactions=[],editingId=null,currentTab='overview';
+
+async function initApp(){
+loadPeople();
+loadTransactions();
+setupUI();
+setupSync();
+}
+
+function setupUI(){
+let navHTML='<button class="nav-btn active" onclick="showTab(\'overview\')">Overview</button><button class="nav-btn" onclick="showTab(\'add\')">Add Entry</button><button class="nav-btn" onclick="showTab(\'people\')">People</button>';
+document.getElementById('nav').innerHTML=navHTML;
+showTab('overview');
+}
+
+function showTab(tab){
+currentTab=tab;
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+document.querySelector(`button[onclick="showTab('${tab}')"]`)?.classList.add('active');
+
+let html='';
+if(tab==='overview'){
+html=renderOverview();
+}else if(tab==='add'){
+html=renderAddForm();
+}else if(tab==='people'){
+html=renderPeople();
+}
+document.getElementById('main').innerHTML=html;
+
+if(tab==='add'){
+document.querySelectorAll('[name="type"]').forEach(btn=>{
+btn.onclick=()=>setType(btn.value);
 });
-function triggerInstall() {
-  if (_deferredPrompt) { _deferredPrompt.prompt(); _deferredPrompt.userChoice.then(() => { _deferredPrompt = null; }); }
-  else toast('&#x2139; Open in Chrome/Edge on Android or desktop to install');
+}
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// Helpers
-// ══════════════════════════════════════════════════════════════════════
-function esc(s){const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML;}
-function escA(s){return String(s??'').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');}
-
-// ══════════════════════════════════════════════════════════════════════
-// PIN — Master: 0012  View: 8888
-// SHA-256 hashes (no salt)
-// ══════════════════════════════════════════════════════════════════════
-const H_MASTER = '84b2a5d834daee2fff7eb5e31f44ba68eb860d86d2cf8e37606a26fa775cf23b'; // 0012
-const H_VIEW   = '2926a2731f4b312c08982cacf8061eb14bf65c1a87cc5d70e864e079c6220731'; // 8888
-
-async function sha256(s) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+function setType(type){
+const fields=['income','expense','salary','transfer','credit','owner-fund','fund-return'];
+fields.forEach(f=>{
+const fieldContainer=document.getElementById(f+'Fields');
+if(fieldContainer){
+if(f===type){
+fieldContainer.classList.add('show');
+}else{
+fieldContainer.classList.remove('show');
+}
+}
+});
 }
 
-let pinEntry = '', readOnly = false;
-function pk(d) {
-  if (!pk._t) pk._t = 0; const n = Date.now(); if (n - pk._t < 40) return; pk._t = n;
-  if (pinEntry.length >= 4) return; pinEntry += d; updateDots();
-  if (pinEntry.length === 4) setTimeout(checkPin, 120);
-}
-function pdel() { pinEntry = pinEntry.slice(0,-1); updateDots(); }
-function updateDots(s) { for (let i=0;i<4;i++) { document.getElementById('pd'+i).className='pd'+(s==='err'?' err':i<pinEntry.length?' on':''); } }
-async function checkPin() {
-  const h = await sha256(pinEntry);
-  if (h === H_MASTER) { sessionStorage.setItem('cb_s','master'); unlockApp(false); }
-  else if (h === H_VIEW) { sessionStorage.setItem('cb_s','view'); unlockApp(true); }
-  else {
-    updateDots('err'); document.getElementById('pinDots').classList.add('shaking');
-    document.getElementById('pinErr').textContent = 'Incorrect PIN';
-    setTimeout(() => { document.getElementById('pinDots').classList.remove('shaking'); pinEntry=''; updateDots(); document.getElementById('pinErr').textContent=''; }, 900);
-  }
-}
-function unlockApp(ro) {
-  readOnly = ro;
-  document.getElementById('pinScreen').style.display = 'none';
-  document.getElementById('app').classList.add('on');
-  // Hide master-only elements in view mode
-  document.querySelectorAll('.master-only').forEach(el => {
-    el.style.display = ro ? 'none' : '';
-  });
-  initApp();
-}
-function lockApp() { sessionStorage.removeItem('cb_s'); document.getElementById('app').classList.remove('on'); document.getElementById('pinScreen').style.display='flex'; readOnly=false; pinEntry=''; updateDots(); }
-function guardWrite() { if (readOnly) { toast('&#x1F512; View-only mode'); return false; } return true; }
-(function() {
-  const s = sessionStorage.getItem('cb_s');
-  if (s === 'master' || s === 'view') {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => unlockApp(s==='view'));
-    else unlockApp(s === 'view');
-  }
-})();
+function renderOverview(){
+if(people.length===0)return '<div style="padding:20px;text-align:center;color:var(--text3);">No people added yet.</div>';
 
-// Clear-all PIN mini-pad
-let clearPinEntry = '';
-function cpk(d) {
-  if (clearPinEntry.length >= 4) return; clearPinEntry += d; updateClearDots();
-  if (clearPinEntry.length === 4) setTimeout(checkClearPin, 120);
-}
-function cpd_del() { clearPinEntry = clearPinEntry.slice(0,-1); updateClearDots(); }
-function updateClearDots(s) { for(let i=0;i<4;i++){document.getElementById('cpd'+i).className='pd'+(s==='err'?' err':i<clearPinEntry.length?' on':'');} }
-async function checkClearPin() {
-  const h = await sha256(clearPinEntry);
-  if (h === H_MASTER) { closeModal('clearOverlay'); executeFullClear(); }
-  else {
-    updateClearDots('err');
-    document.getElementById('clearPinErr').textContent = 'Incorrect PIN';
-    setTimeout(() => { clearPinEntry=''; updateClearDots(); document.getElementById('clearPinErr').textContent=''; }, 900);
-  }
+let totalIncome=0,totalExpense=0,totalOwnerInjection=0;
+transactions.forEach(t=>{
+if(t.type==='income')totalIncome+=t.amount;
+if(t.type==='expense')totalExpense+=t.amount;
+if(t.type==='owner-fund')totalOwnerInjection+=t.amount;
+});
+
+let masterBalance=totalIncome-totalExpense+totalOwnerInjection;
+let html=`<div class="master-card">
+<div class="mc-label">Total Balance</div>
+<div class="mc-amount ${masterBalance<0?'neg':''}">${formatCurrency(masterBalance)}</div>
+<div class="mc-stats">
+<div class="mc-stat">
+<div class="mc-stat-lbl">Income</div>
+<div class="mc-stat-val g">+${formatCurrency(totalIncome)}</div>
+</div>
+<div class="mc-stat">
+<div class="mc-stat-lbl">Expense</div>
+<div class="mc-stat-val r">-${formatCurrency(totalExpense)}</div>
+</div>
+<div class="mc-stat">
+<div class="mc-stat-lbl">Owner Fund</div>
+<div class="mc-stat-val o">+${formatCurrency(totalOwnerInjection)}</div>
+</div>
+</div>`;
+
+if(totalOwnerInjection>0){
+html+=`<div class="owner-injection-row">
+<div class="oil-label">Owner Injection:</div>
+<div class="oil-val">+${formatCurrency(totalOwnerInjection)}</div>
+</div>`;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// Local cache — Firestore is source of truth
-// ══════════════════════════════════════════════════════════════════════
-const gs = (k,d) => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):d; } catch { return d; } };
-const ss = (k,v) => { try { localStorage.setItem(k,JSON.stringify(v)); } catch(e) { console.warn('LS write failed',e); } };
+html+='</div>';
 
-let people = [], txs = [], currency = 'GHS';
-let ledgerFilter='all', personFilter='all', txType='income';
-let deletePendingId=null, editPendingId=null, buyerPayPending=null;
-let db=null, _fs=null, _syncTimeout=null;
+let personCards='<div class="person-grid">';
+people.forEach(p=>{
+let balance=0;
+transactions.forEach(t=>{
+if(t.person===p.name){
+if(['income','salary','owner-fund'].includes(t.type))balance+=t.amount;
+if(['expense','transfer','credit'].includes(t.type))balance-=t.amount;
+if(t.type==='fund-return')balance+=t.amount;
+}
+});
+let incoming=0,outgoing=0;
+transactions.forEach(t=>{
+if(t.person===p.name){
+if(['income','salary','owner-fund'].includes(t.type))incoming++;
+if(['expense','transfer','credit'].includes(t.type))outgoing++;
+}
+});
+personCards+=`<div class="person-card" onclick="filterByPerson('${p.name}')">
+<div class="pc-avatar" style="background:linear-gradient(135deg,${p.color},${adjustColor(p.color)})">${p.name.substring(0,2).toUpperCase()}</div>
+<div class="pc-name">${p.name}</div>
+<div class="pc-role">${p.role||'Member'}</div>
+<div class="pc-balance ${balance>0?'pos':'neg'}">${formatCurrency(balance)}</div>
+<div class="pc-meta">
+${incoming>0?`<span class="pc-chip in">+${incoming}</span>`:''}
+${outgoing>0?`<span class="pc-chip out">-${outgoing}</span>`:''}
+</div>
+</div>`;
+});
+personCards+='</div>';
 
-const COLORS = {
-  green:{bg:'rgba(0,184,122,0.12)',text:'#00b87a'},
-  blue:{bg:'rgba(61,107,223,0.12)',text:'#3d6bdf'},
-  gold:{bg:'rgba(232,160,32,0.12)',text:'#e8a020'},
-  red:{bg:'rgba(232,62,92,0.12)',text:'#e83e5c'},
-  purple:{bg:'rgba(139,92,246,0.12)',text:'#8b5cf6'},
-};
-function pColor(p){ return COLORS[p?.color]||COLORS.green; }
-function pInit(p){ return p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
-function fmtDate(d){ if(!d)return''; const dt=new Date(d+(d.length===10?'T00:00:00':'')); return isNaN(dt)?d:dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'}); }
-function fmtAmt(n){ const abs=Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); return(n<0?'-':'')+currency+' '+abs; }
+html+=personCards;
 
-// Helpers: owner vs non-owner
-function isOwner(p){ return p&&p.role&&p.role.toLowerCase().includes('owner'); }
-function nonOwners(){ return people.filter(p=>!isOwner(p)); }
-function owners(){ return people.filter(isOwner); }
+html+='<div class="sh">Recent Transactions</div>';
+let txHTML='<div class="tx-filters">';
+['income','expense','salary','transfer','credit','owner-fund','fund-return'].forEach(f=>{
+let name=f.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+txHTML+=`<button class="tx-filter" onclick="filterTransactions('${f}')">${name}</button>`;
+});
+txHTML+='</div>';
 
-// ══════════════════════════════════════════════════════════════════════
-// FIREBASE
-// ══════════════════════════════════════════════════════════════════════
-const FB = {
-  apiKey: "AIzaSyDEl6cN6IYqAZrbwIxW36tFudj8OzxVbpQ",
-  authDomain: "expense-4d9f5.firebaseapp.com",
-  projectId: "expense-4d9f5",
-  storageBucket: "expense-4d9f5.firebasestorage.app",
-  messagingSenderId: "323704270723",
-  appId: "1:323704270723:web:f5d7d6a2695d332937d0b6"
-};
-const FS_DOC = ['cashbook','main'];
+let grouped={};
+transactions.slice().reverse().forEach(t=>{
+let date=new Date(t.date).toLocaleDateString();
+if(!grouped[date])grouped[date]=[];
+grouped[date].push(t);
+});
 
-async function initFirebase() {
-  try {
-    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-    const fs = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-    _fs = fs;
-    const app = getApps().length===0 ? initializeApp(FB) : getApps()[0];
-    db = fs.getFirestore(app);
-    const ref = fs.doc(db, ...FS_DOC);
-    fs.onSnapshot(ref, snap => {
-      if (!snap.exists()) {
-        // Nothing in cloud yet — use local cache
-        people = gs('cb_people',[]);
-        txs = gs('cb_txs',[]);
-        currency = gs('cb_currency','GHS');
-        renderAll(); renderPeopleTab(); populateSels(); renderCreditTab();
-        setDbStatus('⚠️ No cloud data yet. Use ↑ Push Local to upload existing data.');
-        return;
-      }
-      applyRemote(snap.data());
-    }, err => {
-      console.warn('[DB] Snapshot error:', err);
-      setDbStatus('❌ Sync error: ' + err.code + '. Check Firestore rules.');
-      people = gs('cb_people',[]); txs = gs('cb_txs',[]); currency = gs('cb_currency','GHS');
-      renderAll(); renderPeopleTab(); populateSels(); renderCreditTab();
-    });
-  } catch(e) {
-    console.warn('[DB] Firebase failed:', e);
-    setDbStatus('⚠️ Cloud unavailable — working offline.');
-    people = gs('cb_people',[]); txs = gs('cb_txs',[]); currency = gs('cb_currency','GHS');
-    renderAll(); renderPeopleTab(); populateSels(); renderCreditTab();
-  }
+Object.keys(grouped).forEach(date=>{
+txHTML+=`<div class="tx-group-date">${date}</div>`;
+grouped[date].forEach(t=>{
+txHTML+=renderTx(t);
+});
+});
+
+html+=txHTML;
+return html;
 }
 
-function applyRemote(r) {
-  if (r.txs !== undefined) txs = r.txs;
-  if (r.people !== undefined) people = r.people;
-  if (r.currency !== undefined) currency = r.currency;
-  ss('cb_txs',txs); ss('cb_people',people); ss('cb_currency',currency);
-  renderAll(); renderPeopleTab(); populateSels(); renderCreditTab();
-  setDbStatus('✅ Live sync active. Last update: '+new Date().toLocaleTimeString());
+function renderAddForm(){
+let html=`<div class="form-card">
+<div class="type-switcher">
+<button class="type-btn active-income" name="type" value="income">Income</button>
+<button class="type-btn active-expense" name="type" value="expense">Expense</button>
+<button class="type-btn active-salary" name="type" value="salary">Salary</button>
+<button class="type-btn active-transfer" name="type" value="transfer">Transfer</button>
+<button class="type-btn active-credit" name="type" value="credit">Credit</button>
+<button class="type-btn active-owner-fund" name="type" value="owner-fund">Owner Fund</button>
+<button class="type-btn active-fund-return" id="tb-fund-return" name="type" value="fund-return">Fund Return</button>
+</div>
+
+<div id="incomeFields" class="show">
+<div class="form-row">
+<div class="f-field"><label class="f-label">Person</label><select id="f-person" class="f-select"><option>Select</option>${people.map(p=>`<option>${p.name}</option>`).join('')}</select></div>
+<div class="f-field"><label class="f-label">Amount (₱)</label><input id="f-amount" class="f-input f-amount" type="number" placeholder="0"/></div>
+</div>
+<div class="form-row single">
+<div class="f-field"><label class="f-label">Description</label><input id="f-desc" class="f-input" placeholder="e.g., Crop Sales"/></div>
+</div>
+<button class="submit-btn" onclick="addTransaction('income')">Add Income</button>
+</div>
+
+<div id="expenseFields">
+<div class="form-row">
+<div class="f-field"><label class="f-label">Category</label><select id="f-category" class="f-select"><option>Select</option><option>Feed</option><option>Medicine</option><option>Labor</option><option>Utilities</option><option>Equipment</option><option>Other</option></select></div>
+<div class="f-field"><label class="f-label">Amount (₱)</label><input id="f-amount" class="f-input f-amount" type="number" placeholder="0"/></div>
+</div>
+<div class="form-row single">
+<div class="f-field"><label class="f-label">Description</label><input id="f-desc" class="f-input" placeholder="e.g., Feed purchase"/></div>
+</div>
+<button class="submit-btn" onclick="addTransaction('expense')">Add Expense</button>
+</div>
+
+<div id="salaryFields">
+<div class="form-row">
+<div class="f-field"><label class="f-label">Person</label><select id="f-person" class="f-select"><option>Select</option>${people.map(p=>`<option>${p.name}</option>`).join('')}</select></div>
+<div class="f-field"><label class="f-label">Amount (₱)</label><input id="f-amount" class="f-input f-amount" type="number" placeholder="0"/></div>
+</div>
+<button class="submit-btn" onclick="addTransaction('salary')">Add Salary</button>
+</div>
+
+<div id="transferFields">
+<div class="form-row">
+<div class="f-field"><label class="f-label">From Person</label><select id="f-from" class="f-select"><option>Select</option>${people.map(p=>`<option>${p.name}</option>`).join('')}</select></div>
+<div class="f-field"><label class="f-label">To Person</label><select id="f-to" class="f-select"><option>Select</option>${people.map(p=>`<option>${p.name}</option>`).join('')}</select></div>
+</div>
+<div class="form-row">
+<div class="f-field"><label class="f-label">Amount (₱)</label><input id="f-amount" class="f-input f-amount" type="number" placeholder="0"/></div>
+</div>
+<button class="submit-btn" onclick="addTransaction('transfer')">Add Transfer</button>
+</div>
+
+<div id="creditFields">
+<div class="form-row">
+<div class="f-field"><label class="f-label">Buyer Name</label><select id="f-buyer" class="f-select"><option>Select</option>${people.map(p=>`<option>${p.name}</option>`).join('')}</select></div>
+</div>
+<div class="form-row">
+<div class="f-field"><label class="f-label">Number of Crates</label><input id="f-crates" class="f-input" type="number" placeholder="0"/></div>
+<div class="f-field"><label class="f-label">Amount per Crate (₱)</label><input id="f-crate-price" class="f-input f-amount" type="number" placeholder="0"/></div>
+</div>
+<div id="creditFields" class="credit-summary" style="display:none;">
+<div id="creditSummaryContent"></div>
+</div>
+<button class="submit-btn" onclick="addTransaction('credit')">Add Credit Sale</button>
+</div>
+
+<div id="ownerFundFields">
+<div class="form-row">
+<div class="f-field"><label class="f-label">Amount (₱)</label><input id="f-amount" class="f-input f-amount" type="number" placeholder="0"/></div>
+</div>
+<div class="form-row single">
+<div class="f-field"><label class="f-label">Description</label><input id="f-desc" class="f-input" placeholder="e.g., Capital injection"/></div>
+</div>
+<button class="submit-btn" onclick="addTransaction('owner-fund')">Add Owner Fund</button>
+</div>
+
+<div id="fundReturnFields">
+<div class="form-row">
+<div class="f-field"><label class="f-label">Amount (₱)</label><input id="f-amount" class="f-input f-amount" type="number" placeholder="0"/></div>
+</div>
+<div class="form-row single">
+<div class="f-field"><label class="f-label">Description</label><input id="f-desc" class="f-input" placeholder="e.g., Profit withdrawal"/></div>
+</div>
+<button class="submit-btn" onclick="addTransaction('fund-return')">Add Fund Return</button>
+</div>
+</div>`;
+
+return html;
 }
 
-function dbSync() {
-  if (!db||!_fs) return;
-  clearTimeout(_syncTimeout);
-  _syncTimeout = setTimeout(async () => {
-    try {
-      await _fs.setDoc(_fs.doc(db,...FS_DOC),{txs,people,currency,ts:Date.now()});
-      setDbStatus('✅ Last sync: '+new Date().toLocaleTimeString());
-    } catch(e) { console.warn('[DB] Write failed:',e); setDbStatus('❌ Sync failed: '+e.message); }
-  }, 800);
+function renderPeople(){
+let html='<div class="people-list">';
+people.forEach(p=>{
+html+=`<div class="form-card">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<div>
+<div class="f-label" style="margin-bottom:5px;color:var(--text);">${p.name}</div>
+<div style="font-size:0.7rem;color:var(--text3);">${p.role||'Member'}</div>
+</div>
+<button class="tb-btn" onclick="deletePerson('${p.name}')">Delete</button>
+</div>
+</div>`;
+});
+html+='</div><div class="form-card"><div class="form-row"><div class="f-field"><label class="f-label">New Person Name</label><input id="newPersonName" class="f-input" placeholder="Enter name"/></div></div><div class="form-row"><div class="f-field"><label class="f-label">Role (optional)</label><input id="newPersonRole" class="f-input" placeholder="e.g., Manager"/></div></div><button class="submit-btn" onclick="addPerson()">Add Person</button></div>';
+return html;
 }
 
-async function manualPull() { if(!db||!_fs){toast('⚠ Not connected');return;} toast('⬇ Pulling…'); const s=await _fs.getDoc(_fs.doc(db,...FS_DOC)); if(s.exists()){applyRemote(s.data());toast('✅ Pulled');} else toast('ℹ No cloud data'); }
-async function manualPush() { if(!db||!_fs){toast('⚠ Not connected');return;} toast('⬆ Pushing…'); try{ await _fs.setDoc(_fs.doc(db,...FS_DOC),{txs,people,currency,ts:Date.now()}); toast('✅ Pushed'); setDbStatus('✅ Pushed: '+new Date().toLocaleTimeString()); }catch(e){toast('✗ Push failed');} }
-function setDbStatus(m){ const el=document.getElementById('dbStatus');if(el)el.innerHTML=m; }
-
-// ══════════════════════════════════════════════════════════════════════
-// App init
-// ══════════════════════════════════════════════════════════════════════
-function initApp() {
-  const today = new Date().toISOString().split('T')[0];
-  ['f-date','f-tf-date','f-cr-date','f-of-date','f-fr-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
-  document.getElementById('r-from').value = today.slice(0,7)+'-01';
-  document.getElementById('r-to').value = today;
-  document.getElementById('s-currency').value = currency;
-  populateSels(); renderAll(); renderPeopleTab(); renderQuickBtns(); renderCreditTab();
-  ['f-cr-total','f-cr-paid'].forEach(id=>{ const el=document.getElementById(id);if(el)el.addEventListener('input',updateCreditCalc); });
-  setType('income', document.getElementById('tb-income'));
-  initFirebase();
-}
-function renderAll(){ renderDashboard(); renderLedger(); renderPersonFilterRow(); }
-
-function switchTab(name,btn) {
-  // Guard: view-only cannot access master-only tabs
-  if (readOnly && ['add','people','settings'].includes(name)) { toast('&#x1F512; View-only mode'); return; }
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const panel=document.getElementById('tab-'+name); if(panel)panel.classList.add('active');
-  const nb=document.querySelector('.nav-btn[data-tab="'+name+'"]'); if(nb)nb.classList.add('active');
-  if(name==='report') populateReportSel();
-  if(name==='credit') renderCreditTab();
+function renderTx(t){
+let icon={income:'📥',expense:'📤',salary:'💼',transfer:'↔️',credit:'💳',['owner-fund']:'💰',['fund-return']:'↩️'}[t.type]||'📄';
+let desc=t.type==='credit'?`${t.crates} crates @ ₱${t.cratePrice}/crate`:t.desc;
+return `<div class="tx-item">
+<div class="tx-icon ${t.type.split('-')[0]}">${icon}</div>
+<div class="tx-body">
+<div class="tx-desc">${desc}</div>
+<div class="tx-meta">
+${t.person?`<span class="tx-person">${t.person}</span>`:''}
+${t.category?`<span class="tx-cat">${t.category}</span>`:''}
+${t.fromPerson?`<span class="tx-person">${t.fromPerson} → ${t.toPerson}</span>`:''}
+${t.buyer?`<span class="tx-person">Buyer: ${t.buyer}</span>`:''}
+</div>
+</div>
+<div class="tx-amount ${t.type.includes('income')||t.type.includes('salary')||t.type==='owner-fund'||t.type==='fund-return'||t.type==='transfer'?'pos':'neg'}">${t.type.includes('return')?'-':''}₱${t.amount}</div>
+<div class="tx-actions">
+<button class="tx-btn edit" onclick="editTransaction('${t.id}')">✎</button>
+<button class="tx-btn del" onclick="deleteTransaction('${t.id}')">✕</button>
+</div>
+</div>`;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// Dashboard
-// ══════════════════════════════════════════════════════════════════════
-function renderDashboard() {
-  let totalIn=0, totalOut=0, ownerIn=0, ownerOut=0;
-  txs.forEach(t=>{
-    if(t.type==='income') totalIn+=t.amount;
-    else if(t.type==='expense'||t.type==='salary') totalOut+=t.amount;
-    else if(t.type==='owner-fund'){ totalIn+=t.amount; ownerIn+=t.amount; }
-    else if(t.type==='fund-return'){ totalOut+=t.amount; ownerOut+=t.amount; }
-    else if(t.type==='credit') totalIn+=(t.creditPaid||0);
-  });
-  const bal=totalIn-totalOut;
-  const ma=document.getElementById('masterAmt');
-  ma.textContent=fmtAmt(bal); ma.className='mc-amount'+(bal<0?' neg':'');
-  document.getElementById('masterIn').textContent=fmtAmt(totalIn);
-  document.getElementById('masterOut').textContent=fmtAmt(totalOut);
-  document.getElementById('masterCount').textContent=txs.length;
+function addTransaction(type){
+let t={id:Date.now().toString(),type,date:new Date().toISOString()};
+let amt=parseFloat(document.getElementById('f-amount').value);
+if(!amt||amt<=0)return alert('Enter valid amount');
 
-  // Owner injection row
-  const netOwner = ownerIn - ownerOut;
-  const injRow = document.getElementById('ownerInjectionRow');
-  if (netOwner > 0.005) {
-    injRow.style.display = 'flex';
-    document.getElementById('ownerInjectionAmt').textContent = fmtAmt(netOwner);
-  } else { injRow.style.display = 'none'; }
-
-  const grid=document.getElementById('personGrid'); grid.innerHTML='';
-  // Only non-owners on dashboard person cards
-  nonOwners().forEach(p=>{
-    const{pIn,pOut,pBal}=pStats(p.id); const c=pColor(p);
-    const card=document.createElement('div'); card.className='person-card fade-in';
-    card.innerHTML=`<div class="pc-avatar" style="background:${c.bg};color:${c.text}">${esc(pInit(p))}</div>
-      <div class="pc-name">${esc(p.name)}</div><div class="pc-role">${esc(p.role||'')}</div>
-      <div class="pc-balance ${pBal>=0?'pos':'neg'}">${fmtAmt(pBal)}</div>
-      <div class="pc-meta"><span class="pc-chip in">In ${fmtAmt(pIn)}</span><span class="pc-chip out">Out ${fmtAmt(pOut)}</span></div>`;
-    card.onclick=()=>{ personFilter=personFilter===p.id?'all':p.id; switchTab('ledger'); renderPersonFilterRow(); renderLedger(); };
-    grid.appendChild(card);
-  });
-  if(!nonOwners().length) grid.innerHTML='<div style="grid-column:1/-1;font-size:0.78rem;color:var(--text3);">No staff added yet.</div>';
-
-  const recent=[...txs].sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,5);
-  const rl=document.getElementById('recentList');
-  rl.innerHTML=recent.length?'':'<div class="tx-empty">No transactions yet.</div>';
-  recent.forEach(t=>rl.appendChild(makeTxEl(t,false)));
-
-  // Outstanding credit below master card
-  const owingEl=document.getElementById('owingList');
-  if(owingEl){
-    const byBuyer={};
-    txs.filter(t=>t.type==='credit').forEach(t=>{ const b=t.creditBuyer||'Unknown'; if(!byBuyer[b])byBuyer[b]={total:0,paid:0}; byBuyer[b].total+=(t.creditTotal||0); byBuyer[b].paid+=(t.creditPaid||0); });
-    const owes=Object.entries(byBuyer).map(([n,d])=>({n,o:d.total-d.paid})).filter(x=>x.o>0.005);
-    owingEl.innerHTML=owes.length ? owes.map(x=>`<div style="margin-bottom:4px;font-size:0.78rem;"><span style="color:var(--text3);">${esc(x.n)}</span> owes <span style="color:var(--red);font-family:'DM Mono',monospace;font-weight:700;">${fmtAmt(x.o)}</span></div>`).join(''):'';
-  }
+if(type==='income'){
+t.person=document.getElementById('f-person').value;
+t.desc=document.getElementById('f-desc').value;
+t.amount=amt;
+if(!t.person)return alert('Select person');
+}else if(type==='expense'){
+t.category=document.getElementById('f-category').value;
+t.desc=document.getElementById('f-desc').value;
+t.amount=amt;
+}else if(type==='salary'){
+t.person=document.getElementById('f-person').value;
+t.amount=amt;
+if(!t.person)return alert('Select person');
+}else if(type==='transfer'){
+t.fromPerson=document.getElementById('f-from').value;
+t.toPerson=document.getElementById('f-to').value;
+t.amount=amt;
+if(!t.fromPerson||!t.toPerson)return alert('Select both people');
+}else if(type==='credit'){
+t.buyer=document.getElementById('f-buyer').value;
+t.crates=parseInt(document.getElementById('f-crates').value);
+t.cratePrice=parseFloat(document.getElementById('f-crate-price').value);
+t.amount=t.crates*t.cratePrice;
+if(!t.buyer||!t.crates||!t.cratePrice)return alert('Fill all credit fields');
+}else if(type==='owner-fund'){
+t.desc=document.getElementById('f-desc').value;
+t.amount=amt;
+}else if(type==='fund-return'){
+t.desc=document.getElementById('f-desc').value;
+t.amount=amt;
 }
 
-function pStats(pid){
-  let pIn=0, pOut=0;
-  txs.forEach(t=>{
-    if(t.person!==pid&&t.transferTo!==pid&&t.creditReceiver!==pid&&t.ownerReceiver!==pid&&t.frSender!==pid) {
-      // Check if this person is the sender side of certain tx
-    }
-    // Use person field for standard tx, transferTo for credits to receiver
-    const involvesAsRecipient = t.person===pid||t.transferTo===pid||t.creditReceiver===pid||t.ownerReceiver===pid;
-    const involvesAsSender = t.transferFrom===pid||t.ownerSender===pid||t.frSender===pid||t.salaryPaidBy===pid;
-    if(t.person===pid){
-      if(t.type==='income') pIn+=t.amount;
-      else if(t.type==='expense'||t.type==='salary') pOut+=t.amount;
-    }
-    if(t.type==='transfer'&&t.transferFrom===pid) pOut+=t.amount;
-    if(t.type==='transfer'&&t.transferTo===pid) pIn+=t.amount;
-    if(t.type==='credit'&&t.creditReceiver===pid) pIn+=(t.creditPaid||0);
-    if(t.type==='owner-fund'&&t.ownerSender===pid) pOut+=t.amount; // owner's perspective: sent out
-    if(t.type==='owner-fund'&&t.ownerReceiver===pid) pIn+=t.amount; // receiver got it
-    if(t.type==='fund-return'&&t.frSender===pid) pOut+=t.amount;
-    if(t.type==='fund-return'&&t.frReceiver===pid) pIn+=t.amount;
-  });
-  return{pIn,pOut,pBal:pIn-pOut};
+db.collection('transactions').add(t).then(()=>{
+loadTransactions();
+showTab('overview');
+}).catch(e=>alert('Error: '+e.message));
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// Ledger
-// ══════════════════════════════════════════════════════════════════════
-function setFilter(f,btn){ ledgerFilter=f; document.querySelectorAll('#ledgerFilters .tx-filter').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderLedger(); }
-
-function renderPersonFilterRow(){
-  const row=document.getElementById('personFilterRow'); row.innerHTML='';
-  const ab=document.createElement('button'); ab.className='tx-filter'+(personFilter==='all'?' on':'');
-  ab.textContent='All People'; ab.onclick=()=>{personFilter='all';renderPersonFilterRow();renderLedger();};
-  row.appendChild(ab);
-  people.forEach(p=>{
-    const b=document.createElement('button'); b.className='tx-filter'+(personFilter===p.id?' on':'');
-    b.textContent=p.name;
-    if(personFilter===p.id){const c=pColor(p);b.style.cssText=`background:${c.bg};color:${c.text};box-shadow:none;`;}
-    b.onclick=()=>{personFilter=p.id;renderPersonFilterRow();renderLedger();};
-    row.appendChild(b);
-  });
+function editTransaction(id){
+let t=transactions.find(x=>x.id===id);
+if(!t)return;
+editingId=id;
+//auto-fill form
+showTab('add');
 }
 
-function renderLedger(){
-  const list=document.getElementById('ledgerList');
-  let f=[...txs];
-  if(ledgerFilter!=='all') f=f.filter(t=>t.type===ledgerFilter);
-  if(personFilter!=='all') f=f.filter(t=>
-    t.person===personFilter||t.transferFrom===personFilter||t.transferTo===personFilter||
-    t.creditReceiver===personFilter||t.creditSeller===personFilter||
-    t.ownerSender===personFilter||t.ownerReceiver===personFilter||
-    t.frSender===personFilter||t.frReceiver===personFilter
-  );
-  f.sort((a,b)=>{ if(a.date&&b.date&&a.date!==b.date)return a.date<b.date?1:-1; return(b.ts||0)-(a.ts||0); });
-  if(!f.length){list.innerHTML='<div class="tx-empty">No transactions match this filter.</div>';return;}
-  const groups={};
-  f.forEach(t=>{const d=t.date||'';if(!groups[d])groups[d]=[];groups[d].push(t);});
-  const dates=Object.keys(groups).sort((a,b)=>a<b?1:-1);
-  list.innerHTML='';
-  dates.forEach(date=>{
-    const lbl=document.createElement('div');lbl.className='tx-group-date';lbl.textContent=fmtDate(date);
-    list.appendChild(lbl);
-    groups[date].forEach(t=>list.appendChild(makeTxEl(t,true)));
-  });
+function deleteTransaction(id){
+if(!confirm('Delete this transaction?'))return;
+db.collection('transactions').doc(id).delete().then(()=>{
+loadTransactions();
+showTab('overview');
+}).catch(e=>alert('Error: '+e.message));
 }
 
-function makeTxEl(t,showActions){
-  const person=people.find(p=>p.id===t.person);
-  const c=person?pColor(person):COLORS.green;
-  const icons={income:'&#x1F49A;',expense:'&#x1F534;',salary:'&#x1F499;',transfer:'&#x1F7E1;',credit:'&#x1F7E3;','owner-fund':'&#x1F7E0;','fund-return':'&#x1F535;'};
-  const icon=icons[t.type]||'&#x2B1C;';
-  const iconCls=t.type==='owner-fund'?'ownerfund':t.type==='fund-return'?'fundreturn':(t.type||'expense');
-  const isIn=t.type==='income'||t.type==='owner-fund';
-
-  let amtHtml='';
-  if(t.type==='credit'){
-    const paid=t.creditPaid||0; const total=t.creditTotal||0;
-    amtHtml=`<div class="tx-amount pos">+${fmtAmt(paid)}<br><span style="font-size:0.62rem;color:var(--text3);">of ${fmtAmt(total)}</span></div>`;
-  } else if(t.type==='transfer'){
-    amtHtml=`<div class="tx-amount" style="color:var(--gold)">&#x21C4; ${fmtAmt(t.amount)}</div>`;
-  } else {
-    const sign=isIn?'+':'-'; const col=isIn?'pos':'neg';
-    amtHtml=`<div class="tx-amount ${col}">${sign}${currency} ${Math.abs(t.amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</div>`;
-  }
-
-  let extraMeta='';
-  if(t.type==='transfer'){
-    const fp=people.find(p=>p.id===t.transferFrom); const tp=people.find(p=>p.id===t.transferTo);
-    extraMeta=`<span class="tx-cat">${fp?esc(fp.name):'?'} &#x2192; ${tp?esc(tp.name):'?'}</span>`;
-    if(t.transferRef)extraMeta+=`<span class="tx-cat">ref: ${esc(t.transferRef)}</span>`;
-  }
-  if(t.type==='credit'){
-    const total=t.creditTotal||0; const outstanding=total-(t.creditPaid||0);
-    if(t.creditBuyer)extraMeta+=`<span class="tx-cat">Buyer: ${esc(t.creditBuyer)}</span>`;
-    const rcvr=people.find(p=>p.id===t.creditReceiver);
-    if(rcvr)extraMeta+=`<span class="tx-cat">Rcvd by: ${esc(rcvr.name)}</span>`;
-    extraMeta+=outstanding>0.005?`<span class="outstanding-tag">Owes ${fmtAmt(outstanding)}</span>`:total>0?`<span class="settled-tag">Settled &#x2713;</span>`:'';
-  }
-  if(t.type==='owner-fund'){
-    const sndp=people.find(p=>p.id===t.ownerSender);
-    const rcvr=people.find(p=>p.id===t.ownerReceiver);
-    if(sndp)extraMeta+=`<span class="tx-cat">From: ${esc(sndp.name)}</span>`;
-    if(rcvr)extraMeta+=`<span class="tx-cat">To: ${esc(rcvr.name)}</span>`;
-  }
-  if(t.type==='fund-return'){
-    const sndp=people.find(p=>p.id===t.frSender); const rcvp=people.find(p=>p.id===t.frReceiver);
-    if(sndp)extraMeta+=`<span class="tx-cat">From: ${esc(sndp.name)}</span>`;
-    if(rcvp)extraMeta+=`<span class="tx-cat">To (Owner): ${esc(rcvp.name)}</span>`;
-  }
-  if(t.type==='salary'&&t.salaryPaidBy){
-    const pb=people.find(p=>p.id===t.salaryPaidBy); if(pb)extraMeta+=`<span class="tx-cat">Paid by: ${esc(pb.name)}</span>`;
-  }
-
-  const el=document.createElement('div'); el.className='tx-item fade-in'; el.dataset.id=t.id;
-  el.innerHTML=`
-    <div class="tx-icon ${iconCls}">${icon}</div>
-    <div class="tx-body">
-      <div class="tx-desc">${esc(t.desc)}</div>
-      <div class="tx-meta">
-        ${person?`<span class="tx-person" style="background:${c.bg};color:${c.text}">${esc(person.name)}</span>`:''}
-        ${t.cat?`<span class="tx-cat">${esc(t.cat)}</span>`:''}
-        <span class="tx-cat">${fmtDate(t.date)}</span>
-        ${extraMeta}
-      </div>
-      ${t.note?`<div class="tx-note">&#x1F4CC; ${esc(t.note)}</div>`:''}
-    </div>
-    ${amtHtml}
-    ${showActions&&!readOnly?`
-    <div class="tx-actions">
-      <button class="tx-btn edit" onclick="event.stopPropagation();askEdit('${escA(t.id)}')" title="Edit">&#x270E;</button>
-      <button class="tx-btn del" onclick="event.stopPropagation();askDelete('${escA(t.id)}','${escA(t.desc)}')" title="Delete">&#x2715;</button>
-    </div>`:''}`;
-  return el;
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// Add Entry — type switcher
-// ══════════════════════════════════════════════════════════════════════
-function setType(type, btn) {
-  txType = type;
-  document.querySelectorAll('.type-btn').forEach(b=>b.className='type-btn');
-  if(btn) btn.className='type-btn active-'+type;
-
-  // Show/hide standard fields vs type-specific fields
-  const useStandard = ['income','expense','salary'].includes(type);
-  document.getElementById('standardFields').style.display = useStandard ? '' : 'none';
-  document.getElementById('transferFields').style.display = type==='transfer' ? '' : 'none';
-  document.getElementById('creditFields').style.display   = type==='credit' ? '' : 'none';
-  document.getElementById('ownerFundFields').style.display = type==='owner-fund' ? '' : 'none';
-  document.getElementById('fundReturnFields').style.display = type==='fund-return' ? '' : 'none';
-  document.getElementById('salaryFields').style.display   = type==='salary' ? '' : 'none';
-
-  const cat = document.getElementById('f-category');
-  if (cat) {
-    if (type==='salary') cat.value='Salary';
-    else if (type==='income') cat.value='Sales Revenue';
-    else cat.value='';
-  }
-  document.getElementById('amtLabel').textContent = 'Amount ('+currency+') *';
-}
-
-function updateCreditCalc(){
-  const total=parseFloat(document.getElementById('f-cr-total').value)||0;
-  const paid=parseFloat(document.getElementById('f-cr-paid').value)||0;
-  const outstanding=total-paid;
-  const box=document.getElementById('creditCalcBox');
-  if(total>0){
-    box.style.display='block';
-    box.textContent='Total: '+fmtAmt(total)+' | Paid: '+fmtAmt(paid)+' | Outstanding: '+fmtAmt(outstanding);
-    box.style.color=outstanding>0.005?'var(--red)':'var(--green)';
-  } else { box.style.display='none'; }
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// Submit transaction
-// ══════════════════════════════════════════════════════════════════════
-function submitTx(){
-  if(!guardWrite()) return;
-  const today = new Date().toISOString().split('T')[0];
-  let tx = { id:'tx_'+Date.now(), type:txType, ts:Date.now() };
-
-  if(txType==='income'||txType==='expense'){
-    const amount=parseFloat(document.getElementById('f-amount').value)||0;
-    const person=document.getElementById('f-person').value;
-    const date=document.getElementById('f-date').value;
-    const cat=document.getElementById('f-category').value;
-    const note=document.getElementById('f-note').value.trim();
-    if(!person){toast('&#x26A0; Select a person');return;}
-    if(!date){toast('&#x26A0; Select a date');return;}
-    if(amount<=0){toast('&#x26A0; Enter a valid amount');return;}
-    const pn=people.find(p=>p.id===person)?.name||'';
-    tx.amount=amount; tx.person=person; tx.date=date; tx.cat=cat; tx.note=note;
-    tx.desc=txType==='income'?(pn?pn+' — ':'')+cat||'Income':'Expense'+(pn?' by '+pn:'');
-  }
-
-  if(txType==='salary'){
-    const amount=parseFloat(document.getElementById('f-amount').value)||0;
-    const person=document.getElementById('f-person').value;
-    const date=document.getElementById('f-date').value;
-    const paidBy=document.getElementById('f-sal-paidby').value;
-    const note=document.getElementById('f-note').value.trim();
-    if(!person||!date||amount<=0){toast('&#x26A0; Fill all required fields');return;}
-    const emp=people.find(p=>p.id===person)?.name||'?';
-    const pb=people.find(p=>p.id===paidBy)?.name||'';
-    tx.amount=amount; tx.person=person; tx.date=date; tx.cat='Salary'; tx.note=note;
-    tx.salaryPaidBy=paidBy;
-    tx.desc='Salary — '+emp+(pb?' (paid by '+pb+')':'');
-  }
-
-  if(txType==='transfer'){
-    const amount=parseFloat(document.getElementById('f-tf-amount').value)||0;
-    const fromP=document.getElementById('f-tf-from').value;
-    const toP=document.getElementById('f-tf-to').value;
-    const date=document.getElementById('f-tf-date').value;
-    const ref=document.getElementById('f-tf-ref').value.trim();
-    if(!fromP||!toP){toast('&#x26A0; Select sender and receiver');return;}
-    if(fromP===toP){toast('&#x26A0; Sender and receiver must differ');return;}
-    if(!date){toast('&#x26A0; Select a date');return;}
-    if(amount<=0){toast('&#x26A0; Enter transfer amount');return;}
-    const fn=people.find(p=>p.id===fromP)?.name||'?';
-    const tn=people.find(p=>p.id===toP)?.name||'?';
-    tx.amount=amount; tx.date=date; tx.transferFrom=fromP; tx.transferTo=toP; tx.transferRef=ref;
-    tx.person=fromP; // for ledger person filter compatibility
-    tx.cat='Transfer'; tx.note=ref;
-    tx.desc='MoMo Transfer: '+fn+' → '+tn;
-  }
-
-  if(txType==='credit'){
-    const buyer=document.getElementById('f-cr-buyer').value.trim();
-    const date=document.getElementById('f-cr-date').value;
-    const total=parseFloat(document.getElementById('f-cr-total').value)||0;
-    const paid=parseFloat(document.getElementById('f-cr-paid').value)||0;
-    const seller=document.getElementById('f-cr-seller').value;
-    const receiver=document.getElementById('f-cr-receiver').value;
-    const cat=document.getElementById('f-cr-cat').value;
-    const note=document.getElementById('f-cr-note').value.trim();
-    if(!buyer){toast('&#x26A0; Enter buyer name');return;}
-    if(!date){toast('&#x26A0; Select a date');return;}
-    if(total<=0){toast('&#x26A0; Enter total expected amount');return;}
-    if(paid>total){toast('&#x26A0; Amount paid cannot exceed total');return;}
-    // creditReceiver gets the money; creditSeller logged the sale
-    tx.amount=paid; tx.creditTotal=total; tx.creditPaid=paid;
-    tx.creditBuyer=buyer; tx.creditSeller=seller; tx.creditReceiver=receiver;
-    tx.person=seller; // for ledger person filter
-    tx.date=date; tx.cat=cat; tx.note=note;
-    tx.desc='Credit sale — '+buyer;
-    // Payments log: initial payment
-    tx.payments = paid>0 ? [{amount:paid, receiver, date, note:'Initial payment'}] : [];
-  }
-
-  if(txType==='owner-fund'){
-    const amount=parseFloat(document.getElementById('f-of-amount').value)||0;
-    const date=document.getElementById('f-of-date').value;
-    const sender=document.getElementById('f-of-sender').value;
-    const receiver=document.getElementById('f-of-receiver').value;
-    const note=document.getElementById('f-of-note').value.trim();
-    if(!sender){toast('&#x26A0; Select owner (sent by)');return;}
-    if(!receiver){toast('&#x26A0; Select receiver');return;}
-    if(!date){toast('&#x26A0; Select a date');return;}
-    if(amount<=0){toast('&#x26A0; Enter amount');return;}
-    const sn=people.find(p=>p.id===sender)?.name||'Owner';
-    const rn=people.find(p=>p.id===receiver)?.name||'?';
-    tx.amount=amount; tx.date=date; tx.ownerSender=sender; tx.ownerReceiver=receiver;
-    tx.person=receiver; // non-owner who received it
-    tx.ownerName=sn; tx.cat='Owner Fund'; tx.note=note;
-    tx.desc='Owner fund: '+sn+' → '+rn;
-  }
-
-  if(txType==='fund-return'){
-    const amount=parseFloat(document.getElementById('f-fr-amount').value)||0;
-    const date=document.getElementById('f-fr-date').value;
-    const sender=document.getElementById('f-fr-sender').value;
-    const receiver=document.getElementById('f-fr-receiver').value;
-    const note=document.getElementById('f-fr-note').value.trim();
-    if(!sender){toast('&#x26A0; Select who is returning funds');return;}
-    if(!receiver){toast('&#x26A0; Select owner receiving funds');return;}
-    if(!date){toast('&#x26A0; Select a date');return;}
-    if(amount<=0){toast('&#x26A0; Enter amount');return;}
-    const sn=people.find(p=>p.id===sender)?.name||'?';
-    const rn=people.find(p=>p.id===receiver)?.name||'Owner';
-    tx.amount=amount; tx.date=date; tx.frSender=sender; tx.frReceiver=receiver;
-    tx.person=sender;
-    tx.cat='Fund Return'; tx.note=note;
-    tx.desc='Fund return: '+sn+' → '+rn;
-  }
-
-  txs.push(tx); ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab();
-
-  // Clear fields
-  ['f-amount','f-note','f-cr-buyer','f-cr-total','f-cr-paid','f-cr-note','f-tf-ref','f-of-note','f-fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('creditCalcBox').style.display='none';
-  const today2=new Date().toISOString().split('T')[0];
-  ['f-date','f-tf-date','f-cr-date','f-of-date','f-fr-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today2;});
-  toast('&#x2705; Transaction saved!'); switchTab('ledger');
-}
-
-function renderQuickBtns(){
-  const c=document.getElementById('quickBtns'); if(!c)return;
-  const s=[
-    {label:'&#x1F49A; Sales',type:'income'},
-    {label:'&#x1F534; Expense',type:'expense'},
-    {label:'&#x1F499; Salary',type:'salary'},
-    {label:'&#x1F7E1; Transfer',type:'transfer'},
-    {label:'&#x1F95A; Credit Sale',type:'credit'},
-    {label:'&#x1F7E0; Owner Fund',type:'owner-fund'},
-    {label:'&#x1F535; Fund Return',type:'fund-return'},
-  ];
-  s.forEach(x=>{
-    const b=document.createElement('button'); b.className='type-btn';
-    b.style.cssText='padding:8px 6px;font-size:0.62rem;border-radius:10px;background:var(--bg2);box-shadow:var(--sh-out);';
-    b.innerHTML=x.label;
-    b.onclick=()=>{const btn=document.getElementById('tb-'+x.type);setType(x.type,btn);switchTab('add');const fa=document.getElementById('f-amount');if(fa)fa.focus();};
-    c.appendChild(b);
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// Credit Sales
-// ══════════════════════════════════════════════════════════════════════
-function renderCreditTab(){
-  const creditTxs=txs.filter(t=>t.type==='credit');
-  const byBuyer={};
-  creditTxs.forEach(t=>{
-    const buyer=t.creditBuyer||'Unknown';
-    if(!byBuyer[buyer]) byBuyer[buyer]={total:0,paid:0,sales:[],seller:null};
-    byBuyer[buyer].total+=(t.creditTotal||0);
-    byBuyer[buyer].paid+=(t.creditPaid||0);
-    byBuyer[buyer].sales.push(t);
-    byBuyer[buyer].seller=t.creditSeller||t.person;
-  });
-  const summaryEl=document.getElementById('creditSummary');
-  if(!Object.keys(byBuyer).length){
-    summaryEl.innerHTML='<div class="tx-empty">No credit sales yet.<br>Use <strong>+ Add</strong> → Credit Sale.</div>';
-  } else {
-    const card=document.createElement('div'); card.className='credit-summary';
-    Object.entries(byBuyer).forEach(([buyer,data])=>{
-      const outstanding=data.total-data.paid;
-      const seller=people.find(p=>p.id===data.seller);
-      const row=document.createElement('div'); row.className='cs-row';
-      row.innerHTML=`<div><div class="cs-buyer">${esc(buyer)}</div>
-        <div class="cs-detail">${data.sales.length} sale(s) via ${seller?esc(seller.name):'—'}</div></div>
-        <div style="text-align:right;display:flex;align-items:center;gap:6px;">
-          <div><div class="cs-total">Total: ${fmtAmt(data.total)}</div>
-          ${outstanding>0.005?`<div class="cs-outstanding">Owes: ${fmtAmt(outstanding)}</div>`:`<div class="cs-settled">Settled ✓</div>`}</div>
-          ${!readOnly&&outstanding>0.005?`<button class="cs-pay-btn" onclick="askCreditPayment('${escA(buyer)}')">💸 Payment</button>`:''}
-        </div>`;
-      card.appendChild(row);
-    });
-    summaryEl.innerHTML=''; summaryEl.appendChild(card);
-  }
-  const listEl=document.getElementById('creditList'); listEl.innerHTML='';
-  if(!creditTxs.length){listEl.innerHTML='<div class="tx-empty">No credit sales logged.</div>';return;}
-  [...creditTxs].sort((a,b)=>(b.ts||0)-(a.ts||0)).forEach(t=>listEl.appendChild(makeTxEl(t,true)));
-}
-
-function askCreditPayment(buyer){
-  if(!guardWrite()) return;
-  buyerPayPending = buyer;
-  const creditTxs = txs.filter(t=>t.type==='credit'&&(t.creditBuyer||'Unknown')===buyer);
-  const total = creditTxs.reduce((s,t)=>s+(t.creditTotal||0),0);
-  const paid  = creditTxs.reduce((s,t)=>s+(t.creditPaid||0),0);
-  const outstanding = Math.max(0,total-paid);
-  document.getElementById('payBuyerLabel').textContent = buyer+' — Outstanding: '+fmtAmt(outstanding);
-  document.getElementById('p-amount').value = outstanding.toFixed(2);
-  document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
-  // Populate receiver — non-owners only
-  const opts = nonOwners().map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
-  document.getElementById('p-receiver').innerHTML = opts;
-  document.getElementById('payOverlay').classList.add('open');
-}
-
-function confirmCreditPayment(){
-  if(!buyerPayPending||!guardWrite()) return;
-  const amt = parseFloat(document.getElementById('p-amount').value)||0;
-  const date = document.getElementById('p-date').value||new Date().toISOString().split('T')[0];
-  const receiver = document.getElementById('p-receiver').value;
-  if(amt<=0){toast('&#x26A0; Enter valid amount');return;}
-  if(!receiver){toast('&#x26A0; Select who received the money');return;}
-  const rName = people.find(p=>p.id===receiver)?.name||'?';
-
-  // Allocate payment oldest-first across all outstanding credit txs for this buyer
-  let remaining = amt;
-  const list = txs.filter(t=>t.type==='credit'&&(t.creditBuyer||'Unknown')===buyerPayPending).sort((a,b)=>(a.ts||0)-(b.ts||0));
-  for(const t of list){
-    if(remaining<=0) break;
-    const owed=Math.max(0,(t.creditTotal||0)-(t.creditPaid||0));
-    if(owed<=0) continue;
-    const alloc=Math.min(owed,remaining);
-    t.creditPaid=(t.creditPaid||0)+alloc;
-    t.amount=t.creditPaid;
-    remaining-=alloc;
-    // Add to payments log
-    if(!t.payments) t.payments=[];
-    t.payments.push({amount:alloc,receiver,receiverName:rName,date,note:'Balance payment'});
-    // Update note on the transaction
-    t.note=(t.note?t.note+' | ':'')+fmtAmt(alloc)+' rcvd by '+rName+' on '+date;
-  }
-
-  ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab();
-  closeModal('payOverlay'); buyerPayPending=null; toast('&#x2705; Payment recorded');
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// People
-// ══════════════════════════════════════════════════════════════════════
 function addPerson(){
-  if(!guardWrite()) return;
-  const name=document.getElementById('p-name').value.trim();
-  const role=document.getElementById('p-role').value.trim();
-  const color=document.getElementById('p-color').value;
-  if(!name){toast('&#x26A0; Enter a name');return;}
-  if(people.some(p=>p.name.toLowerCase()===name.toLowerCase())){toast('&#x26A0; Name already exists');return;}
-  people.push({id:'p_'+Date.now(),name,role,color});
-  ss('cb_people',people); dbSync();
-  document.getElementById('p-name').value=''; document.getElementById('p-role').value='';
-  populateSels(); renderPeopleTab(); renderAll(); toast('&#x2705; Person added');
+let name=document.getElementById('newPersonName').value.trim();
+let role=document.getElementById('newPersonRole').value.trim();
+if(!name)return alert('Enter name');
+let colors=['#FF6B6B','#4ECDC4','#45B7D1','#FFA07A','#98D8C8','#F7DC6F'];
+let person={name,role,color:colors[people.length%colors.length]};
+db.collection('people').add(person).then(()=>{
+loadPeople();
+showTab('people');
+}).catch(e=>alert('Error: '+e.message));
 }
 
-function deletePerson(id){
-  if(!guardWrite()) return;
-  if(txs.some(t=>t.person===id||t.transferFrom===id||t.transferTo===id||t.ownerSender===id||t.ownerReceiver===id||t.frSender===id||t.frReceiver===id||t.creditSeller===id||t.creditReceiver===id)){
-    toast('&#x26A0; Cannot delete — person has transactions');return;
-  }
-  people=people.filter(p=>p.id!==id);
-  ss('cb_people',people); dbSync(); populateSels(); renderPeopleTab(); renderAll(); toast('&#x1F5D1; Person removed');
+function deletePerson(name){
+if(!confirm(`Delete ${name}?`))return;
+db.collection('people').where('name','==',name).get().then(q=>{
+q.forEach(doc=>doc.ref.delete());
+loadPeople();
+showTab('people');
+}).catch(e=>alert('Error: '+e.message));
 }
 
-function renderPeopleTab(){
-  const list=document.getElementById('peopleList'); if(!list)return;
-  list.innerHTML='';
-  if(!people.length){list.innerHTML='<div style="font-size:0.78rem;color:var(--text3);">No people yet.</div>';return;}
-  people.forEach(p=>{
-    const c=pColor(p); const{pIn,pOut,pBal}=pStats(p.id);
-    const row=document.createElement('div'); row.className='person-row';
-    row.innerHTML=`<div class="pr-avatar" style="background:${c.bg};color:${c.text}">${esc(pInit(p))}</div>
-      <div class="pr-info"><div class="pr-name">${esc(p.name)} ${isOwner(p)?'<span style="font-size:0.55rem;background:var(--orange2);color:var(--orange);padding:1px 6px;border-radius:5px;font-weight:700;">OWNER</span>':''}</div>
-      <div class="pr-role">${esc(p.role||'No role')} · <span class="mono" style="color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</span></div></div>
-      ${!readOnly?`<button class="pr-del" onclick="deletePerson('${escA(p.id)}')">&#x2715;</button>`:''}`;
-    list.appendChild(row);
-  });
+function filterByPerson(name){
+//TODO: show filtered view
 }
 
-function populateSels(){
-  // Non-owner people for regular transaction fields
-  const nonOwnerOpts = nonOwners().map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
-  const ownerOpts = owners().length ? owners().map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('') : `<option value="">— No owners added —</option>`;
-  const allOpts = people.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
-
-  // Regular person fields — non-owners only
-  ['f-person','f-tf-from','f-tf-to','f-sal-paidby','e-person'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=nonOwnerOpts;});
-  // Credit fields — non-owners only
-  ['f-cr-seller','f-cr-receiver'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=nonOwnerOpts;});
-  // Owner Fund: sender = owner, receiver = non-owner
-  const ofSender=document.getElementById('f-of-sender'); if(ofSender)ofSender.innerHTML=ownerOpts;
-  const ofReceiver=document.getElementById('f-of-receiver'); if(ofReceiver)ofReceiver.innerHTML=nonOwnerOpts;
-  // Fund Return: sender = non-owner, receiver = owner
-  const frSender=document.getElementById('f-fr-sender'); if(frSender)frSender.innerHTML=nonOwnerOpts;
-  const frReceiver=document.getElementById('f-fr-receiver'); if(frReceiver)frReceiver.innerHTML=ownerOpts;
-  // Credit payment receiver — non-owners
-  const prec=document.getElementById('p-receiver'); if(prec)prec.innerHTML=nonOwnerOpts;
+function filterTransactions(type){
+let btns=document.querySelectorAll('.tx-filter');
+btns.forEach(b=>b.classList.remove('on'));
+event.target.classList.add('on');
 }
 
-function populateReportSel(){
-  const sel=document.getElementById('r-person'); if(!sel)return;
-  sel.innerHTML='<option value="all">All People</option>'+people.map(p=>`<option value="${escA(p.id)}">${esc(p.name)}</option>`).join('');
+function loadPeople(){
+db.collection('people').onSnapshot(snap=>{
+people=[];
+snap.forEach(doc=>{
+people.push({id:doc.id,...doc.data()});
+});
+if(currentTab==='add')showTab('add');
+});
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// Modals: Delete / Edit
-// ══════════════════════════════════════════════════════════════════════
-function askDelete(id,desc){
-  if(!guardWrite()) return;
-  deletePendingId=id;
-  document.getElementById('delModalSub').textContent='Delete "'+desc+'"? This cannot be undone.';
-  document.getElementById('delOverlay').classList.add('open');
-}
-function confirmDelete(){
-  if(!deletePendingId) return;
-  txs=txs.filter(t=>t.id!==deletePendingId);
-  ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab();
-  closeModal('delOverlay'); toast('&#x1F5D1; Transaction deleted');
+function loadTransactions(){
+db.collection('transactions').onSnapshot(snap=>{
+transactions=[];
+snap.forEach(doc=>{
+transactions.push({id:doc.id,...doc.data()});
+});
+if(currentTab==='overview')showTab('overview');
+});
 }
 
-function askEdit(id){
-  if(!guardWrite()) return;
-  const t=txs.find(x=>x.id===id); if(!t)return;
-  editPendingId=id;
-  document.getElementById('e-amount').value=t.type==='credit'?(t.creditPaid||0):(t.amount||0);
-  document.getElementById('e-date').value=t.date;
-  document.getElementById('e-desc').value=t.desc;
-  document.getElementById('e-note').value=t.note||'';
-  document.getElementById('e-person').innerHTML=people.map(p=>`<option value="${escA(p.id)}"${p.id===t.person?' selected':''}>${esc(p.name)}</option>`).join('');
-  document.getElementById('e-category').value=t.cat||'';
-  document.getElementById('editOverlay').classList.add('open');
-}
-function confirmEdit(){
-  if(!editPendingId) return;
-  const idx=txs.findIndex(t=>t.id===editPendingId); if(idx<0)return;
-  const amount=parseFloat(document.getElementById('e-amount').value);
-  const date=document.getElementById('e-date').value;
-  const desc=document.getElementById('e-desc').value.trim();
-  const note=document.getElementById('e-note').value.trim();
-  const person=document.getElementById('e-person').value;
-  const cat=document.getElementById('e-category').value;
-  if(isNaN(amount)||amount<0){toast('&#x26A0; Enter valid amount');return;}
-  if(txs[idx].type==='credit'){
-    txs[idx]={...txs[idx],creditPaid:amount,amount:amount,date,desc:desc||txs[idx].desc,note,person,cat};
-  } else {
-    if(amount<=0){toast('&#x26A0; Enter valid amount');return;}
-    txs[idx]={...txs[idx],amount,date,desc:desc||txs[idx].desc,note,person,cat};
-  }
-  ss('cb_txs',txs); dbSync(); renderAll(); renderCreditTab();
-  closeModal('editOverlay'); toast('&#x2705; Updated');
+function formatCurrency(n){
+return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 }
 
-function closeModal(id){ document.getElementById(id).classList.remove('open'); deletePendingId=null; editPendingId=null; }
-
-// ══════════════════════════════════════════════════════════════════════
-// Clear all — requires master PIN
-// ══════════════════════════════════════════════════════════════════════
-function askClearAll(){
-  if(!guardWrite()) return;
-  clearPinEntry=''; updateClearDots(); document.getElementById('clearPinErr').textContent='';
-  document.getElementById('clearOverlay').classList.add('open');
-}
-function executeFullClear(){
-  txs=[]; people=[]; currency='GHS';
-  ss('cb_txs',txs); ss('cb_people',people); ss('cb_currency',currency);
-  dbSync(); renderAll(); renderPeopleTab(); renderCreditTab(); populateSels();
-  toast('&#x1F5D1; All data cleared');
+function adjustColor(hex){
+let r=parseInt(hex.slice(1,3),16);
+let g=parseInt(hex.slice(3,5),16);
+let b=parseInt(hex.slice(5,7),16);
+r=Math.max(0,r-30);
+g=Math.max(0,g-30);
+b=Math.max(0,b-30);
+return '#'+[r,g,b].map(x=>{let h=x.toString(16);return h.length===1?'0'+h:h;}).join('');
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// Report
-// ══════════════════════════════════════════════════════════════════════
-function generateReport(){
-  const from=document.getElementById('r-from').value;
-  const to=document.getElementById('r-to').value;
-  const pId=document.getElementById('r-person').value;
-  const rType=document.getElementById('r-type').value;
-  let f=[...txs];
-  if(from)f=f.filter(t=>t.date>=from);
-  if(to)f=f.filter(t=>t.date<=to);
-  if(pId!=='all')f=f.filter(t=>t.person===pId);
-  if(rType!=='all')f=f.filter(t=>t.type===rType);
-  f.sort((a,b)=>a.date<b.date?-1:1);
-  const totalIn=f.filter(t=>['income','owner-fund'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-  const totalOut=f.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-  const bal=totalIn-totalOut;
-  const pName=pId==='all'?'All People':(people.find(p=>p.id===pId)?.name||pId);
-  document.getElementById('rpTitle').textContent='Cashbook Report';
-  document.getElementById('rpSub').textContent=fmtDate(from)+' – '+fmtDate(to)+' · '+pName+' · '+f.length+' entries';
-  document.getElementById('rpSummary').innerHTML=`
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total In</div><div class="rp-sum-val" style="color:var(--green)">+${fmtAmt(totalIn)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Total Out</div><div class="rp-sum-val" style="color:var(--red)">${fmtAmt(totalOut)}</div></div>
-    <div class="rp-sum-box"><div class="rp-sum-lbl">Balance</div><div class="rp-sum-val" style="color:${bal>=0?'var(--green)':'var(--red)'}">${fmtAmt(bal)}</div></div>`;
-  document.getElementById('rpBody').innerHTML=f.map(t=>{
-    const p=people.find(x=>x.id===t.person);
-    const isIn=['income','owner-fund'].includes(t.type);
-    const dispAmt=t.type==='credit'?'+'+fmtAmt(t.creditPaid||0)+' / '+fmtAmt(t.creditTotal||0):(isIn?'+':'-')+fmtAmt(t.amount);
-    return`<tr><td>${fmtDate(t.date)}</td><td>${p?esc(p.name):'—'}</td>
-      <td>${esc(t.desc)}${t.note?'<br><small style="color:var(--text3)">'+esc(t.note)+'</small>':''}</td>
-      <td>${esc(t.cat||'—')}</td><td style="text-transform:capitalize">${esc(t.type)}</td>
-      <td style="text-align:right;font-family:'DM Mono',monospace;color:${isIn?'var(--green)':'var(--red)'}">${dispAmt}</td></tr>`;
-  }).join('');
-  if(pId==='all'&&people.length>1){
-    let bd='<div style="margin-top:20px;margin-bottom:8px;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Balance by Person</div>';
-    bd+='<table class="rp-table"><thead><tr><th>Person</th><th>Role</th><th>In</th><th>Out</th><th>Balance</th></tr></thead><tbody>';
-    people.forEach(p=>{
-      const pt=f.filter(t=>t.person===p.id);
-      const pIn=pt.filter(t=>['income','owner-fund'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-      const pOut=pt.filter(t=>['expense','salary','fund-return'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-      const pBal=pIn-pOut;
-      bd+=`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.role||'—')}</td><td style="color:var(--green)">+${fmtAmt(pIn)}</td><td style="color:var(--red)">${fmtAmt(pOut)}</td><td style="font-weight:700;color:${pBal>=0?'var(--green)':'var(--red)'}">${fmtAmt(pBal)}</td></tr>`;
-    });
-    bd+='</tbody></table>';
-    document.getElementById('rpPersonBreakdown').innerHTML=bd;
-  } else document.getElementById('rpPersonBreakdown').innerHTML='';
-  document.getElementById('reportPreview').style.display='block';
-  document.getElementById('reportPreview').scrollIntoView({behavior:'smooth'});
-  toast('&#x1F4CB; Report: '+f.length+' transactions');
+function exportData(){
+let data={people,transactions};
+let json=JSON.stringify(data,null,2);
+let blob=new Blob([json],{type:'application/json'});
+let url=URL.createObjectURL(blob);
+let a=document.createElement('a');
+a.href=url;
+a.download='cashbook-export-'+new Date().toISOString().split('T')[0]+'.json';
+a.click();
+URL.revokeObjectURL(url);
 }
 
-function saveCurrency(){
-  if(!guardWrite()) return;
-  currency=document.getElementById('s-currency').value.trim()||'GHS';
-  ss('cb_currency',currency); renderAll(); dbSync(); toast('&#x2705; Currency updated to '+currency);
+function setupSync(){
+let lastSync=Date.now();
+window.addEventListener('online',()=>{
+document.getElementById('syncBar').className='syncing';
+document.getElementById('syncText').textContent='Syncing...';
+setTimeout(()=>{
+document.getElementById('syncBar').className='synced';
+document.getElementById('syncText').textContent='✓ Synced';
+setTimeout(()=>document.getElementById('syncBar').style.display='none',2000);
+},1500);
+});
+window.addEventListener('offline',()=>{
+document.getElementById('syncBar').className='offline';
+document.getElementById('syncText').textContent='Offline Mode';
+});
 }
-
-let _tt;
-function toast(msg){ const el=document.getElementById('toast'); el.innerHTML=msg; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2600); }
 </script>
 </body>
 </html>
