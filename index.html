@@ -437,6 +437,13 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
             </select>
           </div>
           <div class="f-field">
+            <label class="f-label">Source</label>
+            <select class="f-select" id="f-source">
+              <option value="shop">Shop</option>
+              <option value="farm">Farm</option>
+            </select>
+          </div>
+          <div class="f-field">
             <label class="f-label">Reference / Note</label>
             <input class="f-input" type="text" id="f-note" placeholder="e.g. Receipt #007"/>
           </div>
@@ -479,6 +486,13 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
             <select class="f-select" id="f-cr-cat">
               <option value="Sales Revenue">Sales Revenue</option>
               <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="f-field">
+            <label class="f-label">Source</label>
+            <select class="f-select" id="f-cr-source">
+              <option value="farm">Farm</option>
+              <option value="shop">Shop</option>
             </select>
           </div>
           <div class="f-field"><label class="f-label">Note</label><input class="f-input" type="text" id="f-cr-note" placeholder="Optional note"/></div>
@@ -1008,6 +1022,8 @@ function submitTx(){
     if(!person){toast('&#x26A0; Select a person');return;}if(!date){toast('&#x26A0; Select a date');return;}if(amount<=0){toast('&#x26A0; Enter a valid amount');return;}
     const pn=people.find(p=>p.id===person)?.name||'';let buyer='';
     if(txType==='income'){const bEl=document.getElementById('f-buyer');if(bEl)buyer=bEl.value.trim();if(buyer)tx.buyer=buyer;}
+    // source (shop / farm)
+    const srcEl=document.getElementById('f-source');const srcVal=(srcEl&&srcEl.value)?srcEl.value:'shop';tx.source=srcVal;
     tx.amount=amount;tx.person=person;tx.date=date;tx.cat=cat;tx.note=note;
     if(txType==='income'){tx.desc='Sale'+(buyer?(' — to '+buyer):'')+(pn?(' by '+pn):'')+(cat?(' — '+cat):'');}else{tx.desc='Expense'+(pn?(' by '+pn):'');}
   }
@@ -1033,9 +1049,9 @@ function submitTx(){
     tx.amount=amount;tx.date=date;tx.transferFrom=fromP;tx.transferTo=toP;tx.transferRef=ref;tx.person=fromP;tx.cat='Transfer';tx.note=ref;tx.desc='MoMo Transfer: '+fn+' → '+tn;
   }
   if(txType==='credit'){
-    const buyer=document.getElementById('f-cr-buyer').value.trim();const date=document.getElementById('f-cr-date').value;const total=parseFloat(document.getElementById('f-cr-total').value)||0;const paid=parseFloat(document.getElementById('f-cr-paid').value)||0;const seller=document.getElementById('f-cr-seller').value;const receiver=document.getElementById('f-cr-receiver').value;const cat=document.getElementById('f-cr-cat').value;const note=document.getElementById('f-cr-note').value.trim();
+    const buyer=document.getElementById('f-cr-buyer').value.trim();const date=document.getElementById('f-cr-date').value;const total=parseFloat(document.getElementById('f-cr-total').value)||0;const paid=parseFloat(document.getElementById('f-cr-paid').value)||0;const seller=document.getElementById('f-cr-seller').value;const receiver=document.getElementById('f-cr-receiver').value;const cat=document.getElementById('f-cr-cat').value;const note=document.getElementById('f-cr-note').value.trim();const srcVal=(document.getElementById('f-cr-source')&&document.getElementById('f-cr-source').value)?document.getElementById('f-cr-source').value:'farm';
     if(!buyer){toast('&#x26A0; Enter buyer name');return;}if(!date){toast('&#x26A0; Select a date');return;}if(total<=0){toast('&#x26A0; Enter total expected amount');return;}if(paid>total){toast('&#x26A0; Amount paid cannot exceed total');return;}
-    tx.amount=paid;tx.creditTotal=total;tx.creditPaid=paid;tx.creditBuyer=buyer;tx.creditSeller=seller;tx.creditReceiver=receiver;tx.person=seller;tx.date=date;tx.cat=cat;tx.note=note;tx.desc='Credit sale — '+buyer;
+    tx.amount=paid;tx.creditTotal=total;tx.creditPaid=paid;tx.creditBuyer=buyer;tx.creditSeller=seller;tx.creditReceiver=receiver;tx.person=seller;tx.date=date;tx.cat=cat;tx.note=note;tx.desc='Credit sale — '+buyer;tx.source=srcVal;
     tx.payments=paid>0?[{amount:paid,receiver,date,note:'Initial payment'}]:[];
   }
   if(txType==='owner-fund'){
@@ -1051,7 +1067,7 @@ function submitTx(){
     tx.amount=amount;tx.date=date;tx.frSender=sender;tx.frReceiver=receiver;tx.person=sender;tx.cat='Fund Return';tx.note=note;tx.desc='Fund return: '+sn+' → '+rn;
   }
   txs.push(tx);ss('cb_txs',txs);dbSync();renderAll();renderCreditTab();
-  ['f-amount','f-note','f-buyer','f-cr-buyer','f-cr-total','f-cr-paid','f-cr-note','f-tf-ref','f-of-note','f-fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-amount','f-note','f-buyer','f-cr-buyer','f-cr-total','f-cr-paid','f-cr-note','f-tf-ref','f-of-note','f-fr-note','f-source','f-cr-source'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('creditCalcBox').style.display='none';
   const today2=new Date().toISOString().split('T')[0];
   ['f-date','f-tf-date','f-cr-date','f-of-date','f-fr-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today2;});
@@ -1214,14 +1230,20 @@ function generateReport(){
 
   function makeSalesTable(rows, title, subtitle, showOutstanding){
     if(!rows.length) return '';
-    // Group: shop sales (income) vs farm dispatch (credit)
-    const shopRows   = rows.filter(t => t.type==='income');
-    const farmRows   = rows.filter(t => t.type==='credit');
-    const shopTotal  = shopRows.reduce((s,t)=>s+(t.amount||0),0);
-    const farmTotal  = farmRows.reduce((s,t)=>s+(t.creditTotal||0),0);
+    // Compute collected amounts (only money actually paid) and outstanding credit
+    let shopTotal = 0, farmTotal = 0, outstanding = 0;
+    rows.forEach(t => {
+      const src = t.source || (t.type==='income'?'shop':'farm');
+      if(t.type==='income'){
+        if(src==='shop') shopTotal += (t.amount||0); else farmTotal += (t.amount||0);
+      }else if(t.type==='credit'){
+        const collected = t.creditPaid||0;
+        const owe = Math.max(0,(t.creditTotal||0)-(t.creditPaid||0));
+        if(src==='shop') shopTotal += collected; else farmTotal += collected;
+        if(owe>0){ if(src==='farm') outstanding += owe; else outstanding += owe; }
+      }
+    });
     const grandTotal = shopTotal + farmTotal;
-    // Outstanding credit
-    const outstanding= farmRows.reduce((s,t)=>s+Math.max(0,(t.creditTotal||0)-(t.creditPaid||0)),0);
 
     let html = `
       <div class="pdf-section">
@@ -1274,10 +1296,11 @@ function generateReport(){
 
   // Totals
   const totalExpenses   = expenseTxs.reduce((s,t)=>s+(t.amount||0),0);
-  const totalShopSales  = salesTxs.filter(t=>t.type==='income').reduce((s,t)=>s+(t.amount||0),0);
-  const totalFarmSales  = salesTxs.filter(t=>t.type==='credit').reduce((s,t)=>s+(t.creditTotal||0),0);
+  const totalShopSales  = salesTxs.reduce((s,t)=>{const src=t.source||(t.type==='income'?'shop':'farm');if(src==='shop'){return s+((t.type==='income')?(t.amount||0):(t.creditPaid||0));}return s;},0);
+  const totalFarmSales  = salesTxs.reduce((s,t)=>{const src=t.source||(t.type==='income'?'shop':'farm');if(src==='farm'){return s+((t.type==='income')?(t.amount||0):(t.creditPaid||0));}return s;},0);
   const totalSales      = totalShopSales + totalFarmSales;
   const cashInjection   = ownerFunds.reduce((s,t)=>s+(t.amount||0),0);
+  const totalOutstanding = salesTxs.reduce((s,t)=>{if(t.type==='credit'){const src=t.source||(t.type==='income'?'shop':'farm');const owe=Math.max(0,(t.creditTotal||0)-(t.creditPaid||0));if(src==='farm')return s+owe;}return s;},0);
 
   const dateLabel = (from && to) ? fmtDate(from)+' – '+fmtDate(to) : (from ? 'From '+fmtDate(from) : (to ? 'To '+fmtDate(to) : 'All Dates'));
 
@@ -1299,6 +1322,7 @@ function generateReport(){
     const summaryRows = [];
     if(totalShopSales > 0) summaryRows.push({label:'Shop Sales', amount:totalShopSales});
     if(totalFarmSales > 0) summaryRows.push({label:'Farm Dispatch', amount:totalFarmSales});
+    if(totalOutstanding > 0) summaryRows.push({label:'Outstanding – Credit Sales', amount:totalOutstanding});
     summaryRows.push({label:'Total Sales / Dispatch', amount:totalSales, isTotal:true});
     if(totalExpenses > 0) summaryRows.push({label:'Total Expenses', amount:totalExpenses});
     if(cashInjection > 0) summaryRows.push({label:'Cash Injection', amount:cashInjection, prefix:'+ '});
