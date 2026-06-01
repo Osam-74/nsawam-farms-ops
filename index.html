@@ -627,14 +627,17 @@ input,select,textarea{font-family:'DM Mono',monospace;outline:none;}
         <button class="submit-btn" style="margin:0;background:linear-gradient(135deg,#2a4a9a,#3d6bdf);" onclick="manualPush()">&#x2191; Push Local</button>
       </div>
     </div>
-    <!-- <div class="sh">Data</div>
+    <div class="sh">Data</div>
     <div class="form-card">
       <button class="submit-btn" style="background:linear-gradient(135deg,#c0203a,#e83e5c);margin-bottom:10px;" onclick="askClearAll()">Clear All Data</button>
       <div style="font-size:0.68rem;color:var(--text3);line-height:1.7;">
         <strong style="color:var(--text2);">Install as app:</strong><br>
+        Desktop: use the <strong>&#x2B07; Install</strong> button in the top bar (Chrome/Edge).<br>
+        iOS Safari: Share &#x2192; Add to Home Screen<br>
+        Android Chrome: Menu &#x2192; Add to Home Screen
       </div>
     </div>
-  </div> -->
+  </div>
 
   </div></div>
 </div>
@@ -841,9 +844,9 @@ async function initFirebase(){
   }catch(e){console.warn('[DB] Firebase failed:',e);setDbStatus('⚠️ Cloud unavailable — working offline.');people=gs('cb_people',[]);txs=gs('cb_txs',[]);currency=gs('cb_currency','GHS');renderAll();renderPeopleTab();populateSels();renderCreditTab();}
 }
 function applyRemote(r){if(r.txs!==undefined)txs=r.txs;if(r.people!==undefined)people=r.people;if(r.currency!==undefined)currency=r.currency;ss('cb_txs',txs);ss('cb_people',people);ss('cb_currency',currency);renderAll();renderPeopleTab();populateSels();renderCreditTab();setDbStatus('✅ Live sync active. Last update: '+new Date().toLocaleTimeString());}
-function dbSync(){if(!db||!_fs)return;clearTimeout(_syncTimeout);_syncTimeout=setTimeout(async()=>{try{await _fs.setDoc(_fs.doc(db,...FS_DOC),{txs,people,currency,ts:Date.now()});setDbStatus('✅ Last sync: '+new Date().toLocaleTimeString());}catch(e){console.warn('[DB] Write failed:',e);setDbStatus('❌ Sync failed: '+e.message);}},800);}
+function dbSync(){if(!db||!_fs)return;clearTimeout(_syncTimeout);_syncTimeout=setTimeout(async()=>{try{await _fs.setDoc(_fs.doc(db,...FS_DOC),{txs,people,currency,ts:Date.now(),_pinHash:H_MASTER});setDbStatus('✅ Last sync: '+new Date().toLocaleTimeString());}catch(e){console.warn('[DB] Write failed:',e);setDbStatus('❌ Sync failed: '+e.message);}},800);}
 async function manualPull(){if(!db||!_fs){toast('⚠ Not connected');return;}toast('⬇ Pulling…');const s=await _fs.getDoc(_fs.doc(db,...FS_DOC));if(s.exists()){applyRemote(s.data());toast('✅ Pulled');}else toast('ℹ No cloud data');}
-async function manualPush(){if(!db||!_fs){toast('⚠ Not connected');return;}toast('⬆ Pushing…');try{await _fs.setDoc(_fs.doc(db,...FS_DOC),{txs,people,currency,ts:Date.now()});toast('✅ Pushed');setDbStatus('✅ Pushed: '+new Date().toLocaleTimeString());}catch(e){toast('✗ Push failed');}}
+async function manualPush(){if(!db||!_fs){toast('⚠ Not connected');return;}toast('⬆ Pushing…');try{await _fs.setDoc(_fs.doc(db,...FS_DOC),{txs,people,currency,ts:Date.now(),_pinHash:H_MASTER});toast('✅ Pushed');setDbStatus('✅ Pushed: '+new Date().toLocaleTimeString());}catch(e){toast('✗ Push failed');}}
 function setDbStatus(m){const el=document.getElementById('dbStatus');if(el)el.innerHTML=m;}
 
 // ══════════════════════════════════════════════════════════════════════
