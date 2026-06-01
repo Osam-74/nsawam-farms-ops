@@ -1,10 +1,10 @@
-const CACHE_NAME = 'cashbook-v4';
+const CACHE_NAME = 'cashbook-v5';
 
-// Core files to pre-cache for offline use
+// Core files to pre-cache for offline use (use relative paths for GitHub Pages)
 const PRECACHE = [
-  '/nsawam-farms-ops/',
-  '/nsawam-farms-ops/index.html',
-  '/nsawam-farms-ops/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
 // ── Install: pre-cache shell ──────────────────────────────────────────────────
@@ -27,7 +27,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ── Fetch strategy ────────────────────────────────────────────────────────────
+// ── Fetch strategy ─────────────────────────────────────────────────────────────
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
@@ -62,9 +62,8 @@ self.addEventListener('fetch', event => {
           return caches.match(event.request).then(cached => {
             if (cached) return cached;
             // For navigation requests (page reload/direct URL), serve index.html
-            // This fixes the GitHub Pages reload 404 error
             if (event.request.mode === 'navigate') {
-              return caches.match('/nsawam-farms-ops/index.html');
+              return caches.match('./index.html');
             }
             return new Response('Offline — resource unavailable', { status: 503 });
           });
@@ -73,7 +72,7 @@ self.addEventListener('fetch', event => {
   }
 });
 
-// ── Message handler ───────────────────────────────────────────────────────────
+// ── Message handler ────────────────────────────────────────────────────────────
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
