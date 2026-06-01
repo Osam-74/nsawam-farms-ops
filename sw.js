@@ -1,60 +1,81 @@
-// sw.js — Cashbook Service Worker
-const CACHE = 'cashbook-v3';
+const CACHE_NAME = 'cashbook-v4';
 
-const STATIC = [
-  './index.html',
-  './manifest.json'
+// Core files to pre-cache for offline use
+const PRECACHE = [
+  '/nsawam-farms-ops/',
+  '/nsawam-farms-ops/index.html',
+  '/nsawam-farms-ops/manifest.json'
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE)
-      .then(c => c.addAll(STATIC))
+// ── Install: pre-cache shell ──────────────────────────────────────────────────
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(PRECACHE))
       .then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+// ── Activate: remove old caches ───────────────────────────────────────────────
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
+// ── Fetch strategy ────────────────────────────────────────────────────────────
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
 
-  // Never intercept Firebase / Google requests — Firestore needs live network
+  // NEVER intercept Firebase / Google / CDN requests
+  // These must always hit the network for Firestore real-time sync to work
   if (
     url.hostname.includes('firebase') ||
     url.hostname.includes('firebaseio') ||
     url.hostname.includes('googleapis') ||
     url.hostname.includes('gstatic') ||
     url.hostname.includes('google') ||
+    url.hostname.includes('fonts.') ||
     url.protocol === 'chrome-extension:'
-  ) return;
+  ) {
+    return; // let browser handle — no interception
+  }
 
-  // For everything else: network-first, fall back to cache
-  e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        if (e.request.method === 'GET' && res.status === 200) {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return res;
-      })
-      .catch(() =>
-        caches.match(e.request).then(cached => {
-          if (cached) return cached;
-          if (e.request.mode === 'navigate') return caches.match('./index.html');
-          return new Response('Offline', { status: 503 });
+  // For same-origin GET requests: Network-first, fall back to cache
+  if (event.request.method === 'GET') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Cache successful responses
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return response;
         })
-      )
-  );
+        .catch(() => {
+          // Network failed — serve from cache
+          return caches.match(event.request).then(cached => {
+            if (cached) return cached;
+            // For navigation requests (page reload/direct URL), serve index.html
+            // This fixes the GitHub Pages reload 404 error
+            if (event.request.mode === 'navigate') {
+              return caches.match('/nsawam-farms-ops/index.html');
+            }
+            return new Response('Offline — resource unavailable', { status: 503 });
+          });
+        })
+    );
+  }
 });
 
-self.addEventListener('message', e => {
-  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+// ── Message handler ───────────────────────────────────────────────────────────
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
