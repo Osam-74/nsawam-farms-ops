@@ -1140,12 +1140,12 @@ function setType(type, btn) {
 
   // Show/hide standard fields vs type-specific fields
   const useStandard = ['income','expense','salary'].includes(type);
-  document.getElementById('standardFields').style.display = useStandard ? '' : 'none';
-  document.getElementById('transferFields').style.display = type==='transfer' ? '' : 'none';
-  document.getElementById('creditFields').style.display   = type==='credit' ? '' : 'none';
-  document.getElementById('ownerFundFields').style.display = type==='owner-fund' ? '' : 'none';
-  document.getElementById('fundReturnFields').style.display = type==='fund-return' ? '' : 'none';
-  document.getElementById('salaryFields').style.display   = type==='salary' ? '' : 'none';
+  const std = document.getElementById('standardFields'); if(std) std.style.display = useStandard ? 'block' : 'none';
+  const tf = document.getElementById('transferFields'); if(tf) tf.style.display = type==='transfer' ? 'block' : 'none';
+  const cr = document.getElementById('creditFields'); if(cr) cr.style.display = type==='credit' ? 'block' : 'none';
+  const of = document.getElementById('ownerFundFields'); if(of) of.style.display = type==='owner-fund' ? 'block' : 'none';
+  const fr = document.getElementById('fundReturnFields'); if(fr) fr.style.display = type==='fund-return' ? 'block' : 'none';
+  const sal = document.getElementById('salaryFields'); if(sal) sal.style.display = type==='salary' ? 'block' : 'none';
 
   const cat = document.getElementById('f-category');
   if (cat) {
