@@ -2,8 +2,8 @@
   "name": "Cashbook — Farm Expense Tracker",
   "short_name": "Cashbook",
   "description": "Farm expense and income tracker with per-person balances, synced to cloud.",
-  "start_url": "/nsawam-farms-ops/index.html",
-  "scope": "/nsawam-farms-ops/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "theme_color": "#e8eaf0",
@@ -12,15 +12,15 @@
   "categories": ["finance", "productivity"],
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%233d6bdf'/><text y='148' x='16' font-size='140' font-weight='bold'>💰</text></svg>",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%233d6bdf'/><text y='400' x='50' font-size='380' font-weight='bold'>💰</text></svg>",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]
